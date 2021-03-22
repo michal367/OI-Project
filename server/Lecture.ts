@@ -1,18 +1,16 @@
-import makeid from './idgen.ts'
-class Session{
+import { v4 } from "https://deno.land/std/uuid/mod.ts";
+class Lecture {
     test = "testowe pole";
-    tutor:any;
-    id:any;
+    tutor: any;
+    id: any;
 
-    constructor(tutor:string){
-        console.log('Session construtor');
+    constructor(tutor: string) {
+        console.log("Lecture construtor");
         this.tutor = tutor;
-        this.id = makeid(tutor.length);
-
+        this.id = v4.generate();
 
         // '/session/id'
     }
-
 
     // add student
     // create question
@@ -21,9 +19,10 @@ class Session{
     // get students
     // get all questions
     // get question
-    
+
     // import questions
     // export questions
 
-    // get answers 
-}export default Session;
+    // get answers
+}
+export default Lecture;
