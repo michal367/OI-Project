@@ -29,12 +29,10 @@ const theme = createMuiTheme({
 
 function App() {
     return (
-        <BackEndService>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <CreateSessionView />
-            </ThemeProvider>
-        </BackEndService>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <CreateSessionView />
+        </ThemeProvider>
     );
 }
 
