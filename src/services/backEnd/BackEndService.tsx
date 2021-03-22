@@ -5,9 +5,8 @@ export interface IBackEndProps {
     children?: ReactNode
 }
 
-export interface IBackEndContext {
+export interface IBackEnd {
     startSession: () => Promise<void>
-    children?: ReactNode
 }
 
 export function BackEndService(props: IBackEndProps) {
@@ -32,7 +31,7 @@ const startSession = () => {
     })
 };
 
-const BackEndContext = createContext<IBackEndContext>({ startSession });
+const BackEndContext = createContext<IBackEnd>({ startSession });
 
 export const useBackEnd = () => {
     return useContext(BackEndContext);
