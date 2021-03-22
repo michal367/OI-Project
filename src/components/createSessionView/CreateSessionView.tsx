@@ -41,6 +41,7 @@ export function CreateSessionView() {
             width: "200px",
             height: "200px",
             fontSize: "150px",
+            color: theme.palette.grey[50],
         },
         header: {
             fontSize: "90px",
@@ -70,7 +71,7 @@ export function CreateSessionView() {
 
     return (
         <div className={classes.root}>
-            <h1 className={classes.header}>Stwórz sesję</h1>
+            <h1 className={classes.header}>Rozpocznij sesję</h1>
             <div className={classes.wrapper}>
                 <Fab
                     aria-label="save"
@@ -79,9 +80,15 @@ export function CreateSessionView() {
                     onClick={handleButtonClick}
                 >
                     {success ? (
-                        <CheckIcon fontSize="inherit" />
+                        <CheckIcon 
+                         fontSize="inherit"
+                         color="inherit"
+                        />
                     ) : (
-                        <PlayArrowIcon fontSize="inherit" />
+                        <PlayArrowIcon 
+                         fontSize="inherit"
+                         color="inherit" 
+                        />
                     )}
                 </Fab>
                 {loading && (

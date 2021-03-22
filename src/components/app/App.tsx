@@ -7,15 +7,15 @@ import { BackEndService } from "../../services/backEnd/BackEndService";
 const theme = createMuiTheme({
     palette: {
         primary: {
-            // light: will be calculated,
-            light: "#80A3E4",
-            main: "#4870AC",
-            // dark: "#404756",
+            light: "#E1F1FF",
+            main: "#80A3E4",
+            dark: "#4870AC",
             // contrastText: will be calculated,
         },
         secondary: {
             light: "#FFEECB",
             main: "#D9A21B",
+            dark: "#877455",
         },
         // Used by `getContrastText()` to maximize the contrast between
         // the background and the text.
