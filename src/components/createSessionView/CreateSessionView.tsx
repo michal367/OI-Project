@@ -6,9 +6,11 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
+import { useBackEnd } from "../../services/backEnd/BackEndService";
 
 export function CreateSessionView() {
     const theme = useTheme();
+    const backEnd = useBackEnd();
 
     const classes = makeStyles({
         root: {
@@ -48,26 +50,21 @@ export function CreateSessionView() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const timer = useRef<number>();
     const buttonClassname = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
 
-    useEffect(() => {
-        return () => {
-            clearTimeout(timer.current);
-        };
-    }, []);
+    
 
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            timer.current = window.setTimeout(() => {
+            backEnd.startSession().then(()=>{
                 setSuccess(true);
                 setLoading(false);
-            }, 2000);
+            })
         }
     };
 
