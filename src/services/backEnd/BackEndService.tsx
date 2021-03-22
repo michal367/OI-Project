@@ -1,8 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
 
-
-
-
 export interface IBackEndProps {
     startSession?: () => Promise<void>
     children?: ReactNode

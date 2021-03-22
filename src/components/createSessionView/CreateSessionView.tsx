@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -55,13 +55,13 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
-    
+
 
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            backEnd.startSession().then(()=>{
+            backEnd.startSession().then(() => {
                 setSuccess(true);
                 setLoading(false);
             })
