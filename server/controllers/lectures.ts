@@ -1,13 +1,13 @@
 import Lecture from "../Lecture.ts";
+import {Response} from "https://deno.land/x/oak/response.ts";
+//import {Request} from "https://deno.land/x/oak/request.ts";
 
 const lectures = new Map();
 
 const createLecture = async ({
-  request,
-  response,
+  response
 }: {
-  request: any;
-  response: any;
+  response: Response;
 }) => {
   const lecture: Lecture = new Lecture("n/a");
   lectures.set(lecture.id, lecture);
@@ -18,11 +18,9 @@ const createLecture = async ({
 };
 
 const listLectures = async ({
-  request,
-  response,
+  response
 }: {
-  request: any;
-  response: any;
+  response: Response;
 }) => {
   response.status = 200;
   response.body = [...lectures.values()];
@@ -33,7 +31,7 @@ const getLecture = ({
   response,
 }: {
   params: { id: string };
-  response: any;
+  response: Response;
 }) => {
   const selectedLecture: Lecture | undefined = lectures.get(params.id);
   if (selectedLecture) {
@@ -52,7 +50,7 @@ const deleteLecture = ({
   response,
 }: {
   params: { id: string };
-  response: any;
+  response: Response;
 }) => {
   lectures.delete(params.id);
   response.status = 204;

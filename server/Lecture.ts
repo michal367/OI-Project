@@ -1,11 +1,9 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 class Lecture {
-    test = "testowe pole";
-    tutor: any;
-    id: any;
+    tutor: string;
+    id: string;
 
     constructor(tutor: string) {
-        console.log("Lecture construtor");
         this.tutor = tutor;
         this.id = v4.generate();
 
