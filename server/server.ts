@@ -2,8 +2,6 @@ import { Application, send } from "https://deno.land/x/oak/mod.ts";
 import * as path from "https://deno.land/std/path/mod.ts";
 import router from "./routes.ts";
 
-// na froncie ktoś wchodzi na stronę i to powoduje stworzenie sesji
-
 const PORT = 8000;
 const HOST = "localhost";
 const app = new Application();
