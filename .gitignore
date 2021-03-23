@@ -186,3 +186,6 @@ dist/
 # Temporary folders
 tmp/
 temp/
+
+# Deno settings
+server/.vscode/
