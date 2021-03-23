@@ -21,7 +21,6 @@ function App() {
       </header>
     </div>
   );
-  // dodaje linijke zeby przetestowac wypychanie commitow
 }
 
 export default App;
