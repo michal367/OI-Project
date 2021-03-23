@@ -27,7 +27,7 @@ const createLecture = () => {
     return new Promise<Lecture>((resolve, reject) => {
         fetch(`${BASE_URL}/lectures`, {
             method: "POST",
-            //TODO ogarnać cros zeby działał jak powinien 
+            //TODO fix cors
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
