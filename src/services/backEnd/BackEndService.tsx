@@ -1,17 +1,17 @@
 import { createContext, ReactNode, useContext } from "react";
 
 export interface IBackEndProps {
-    startSession?: () => Promise<void>
+    createLecture?: () => Promise<Lecture>
     children?: ReactNode
 }
 
 export interface IBackEnd {
-    startSession: () => Promise<void>
+    createLecture: () => Promise<Lecture>
 }
 
 export function BackEndService(props: IBackEndProps) {
     const value = {
-        startSession: props.startSession || startSession
+        createLecture: props.createLecture || createLecture
     };
 
     return (
@@ -21,17 +21,26 @@ export function BackEndService(props: IBackEndProps) {
     );
 }
 
-const startSession = () => {
-    return new Promise<void>((resolve, reject) => {
-        setTimeout(() => {
-            console.log("Backend says: Session starting");
-            resolve();
-        }, 2000)
+const BASE_URL = "http://localhost:8000/api";
 
+const createLecture = () => {
+    return new Promise<Lecture>((resolve, reject) => {
+        fetch(`${BASE_URL}/lectures`, {
+            method: "POST",
+            //TODO ogarnać cros zeby działał jak powinien 
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then((lecture: Lecture) => {
+                resolve(lecture);
+            })
     })
 };
 
-const BackEndContext = createContext<IBackEnd>({ startSession });
+const BackEndContext = createContext<IBackEnd>({ createLecture });
 
 export const useBackEnd = () => {
     return useContext(BackEndContext);

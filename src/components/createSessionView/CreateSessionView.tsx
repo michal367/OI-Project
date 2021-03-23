@@ -56,15 +56,14 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
-
-
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            backEnd.startSession().then(() => {
+            backEnd.createLecture().then((lecture) => {
                 setSuccess(true);
                 setLoading(false);
+                console.log(lecture);
             })
         }
     };
@@ -80,14 +79,14 @@ export function CreateSessionView() {
                     onClick={handleButtonClick}
                 >
                     {success ? (
-                        <CheckIcon 
-                         fontSize="inherit"
-                         color="inherit"
+                        <CheckIcon
+                            fontSize="inherit"
+                            color="inherit"
                         />
                     ) : (
-                        <PlayArrowIcon 
-                         fontSize="inherit"
-                         color="inherit" 
+                        <PlayArrowIcon
+                            fontSize="inherit"
+                            color="inherit"
                         />
                     )}
                 </Fab>
