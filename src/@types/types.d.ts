@@ -1,0 +1,3 @@
+interface Lecture {
+    id: string;
+}
