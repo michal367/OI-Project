@@ -1,17 +1,12 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
-import {
-  createLecture,
-  listLectures,
-  getLecture,
-  deleteLecture,
-} from "./controllers/lectures.ts";
+import * as Lectures from "./controllers/lectures.ts";
 
 const router = new Router();
 
 router
-  .post("/api/lectures", createLecture)
-  .get("/api/lectures", listLectures)
-  .get("/api/lectures/:id", getLecture)
-  .delete("/api/lectures/:id", deleteLecture);
+  .post("/api/lectures", Lectures.create)
+  .get("/api/lectures", Lectures.list)
+  .get("/api/lectures/:id", Lectures.get)
+  .delete("/api/lectures/:id", Lectures.remove);
 
 export default router;

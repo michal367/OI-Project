@@ -4,7 +4,7 @@ import {Response} from "https://deno.land/x/oak/response.ts";
 
 const lectures = new Map();
 
-const createLecture = async ({
+const create = async ({
   response
 }: {
   response: Response;
@@ -17,7 +17,7 @@ const createLecture = async ({
   };
 };
 
-const listLectures = async ({
+const list = async ({
   response
 }: {
   response: Response;
@@ -26,7 +26,7 @@ const listLectures = async ({
   response.body = [...lectures.values()];
 };
 
-const getLecture = ({
+const get = ({
   params,
   response,
 }: {
@@ -45,7 +45,7 @@ const getLecture = ({
   }
 };
 
-const deleteLecture = ({
+const remove = ({
   params,
   response,
 }: {
@@ -56,4 +56,4 @@ const deleteLecture = ({
   response.status = 204;
 };
 
-export { createLecture, listLectures, getLecture, deleteLecture };
+export { create, list, get, remove };
