@@ -3,7 +3,6 @@ import * as path from "https://deno.land/std/path/mod.ts";
 import router from "./routes.ts";
 
 const PORT = 8000;
-//const HOST = "localhost";
 const app = new Application();
 
 app.use(router.routes());
