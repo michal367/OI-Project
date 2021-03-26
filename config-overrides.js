@@ -24,6 +24,7 @@ module.exports = {
 		paths.testsSetup = path.resolve(__dirname, src_dir + '/setupTests.ts');
 		paths.proxySetup = path.resolve(__dirname, src_dir + '/setupProxy.js');
 		paths.swSrc = path.resolve(__dirname, src_dir + '/service-worker.ts');
+		paths.appTypeDeclarations = path.resolve(__dirname, src_dir + '/react-app-env.d.ts');
 		if(cmd == "build.js")
 			paths.appBuild = path.resolve(__dirname, build_dir);
 		paths.appPublic = path.resolve(__dirname, public_dir);
