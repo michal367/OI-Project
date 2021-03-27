@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 
 interface StudentListViewProps {
@@ -17,10 +18,27 @@ export function StudentListView(props: StudentListViewProps) {
 
 
     return (
-        <pre>
-            {
-                JSON.stringify(studentList, null, 4)
-            }
-        </pre>
+        <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Nr</TableCell>
+                        <TableCell>Nick</TableCell>
+                        <TableCell>Imię</TableCell>
+                        <TableCell>Nazwisko</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {studentList.map((student, index) => (
+                        <TableRow key={student.id}>
+                            <TableCell>{index}</TableCell>
+                            <TableCell>{student.nick}</TableCell>
+                            <TableCell>{student.name}</TableCell>
+                            <TableCell>{student.surname}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 }
