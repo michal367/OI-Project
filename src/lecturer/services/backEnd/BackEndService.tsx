@@ -26,20 +26,15 @@ export function BackEndService(props: IBackEndProps) {
 const BASE_URL = "http://localhost:8000/api";
 
 const createLecture = () => {
-    return new Promise<Lecture>((resolve, reject) => {
-        fetch(`${BASE_URL}/lectures`, {
-            method: "POST",
-            //TODO fix cors
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then((lecture: Lecture) => {
-                resolve(lecture);
-            })
+    return fetch(`${BASE_URL}/lectures`, {
+        method: "POST",
+        //TODO fix cors
+        mode: 'cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
     })
+        .then(response => response.json())
 };
 
 const getStudentsForLecture = (id: String) => {
