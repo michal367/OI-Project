@@ -1,6 +1,5 @@
 import Lecture from "../Lecture.ts";
-import {Response} from "https://deno.land/x/oak/response.ts";
-import {Request} from "https://deno.land/x/oak/request.ts";
+import { Response, Request } from "https://deno.land/x/oak/mod.ts";
 
 const lectures = new Map();
 
@@ -59,8 +58,8 @@ const remove = ({
 const getStudentsList = ({
   params,
   response,
-}:{
-  params: {id: string };
+}: {
+  params: { id: string };
   response: Response;
 }) => {
   const selectedLecture = lectures.get(params.id);
@@ -75,18 +74,19 @@ const getStudentsList = ({
   }
 };
 
-const addStudentToLecture = ({
+const addStudentToLecture = async ({
   params,
   request,
-  response,
-}:{
-  params:  {id: string};
-  request: Request;
-  response: Response;
+  response
+}: {
+  params: { id: string },
+  request: Request,
+  response: Response
 }) => {
+  const jsonData = await request.body({ type: 'json' }).value;
   const selectedLecture = lectures.get(params.id);
   if (selectedLecture) {
-    selectedLecture.lectureStudents.addStudent("nick", "name", "surname");
+    selectedLecture.lectureStudents.addStudent(jsonData["nick"], jsonData["name"], jsonData["surname"]);
     response.status = 200;
     response.body = {
       msg: "Student connection successfull!",
