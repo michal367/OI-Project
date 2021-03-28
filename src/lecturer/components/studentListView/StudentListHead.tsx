@@ -1,7 +1,11 @@
+/* Code adopted from: https://material-ui.com/components/tables/ */
+
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { Order } from '../../util/comparators';
+import { StudentListRow } from './StudentListView';
 
 
 export interface HeadCell<T> {
@@ -10,18 +14,16 @@ export interface HeadCell<T> {
     numeric: boolean;
 }
 
-export type Order = 'asc' | 'desc';
-
 export interface StudentListHeadProps {
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Student) => void;
+    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof StudentListRow) => void;
     order: Order;
     orderBy: string;
-    cells: HeadCell<Student>[];
+    cells: HeadCell<StudentListRow>[];
 }
 
 export function StudentListHead(props: StudentListHeadProps) {
     const { order, orderBy, onRequestSort, cells } = props;
-    const createSortHandler = (property: keyof Student) => (event: React.MouseEvent<unknown>) => {
+    const createSortHandler = (property: keyof StudentListRow) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
