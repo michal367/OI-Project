@@ -2,14 +2,16 @@ import { useState, useRef, ChangeEvent } from "react";
 import { TextField, Button, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
+import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { MatchParams } from "../../@types/types";
 
 export function ChooseNicknameView() {
     const theme = useTheme();
     // const backEnd = useBackEnd();
-
+    const match = useRouteMatch<MatchParams>("/:session");
     const classes = makeStyles({
         root: {
             background: theme.palette.primary.light,
@@ -60,6 +62,7 @@ export function ChooseNicknameView() {
     });
     const timer = useRef<number>();
     const [name, setName] = useState('');
+    const [session, setSession] = useState(match?.params.session);
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
       setName(event.target.value);
     };
@@ -92,7 +95,7 @@ export function ChooseNicknameView() {
                         disabled={loading}
                         onClick={handleButtonClick}
                     >
-                        {success ? (`Dołączono pomyślnie ${name}`) : ("Dołącz do sesji")}
+                        {success ? (`${name} dołączył pomyślnie`) : (`Dołącz do sesji: ${session}`)}
                         
                     </Button>
                     {loading && (
