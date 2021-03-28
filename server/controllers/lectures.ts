@@ -56,4 +56,11 @@ const remove = ({
   response.status = 204;
 };
 
+// TODO: write student list proceed functions
+// addStudent
+// getStudent
+// showStudents
+// deleteStudent
+
+
 export { create, list, get, remove };
