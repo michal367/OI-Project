@@ -4,7 +4,7 @@ interface Lecture {
 
 interface Student {
     id: string;
-    name: String;
-    surname: String;
-    nick: String;
+    name: string;
+    surname: string;
+    nick: string;
 }
