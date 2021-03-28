@@ -1,6 +1,7 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { ChooseNicknameView } from "../chooseNicknameView/ChooseNicknameView";
+import { Route, BrowserRouter as Router } from "react-router-dom";
 import "fontsource-roboto";
 
 const theme = createMuiTheme({
@@ -28,10 +29,14 @@ const theme = createMuiTheme({
 
 function App() {
     return (
+        <Router>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <ChooseNicknameView />
+            <Route path='/'>
+                <ChooseNicknameView />
+            </Route>
         </ThemeProvider>
+        </Router>
     );
 }
 
