@@ -56,11 +56,46 @@ const remove = ({
   response.status = 204;
 };
 
-// TODO: write student list proceed functions
-// addStudent
-// getStudent
-// showStudents
-// deleteStudent
+const getStudentsList = ({
+  params,
+  response,
+}:{
+  params: {id: string };
+  response: Response;
+}) => {
+  const selectedLecture = lectures.get(params.id);
+  if (selectedLecture) {
+    response.status = 200;
+    response.body = selectedLecture.lectureStudents;
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
 
+const addStudentToLecture = ({
+  params,
+  response,
+}:{
+  params:  {id: string, nick: string, name: string, surname: string };
+  response: Response;
+}) => {
+  const selectedLecture = lectures.get(params.id);
+  if (selectedLecture) {
 
-export { create, list, get, remove };
+    selectedLecture.lectureStudents.addStudent(params.nick, params.name, params.surname);
+    response.status = 200;
+    response.body = {
+      msg: "Connection successfull!",
+    };
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
+
+export { create, list, get, remove, getStudentsList, addStudentToLecture };

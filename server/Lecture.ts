@@ -1,10 +1,9 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import StudentList from "./StudentList.ts";
-import Student from "./Student.ts"
 class Lecture {
     tutor: string;
     id: string;
-    lectureStudents: StudentList<Student>;
+    lectureStudents: StudentList;
 
     constructor(tutor: string) {
         this.tutor = tutor;

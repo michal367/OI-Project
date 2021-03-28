@@ -1,9 +1,9 @@
-import { Student } from "./Student.ts";
+import Student from "./Student.ts"
 
-class StudentList<Student> {
+class StudentList {
 
     private students: Array<Student>;
-    
+
     constructor(){
         this.students = [];
     }
@@ -25,9 +25,8 @@ class StudentList<Student> {
     }
 
     // needed?
-    clearArray(): StudentList<Student>{
+    clearArray(): StudentList{
         return new StudentList;
-        // this.students = [];
     }
 }
 export default StudentList;

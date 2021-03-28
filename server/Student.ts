@@ -1,5 +1,5 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
-export class Student  {
+class Student  {
 
     id: string;
     nick: string;
@@ -14,8 +14,10 @@ export class Student  {
         this.surname = surname;
     }
 
-    idEquals(id:string) {
-        return this.id = id;
+    idEquals(id:string): boolean{
+        return this.id == id;
     }
 
-} 
+}
+
+export default Student;
