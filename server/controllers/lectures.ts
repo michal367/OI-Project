@@ -1,6 +1,6 @@
 import Lecture from "../Lecture.ts";
 import {Response} from "https://deno.land/x/oak/response.ts";
-//import {Request} from "https://deno.land/x/oak/request.ts";
+import {Request} from "https://deno.land/x/oak/request.ts";
 
 const lectures = new Map();
 
@@ -77,18 +77,19 @@ const getStudentsList = ({
 
 const addStudentToLecture = ({
   params,
+  request,
   response,
 }:{
-  params:  {id: string, nick: string, name: string, surname: string };
+  params:  {id: string};
+  request: Request;
   response: Response;
 }) => {
   const selectedLecture = lectures.get(params.id);
   if (selectedLecture) {
-
-    selectedLecture.lectureStudents.addStudent(params.nick, params.name, params.surname);
+    selectedLecture.lectureStudents.addStudent("nick", "name", "surname");
     response.status = 200;
     response.body = {
-      msg: "Connection successfull!",
+      msg: "Student connection successfull!",
     };
   } else {
     response.status = 404;

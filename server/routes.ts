@@ -8,7 +8,7 @@ router
   .get("/api/lectures", Lectures.list)
   .get("/api/lectures/:id", Lectures.get)
   .delete("/api/lectures/:id", Lectures.remove)
-  .get("api/lectures/:id/student-list", Lectures.getStudentsList)
+  .get("/api/lectures/:id/student-list", Lectures.getStudentsList)
   .post("/api/lectures/:id/student-login", Lectures.addStudentToLecture);
 
 export default router;
