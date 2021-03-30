@@ -31,7 +31,7 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            {/* <CreateSessionView /> */}
+            <CreateSessionView />
             <StudentListView />
         </ThemeProvider>
     );

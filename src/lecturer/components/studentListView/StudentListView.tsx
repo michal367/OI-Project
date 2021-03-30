@@ -1,6 +1,6 @@
 /* Code adopted from: https://material-ui.com/components/tables/ */
 
-import { Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
+import { makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
@@ -17,8 +17,15 @@ export interface StudentListRow extends Student {
 export function StudentListView(props: StudentListViewProps) {
     const backEnd = useBackEnd();
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof StudentListRow>('orderIndex');
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
+
+    const classes = makeStyles({
+        root: {
+            maxWidth:"600px",
+            margin:"15px auto"
+        },
+      })();
 
     useEffect(() => {
         backEnd.getStudentsForLecture(props.lecture?.id ?? "")
@@ -42,7 +49,7 @@ export function StudentListView(props: StudentListViewProps) {
     };
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className={classes.root}>
             <Table aria-label="tabela z listą studentów">
                 <StudentListHead
                     order={order}
