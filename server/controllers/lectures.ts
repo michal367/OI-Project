@@ -56,4 +56,23 @@ const remove = ({
   response.status = 204;
 };
 
-export { create, list, get, remove };
+const link = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: Response;
+}) => { 
+  const selectedLecture: Lecture | undefined = lectures.get(params.id);
+  if (selectedLecture) {
+    response.status = 200;
+    response.body = selectedLecture.link;
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
+
+export { create, list, get, remove, link };

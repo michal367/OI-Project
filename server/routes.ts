@@ -7,6 +7,7 @@ router
   .post("/api/lectures", Lectures.create)
   .get("/api/lectures", Lectures.list)
   .get("/api/lectures/:id", Lectures.get)
-  .delete("/api/lectures/:id", Lectures.remove);
-
+  .delete("/api/lectures/:id", Lectures.remove)
+  .get("/api/lectures/link/:id", Lectures.link);
+  
 export default router;
