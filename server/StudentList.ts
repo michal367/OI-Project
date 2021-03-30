@@ -12,8 +12,7 @@ class StudentList {
         return this.students.size;
     }
 
-    addStudent(nick: string, name: string, surname: string): void{
-        let student = new Student(nick, name, surname);
+    addStudent(student: Student): void{
         this.students.set(student.id, student);
     }
 
