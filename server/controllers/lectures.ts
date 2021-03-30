@@ -55,6 +55,25 @@ const remove = ({
   response.status = 204;
 };
 
+const link = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: Response;
+}) => { 
+  const selectedLecture: Lecture | undefined = lectures.get(params.id);
+  if (selectedLecture) {
+    response.status = 200;
+    response.body = selectedLecture.link;
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
+
 const getStudentsList = ({
   params,
   response,
@@ -99,4 +118,4 @@ const addStudentToLecture = async ({
   }
 };
 
-export { create, list, get, remove, getStudentsList, addStudentToLecture };
+export { create, list, get, remove, getStudentsList, addStudentToLecture, link};
