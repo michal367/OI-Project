@@ -5,7 +5,7 @@ import { green } from "@material-ui/core/colors";
 import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+// import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { MatchParams } from "../../@types/types";
 
 export function ChooseNicknameView() {
