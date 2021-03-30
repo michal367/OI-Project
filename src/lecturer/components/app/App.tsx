@@ -2,6 +2,7 @@ import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import "fontsource-roboto";
+import { StudentListView } from "../studentListView/StudentListView";
 
 const theme = createMuiTheme({
     palette: {
@@ -31,6 +32,7 @@ function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <CreateSessionView />
+            <StudentListView />
         </ThemeProvider>
     );
 }
