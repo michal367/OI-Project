@@ -3,12 +3,12 @@ import StudentList from "./StudentList.ts";
 class Lecture {
     tutor: string;
     id: string;
-    lectureStudents: StudentList;
+    studentList: StudentList;
 
     constructor(tutor: string) {
         this.tutor = tutor;
         this.id = v4.generate();
-        this.lectureStudents = new StudentList;
+        this.studentList = new StudentList;
     }
 }
 

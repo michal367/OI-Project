@@ -2,26 +2,27 @@ import Student from "./Student.ts"
 
 class StudentList {
 
-    private students: Array<Student>;
+    private students: Map<String ,Student>;
 
     constructor(){
-        this.students = [];
+        this.students = new Map();
     }
 
     size(): number{
-        return this.students.length;
+        return this.students.size;
     }
 
     addStudent(nick: string, name: string, surname: string): void{
-        this.students.push(new Student(nick, name, surname));
+        let student = new Student(nick, name, surname);
+        this.students.set(student.id, student);
     }
 
-    getStudent(index: number): Student{
-        return this.students[index];
+    getStudent(index: string): Student{
+        return this.students.get(index);
     }
 
     deleteStudent(id: string): void{
-        this.students = this.students.filter(student => !student.idEquals(id));
+        this.students.delete(id);
     }
 
     // needed?

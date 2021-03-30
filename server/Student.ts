@@ -7,7 +7,6 @@ class Student  {
     surname: string;
     
     constructor(nick: string, name: string, surname: string){
-
         this.id = v4.generate();
         this.nick = nick;
         this.name = name;
