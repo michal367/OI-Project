@@ -1,7 +1,6 @@
 import Lecture from "../Lecture.ts";
-import {Response} from "https://deno.land/x/oak/response.ts";
-//import {Request} from "https://deno.land/x/oak/request.ts";
-
+import { Response, Request } from "https://deno.land/x/oak/mod.ts";
+import Student from "../Student.ts"
 const lectures = new Map();
 
 const create = async ({
@@ -56,4 +55,48 @@ const remove = ({
   response.status = 204;
 };
 
-export { create, list, get, remove };
+const getStudentsList = ({
+  params,
+  response,
+}: {
+  params: { id: string };
+  response: Response;
+}) => {
+  const selectedLecture = lectures.get(params.id);
+  if (selectedLecture) {
+    response.status = 200;
+    response.body = selectedLecture.studentList;
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
+
+const addStudentToLecture = async ({
+  params,
+  request,
+  response
+}: {
+  params: { id: string },
+  request: Request,
+  response: Response
+}) => {
+  const jsonData = await request.body({ type: 'json' }).value;
+  const selectedLecture = lectures.get(params.id);
+  if (selectedLecture) {
+    selectedLecture.studentList.addStudent(new Student(jsonData["nick"], jsonData["name"], jsonData["surname"]));
+    response.status = 200;
+    response.body = {
+      msg: "Student connection successfull!",
+    };
+  } else {
+    response.status = 404;
+    response.body = {
+      msg: "Lecture Not Found",
+    };
+  }
+};
+
+export { create, list, get, remove, getStudentsList, addStudentToLecture };
