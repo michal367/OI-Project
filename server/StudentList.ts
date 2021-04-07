@@ -1,32 +1,31 @@
-import Student from "./Student.ts"
+import Student from "./Student.ts";
 
 class StudentList {
+    private students: Map<string, Student>;
 
-    private students: Map<String ,Student>;
-
-    constructor(){
+    constructor() {
         this.students = new Map();
     }
 
-    size(): number{
+    size(): number {
         return this.students.size;
     }
 
-    addStudent(student: Student): void{
+    addStudent(student: Student): void {
         this.students.set(student.id, student);
     }
 
-    getStudent(index: string): Student{
+    getStudent(index: string): Student | undefined {
         return this.students.get(index);
     }
 
-    deleteStudent(id: string): void{
+    deleteStudent(id: string): void {
         this.students.delete(id);
     }
 
     // needed?
-    clearArray(): StudentList{
-        return new StudentList;
+    clearArray(): StudentList {
+        return new StudentList();
     }
 }
 export default StudentList;
