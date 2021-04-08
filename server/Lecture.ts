@@ -11,8 +11,8 @@ class Lecture {
     constructor(tutor: string) {
         this.tutor = tutor;
         this.id = v4.generate();
-        this.link = cryptoRandomString({length: 7, type: 'numeric'});
-        this.studentList = new StudentList;
+        this.link = cryptoRandomString({ length: 7, type: "numeric" });
+        this.studentList = new StudentList();
     }
 }
 

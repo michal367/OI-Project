@@ -1,10 +1,16 @@
 import { Application, send } from "https://deno.land/x/oak/mod.ts";
 import * as path from "https://deno.land/std/path/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import router from "./routes.ts";
 
 const PORT = 8000;
 const app = new Application();
 
+app.use(
+    oakCors({
+        origin: /^.+localhost:(8000|3000)$/,
+    })
+);
 app.use(router.routes());
 app.use(router.allowedMethods());
 

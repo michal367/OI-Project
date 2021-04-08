@@ -29,10 +29,7 @@ const createLecture = () => {
     return fetch(`${BASE_URL}/lectures`, {
         method: "POST",
         //TODO fix cors
-        mode: 'cors',
-        headers: {
-            'Access-Control-Allow-Origin': '*'
-        },
+        mode: 'cors'
     })
         .then(response => response.json())
 };
