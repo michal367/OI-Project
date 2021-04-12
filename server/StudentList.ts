@@ -1,9 +1,11 @@
 import Student from "./Student.ts";
+import EventEmitter from "https://deno.land/x/events/mod.ts";
 
-class StudentList {
+class StudentList extends EventEmitter{
     private students: Map<string, Student>;
 
     constructor() {
+        super();
         this.students = new Map();
     }
 
@@ -13,7 +15,7 @@ class StudentList {
 
     addStudent(student: Student): void {
         this.students.set(student.id, student);
-        
+        this.emit("studentAdded"); // {event: "added", data: {student}} ??
     }
 
     getStudent(index: string): Student | undefined {
@@ -22,6 +24,7 @@ class StudentList {
 
     deleteStudent(id: string): void {
         this.students.delete(id);
+        this.emit("studentDeleted"); // tu mozna po przecinku wyslac studenta
     }
 
     asArray() {
