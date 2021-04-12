@@ -23,6 +23,10 @@ class StudentList {
         this.students.delete(id);
     }
 
+    asArray() {
+        return [...this.students.values()];
+    }
+
     // needed?
     clearArray(): StudentList {
         return new StudentList();

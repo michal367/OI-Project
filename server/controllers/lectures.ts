@@ -76,7 +76,7 @@ const getStudentsList = ({
     const selectedLecture = lectures.get(params.id);
     if (selectedLecture) {
         response.status = 200;
-        response.body = selectedLecture.studentList;
+        response.body = selectedLecture.studentList.asArray();
     } else {
         response.status = 404;
         response.body = {
@@ -97,9 +97,8 @@ const addStudentToLecture = async ({
     const jsonData = await request.body({ type: "json" }).value;
     const selectedLecture = lectures.get(params.id);
     if (selectedLecture) {
-        selectedLecture.studentList.addStudent(
-            new Student(jsonData["nick"], jsonData["name"], jsonData["surname"])
-        );
+        const student = new Student(jsonData["nick"], jsonData["name"], jsonData["surname"]);
+        selectedLecture.studentList.addStudent(student);
         response.status = 200;
         response.body = {
             msg: "Student connection successfull!",
