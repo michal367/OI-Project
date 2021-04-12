@@ -3,6 +3,7 @@
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { makeStyles, useTheme } from "@material-ui/core";
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import { Order } from '../../util/comparators';
 import { StudentListRow } from './StudentListView';
@@ -27,9 +28,31 @@ export function StudentListHead(props: StudentListHeadProps) {
         onRequestSort(event, property);
     };
 
+    const theme = useTheme();
+
+    const classes = makeStyles({
+        root: {
+            maxWidth: "600px",
+            margin: "15px auto"
+        },
+        head: {
+            padding: "20px 15px",
+            textAlign: "left",
+            fontWeight: 500,
+            color: "#fff",
+            
+            backgroundColor: theme.palette.primary.main,
+            "& span": {
+                fontSize: "16px"
+            }
+        },
+        
+
+    })();
+
     return (
         <TableHead>
-            <TableRow>
+            <TableRow className={classes.head}>
                 {cells.map((headCell) => (
                     <TableCell
                         key={headCell.id}

@@ -1,6 +1,6 @@
 /* Code adopted from: https://material-ui.com/components/tables/ */
 
-import { makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
+import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
@@ -20,12 +20,30 @@ export function StudentListView(props: StudentListViewProps) {
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
 
+    const theme = useTheme();
+
     const classes = makeStyles({
         root: {
-            maxWidth:"600px",
-            margin:"15px auto"
+            maxWidth: "500px",
+            margin: "15px auto",
+            background: theme.palette.secondary.light,
+            borderRadius: "0"
         },
-      })();
+        row: {
+            "& td": {
+                padding: "15px",
+                textAlign: "left",
+                verticalAlign: "middle",
+                fontWeight: 300,
+                fontSize: "14px",
+                color: "#000",
+                borderBottom: "solid 1px rgba(255,255,255,0.1)"
+            },
+            "&:nth-of-type(odd)": {
+                background: "#fedf9d;"
+            }
+        }
+    })();
 
     useEffect(() => {
         backEnd.getStudentsForLecture(props.lecture?.id ?? "")
@@ -61,7 +79,7 @@ export function StudentListView(props: StudentListViewProps) {
                     {stableSort(studentList, getComparator(order, orderBy))
                         .map((row, index) => {
                             return (
-                                <TableRow key={row.id}>
+                                <TableRow key={row.id} className={classes.row}>
                                     <TableCell>{row.orderIndex}</TableCell>
                                     <TableCell>{row.nick}</TableCell>
                                     <TableCell>{row.name}</TableCell>
