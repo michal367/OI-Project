@@ -7,6 +7,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
+import {importQuestions} from "../../services/FileService"// nowe nie powinno tego być docelowo
 
 export function CreateSessionView() {
     const theme = useTheme();
@@ -68,6 +69,25 @@ export function CreateSessionView() {
         }
     };
 
+    // nie powinno tego być w przyszlosci 
+    const onChange = (event:any) => {
+        var files = event.target.files;
+        var json;
+        for (var i = 0, f; f = files[i]; i++) {
+            var reader = new FileReader();
+            reader.onload = (function (theFile) {
+                    return function (e:any) {
+                        try {
+                            json = JSON.parse(e.target.result);
+                            console.log(importQuestions(JSON.stringify(json))[0].text); // test
+                        } catch (ex) {
+                            alert(ex);
+                        }
+                    }
+                })(f);
+                reader.readAsText(f);
+            }
+    }
     return (
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
@@ -97,6 +117,7 @@ export function CreateSessionView() {
                     />
                 )}
             </div>
+            <input type="file" name="file" onChange={(e) => onChange(e)}/>
         </div>
-    );
+    ); // tego <input type file ... też
 }
