@@ -193,7 +193,7 @@
 
 **addStudentToLecture**
 ----
-    Tworzy studenta z przesłanych w body danych i dodaje go do sesji wykładowej o podanym id.
+    Tworzy studenta z przesłanych w body danych i dodaje go do sesji wykładowej o podanym linku.
 
 * **URL** /api/lectures/:id/student-login
 
@@ -201,7 +201,7 @@
   
 *  **URL Params**
 
-   **Required:** `id=[string]`
+   **Required:** `link=[string]`
 
 * **Data Params** 
     **Content:**

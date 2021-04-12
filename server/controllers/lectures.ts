@@ -90,12 +90,12 @@ const addStudentToLecture = async ({
     request,
     response,
 }: {
-    params: { id: string };
+    params: { link: string };
     request: Request;
     response: Response;
 }) => {
     const jsonData = await request.body({ type: "json" }).value;
-    const selectedLecture = lectures.get(params.id);
+    const selectedLecture: Lecture | undefined = [...lectures.values()].find(lecture=>lecture.link === params.link);
     if (selectedLecture) {
         const student = new Student(jsonData["nick"], jsonData["name"], jsonData["surname"]);
         selectedLecture.studentList.addStudent(student);
