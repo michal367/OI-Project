@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
-import studentListMock from "../../util/mockData";
+import {studentListMock} from "../../util/mockData";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode

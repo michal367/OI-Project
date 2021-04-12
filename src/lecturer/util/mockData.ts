@@ -121,4 +121,21 @@ const studentListMock: Student[] = [
     },
 ];
 
-export default studentListMock;
+const questionListMock: Question[] = [
+    {
+        title: "BAJO JAJO",
+        text: "czy jajo?",
+        options: [
+            {
+                index: 1,
+                text: "tak",
+                iscorrect: true
+            }
+        ]
+    }
+];
+
+export default {
+    studentListMock
+};
+export {studentListMock, questionListMock};
