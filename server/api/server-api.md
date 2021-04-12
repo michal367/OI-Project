@@ -226,3 +226,37 @@
 
   * **Code:** 404 <br />
     **Content:** `{ msg : "Lecture Not Found" }`
+
+**getLectureByLink**
+----
+    Zwraca sesję wykładową identyfikowaną przez link.
+
+* **URL** /api/lectures/lecture/:link
+
+* **Method:** `GET`
+  
+*  **URL Params**
+
+   **Required:** `link=[string]`
+
+* **Data Params** None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    ```json
+    {
+        "tutor": "n/a",
+        "id": "02c75ac6-7e76-4b1c-9e2d-b6f3f02c7910",
+        "link": "6265204",
+        "studentList": {
+            "students": {}
+        }
+    }
+    ```
+ 
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ msg : "Lecture Not Found" }`

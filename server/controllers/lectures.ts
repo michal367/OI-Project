@@ -111,6 +111,25 @@ const addStudentToLecture = async ({
     }
 };
 
+const getLectureByLink = ({
+  params,
+  response,
+}: {
+  params: { link: string };
+  response: Response;
+}) => {
+  const selectedLecture: Lecture | undefined = [...lectures.values()].find(lecture=>lecture.link === params.link);
+  if (selectedLecture) {
+      response.status = 200;
+      response.body = selectedLecture;
+  } else {
+      response.status = 404;
+      response.body = {
+          msg: "Lecture Not Found",
+      };
+  }
+};
+
 export {
     create,
     list,
@@ -119,4 +138,5 @@ export {
     getStudentsList,
     addStudentToLecture,
     link,
+    getLectureByLink,
 };
