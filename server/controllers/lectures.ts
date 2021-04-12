@@ -130,6 +130,34 @@ const getLectureByLink = ({
   }
 };
 
+const getStudentById = ({
+    params,
+    response,
+  }: {
+    params: { l_id: string, s_id: string };
+    response: Response;
+  }) => {
+    const selectedLecture: Lecture | undefined = lectures.get(params.l_id);
+    if (selectedLecture) {
+        const selectedStudent: Student | undefined = selectedLecture.studentList.getStudent(params.s_id);
+        if(selectedStudent){
+            response.status = 200;
+            response.body = selectedStudent;
+        }
+        else{
+            response.status = 404;
+            response.body = {
+                msg: "Student Not found",
+            };
+        }
+    } else {
+        response.status = 404;
+        response.body = {
+            msg: "Lecture Not Found",
+        };
+    }
+  };
+
 export {
     create,
     list,
@@ -139,4 +167,5 @@ export {
     addStudentToLecture,
     link,
     getLectureByLink,
+    getStudentById,
 };

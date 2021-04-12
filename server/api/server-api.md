@@ -260,3 +260,38 @@
 
   * **Code:** 404 <br />
     **Content:** `{ msg : "Lecture Not Found" }`
+
+**getStudentById**
+----
+    Zwraca studenta z danej sesji wykładowej.
+
+* **URL** api/lectures/:l_id/student/:s_id
+
+* **Method:** `GET`
+  
+*  **URL Params**
+
+   **Required:** `l_id=[string], s_id=[string]`
+
+* **Data Params** None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    ```json
+    {
+        "id": "a47a2c4e-a879-4684-bf30-21fd2bea4332",
+        "nick": "nickowicz",
+        "name": "naomowicz",
+        "surname": "surnamowciz"
+    }
+    ```
+ 
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ msg : "Lecture Not Found" }`
+    
+  * **Code:** 404 <br />
+    **Content:** `{ msg : "Student Not Found" }`

@@ -11,6 +11,7 @@ router
     .get("/api/lectures/link/:id", Lectures.link)
     .get("/api/lectures/:id/student-list", Lectures.getStudentsList)
     .post("/api/lectures/:id/student-login", Lectures.addStudentToLecture)
-    .get("/api/lectures/lecture/:link", Lectures.getLectureByLink);
-    
+    .get("/api/lectures/lecture/:link", Lectures.getLectureByLink)
+    .get("/api/lectures/:l_id/student/:s_id", Lectures.getStudentById);
+
 export default router;
