@@ -13,6 +13,7 @@ class StudentList {
 
     addStudent(student: Student): void {
         this.students.set(student.id, student);
+        
     }
 
     getStudent(index: string): Student | undefined {
@@ -31,5 +32,6 @@ class StudentList {
     clearArray(): StudentList {
         return new StudentList();
     }
+
 }
 export default StudentList;

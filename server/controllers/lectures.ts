@@ -1,9 +1,9 @@
 import Lecture from "../Lecture.ts";
-import { Response, Request } from "https://deno.land/x/oak/mod.ts";
+import { Response, Request} from "https://deno.land/x/oak/mod.ts";
 import Student from "../Student.ts";
 const lectures = new Map();
 
-const create = ({ response }: { response: Response }) => {
+const create =  ({ response}: { response: Response }) => {
     const lecture: Lecture = new Lecture("n/a");
     lectures.set(lecture.id, lecture);
     response.status = 201;
@@ -168,4 +168,5 @@ export {
     link,
     getLectureByLink,
     getStudentById,
+    lectures,
 };
