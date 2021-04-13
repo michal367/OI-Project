@@ -16,6 +16,7 @@ export default function TopBar() {
                 <Tab label="Start Session" value="/" component={RouterLink} to="/" />
                 <Tab label="View Session" value="/session" component={RouterLink} to="/session" />
                 <Tab label="Stwórz Quiz" value="/quiz" component={RouterLink} to="/quiz" />
+                <Tab label="Create question" value="/question" component={RouterLink} to="/question"/>
             </Tabs>
         </AppBar>
     );
