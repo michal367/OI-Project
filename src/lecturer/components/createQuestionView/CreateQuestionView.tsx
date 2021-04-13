@@ -5,14 +5,15 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import { makeStyles, useTheme } from "@material-ui/core";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 export function CreateQuestionView(){
     const theme = useTheme();
+    
     const [inputList, setInputList] = useState([{ answer: ""}]);
 
     const classes = makeStyles({
@@ -44,13 +45,23 @@ export function CreateQuestionView(){
         }
     })();
 
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+        const { value } = e.target;
+        const list = [...inputList];
+        list[index].answer = value;
+        setInputList(list); 
+        console.log(list);
+    };
+
     const handleAddButtonClick = () => {
         setInputList([...inputList, { answer: ""}]);
     };
     
-    const handleRemoveButtonClick = () => {
+    const handleRemoveButtonClick = (index: number) => {
         const list = [...inputList];
-        list.splice(list.length - 1, 1);
+        console.log(list);
+        list.splice(index, 1);
+        console.log(list);
         setInputList(list);
     };
 
@@ -59,14 +70,13 @@ export function CreateQuestionView(){
             <form className={classes.form} noValidate autoComplete="off">
                 <InputLabel>Pytanie</InputLabel>
                 <TextField
-                label="Pytanie"
-                multiline={true}
-                rows={5}
-                required
-                variant={"outlined"}
-                className={classes.textarea}
-                fullWidth>
-                    hello
+                    label="Pytanie"
+                    multiline={true}
+                    rows={5}
+                    required
+                    variant={"outlined"}
+                    className={classes.textarea}
+                    fullWidth>
                 </TextField>
                 <Grid container spacing={1}>
                     <Grid item xs={6} sm={9}>
@@ -78,9 +88,14 @@ export function CreateQuestionView(){
                 </Grid>
                 {inputList.map((x, i) => {
                     return (
-                        <Grid container spacing={1}>
+                        <Grid item key={i} container spacing={1}>
+                            {inputList.length !== 0 && <Fab color="primary" aria-label="add" onClick={() => handleRemoveButtonClick(i)}>
+                                 <DeleteIcon />
+                            </Fab>}
                             <Grid item xs={12} sm={9}>
                                 <TextField
+                                    value={x.answer}
+                                    onChange={e => handleInputChange(e, i)}
                                     label="Odpowiedź"
                                     multiline={true}
                                     rows={1}
@@ -88,10 +103,9 @@ export function CreateQuestionView(){
                                     variant={"outlined"}
                                     className={classes.textarea}
                                     fullWidth>
-                                        hello
                                 </TextField>
                             </Grid>
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm={1}>
                                 <Checkbox
                                     color="primary"
                                     inputProps={{ 'aria-label': 'secondary checkbox' }}
@@ -101,11 +115,8 @@ export function CreateQuestionView(){
                     );                 
                 })}
                 <Fab color="primary" aria-label="add" onClick={handleAddButtonClick}>
-                    <AddIcon />
+                     <AddIcon />
                 </Fab>
-                {inputList.length !== 1 && <Button variant="contained" color="primary" href="#contained-buttons" onClick={handleRemoveButtonClick}>
-                    Usuń
-                </Button>}  
                 <div className={classes.right}>
                     <Button variant="contained" size="large" color="primary">
                         Zakończ
