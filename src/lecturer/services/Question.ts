@@ -1,4 +1,3 @@
-
 export default class Question{
     text: string;
     options: string[];
