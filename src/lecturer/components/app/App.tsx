@@ -1,6 +1,7 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
+import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
 import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
@@ -49,6 +50,10 @@ function App() {
 
                         <Route path="/session">
                             <StudentListView />
+                        </Route>
+
+                        <Route path="/quiz">
+                            <PickQuizView />
                         </Route>
 
                         <Route path="/question">
