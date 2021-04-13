@@ -1,9 +1,9 @@
 import Lecture from "../Lecture.ts";
-import { Response, Request } from "https://deno.land/x/oak/mod.ts";
+import { Response, Request} from "https://deno.land/x/oak/mod.ts";
 import Student from "../Student.ts";
 const lectures = new Map();
 
-const create = ({ response }: { response: Response }) => {
+const create =  ({ response}: { response: Response }) => {
     const lecture: Lecture = new Lecture("n/a");
     lectures.set(lecture.id, lecture);
     response.status = 201;
@@ -76,7 +76,7 @@ const getStudentsList = ({
     const selectedLecture = lectures.get(params.id);
     if (selectedLecture) {
         response.status = 200;
-        response.body = selectedLecture.studentList;
+        response.body = selectedLecture.studentList.asArray();
     } else {
         response.status = 404;
         response.body = {
@@ -90,16 +90,15 @@ const addStudentToLecture = async ({
     request,
     response,
 }: {
-    params: { id: string };
+    params: { link: string };
     request: Request;
     response: Response;
 }) => {
     const jsonData = await request.body({ type: "json" }).value;
-    const selectedLecture = lectures.get(params.id);
+    const selectedLecture: Lecture | undefined = [...lectures.values()].find(lecture=>lecture.link === params.link);
     if (selectedLecture) {
-        selectedLecture.studentList.addStudent(
-            new Student(jsonData["nick"], jsonData["name"], jsonData["surname"])
-        );
+        const student = new Student(jsonData["nick"], jsonData["name"], jsonData["surname"]);
+        selectedLecture.studentList.addStudent(student);
         response.status = 200;
         response.body = {
             msg: "Student connection successfull!",
@@ -112,6 +111,53 @@ const addStudentToLecture = async ({
     }
 };
 
+const getLectureByLink = ({
+  params,
+  response,
+}: {
+  params: { link: string };
+  response: Response;
+}) => {
+  const selectedLecture: Lecture | undefined = [...lectures.values()].find(lecture=>lecture.link === params.link);
+  if (selectedLecture) {
+      response.status = 200;
+      response.body = selectedLecture;
+  } else {
+      response.status = 404;
+      response.body = {
+          msg: "Lecture Not Found",
+      };
+  }
+};
+
+const getStudentById = ({
+    params,
+    response,
+  }: {
+    params: { l_id: string, s_id: string };
+    response: Response;
+  }) => {
+    const selectedLecture: Lecture | undefined = lectures.get(params.l_id);
+    if (selectedLecture) {
+        const selectedStudent: Student | undefined = selectedLecture.studentList.getStudent(params.s_id);
+        if(selectedStudent){
+            response.status = 200;
+            response.body = selectedStudent;
+        }
+        else{
+            response.status = 404;
+            response.body = {
+                msg: "Student Not found",
+            };
+        }
+    } else {
+        response.status = 404;
+        response.body = {
+            msg: "Lecture Not Found",
+        };
+    }
+  };
+
 export {
     create,
     list,
@@ -120,4 +166,7 @@ export {
     getStudentsList,
     addStudentToLecture,
     link,
+    getLectureByLink,
+    getStudentById,
+    lectures,
 };
