@@ -6,6 +6,7 @@ import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
+import { QuestionsListView } from "../questionsListView/QuestionsListView";
 
 const theme = createMuiTheme({
     palette: {
@@ -50,6 +51,10 @@ function App() {
 
                     <Route path="/question">
                         <CreateQuestionView/>
+                    </Route>
+
+                    <Route path="/import-export">
+                        <QuestionsListView/>
                     </Route>
 
                     <Route path="/">

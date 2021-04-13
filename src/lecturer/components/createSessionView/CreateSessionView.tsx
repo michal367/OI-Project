@@ -8,8 +8,6 @@ import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 
-import { QuestionsListView } from "../questionsListView/QuestionsListView";
-
 export function CreateSessionView() {
     const theme = useTheme();
     const backEnd = useBackEnd();
@@ -98,7 +96,6 @@ export function CreateSessionView() {
                     />
                 )}
             </div>
-            <QuestionsListView/>
         </div>
     );
 }
