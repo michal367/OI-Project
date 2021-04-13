@@ -13,9 +13,11 @@ export default function TopBar() {
                 value={location.pathname}
                 centered
             >
-                <Tab label="Start Session" value="/" component={RouterLink} to="/" />
-                <Tab label="View Session" value="/session" component={RouterLink} to="/session" />
-                <Tab label="Create question" value="/question" component={RouterLink} to="/question"/>
+                <Tab label="Rozpocznij sesję" value="/" component={RouterLink} to="/" />
+                <Tab label="Uczestnicy" value="/session" component={RouterLink} to="/session" />
+                <Tab label="Stwórz Quiz" value="/quiz" component={RouterLink} to="/quiz" />
+                <Tab label="Stwórz Pytanie" value="/question" component={RouterLink} to="/question"/>
+                <Tab label="Import/Eksport" value="/import-export" component={RouterLink} to="/import-export"/>
             </Tabs>
         </AppBar>
     );

@@ -14,9 +14,13 @@ interface Answer {
     text: string;
     isCorrect: boolean;
 }
-
 interface Question {
     title: string;
     text: string;
     options: Answer[];
+}
+
+interface Quiz {
+    title: string;
+    questions: Question[];
 }
