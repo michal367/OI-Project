@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -6,12 +6,15 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd, useBackEndSocket } from "../../services/backEnd/BackEndService";
-import { sessionId } from "../app/App";
-
+import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
+import { useHistory } from "react-router-dom";
+import { Context } from "../../services/store/StoreService";
+import { ReducerAction } from "../../services/store/Reducer";
 
 export function CreateSessionView() {
+    const [, dispatch] = useContext(Context);
+    const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
     const {
@@ -72,14 +75,21 @@ export function CreateSessionView() {
                 setLoading(false);
                 console.log(lecture);
 
-                sessionId.value = lecture.id;
+                dispatch({ type: ReducerAction.SET_SESSION_ID, payload: lecture.id });
 
-                backEnd.getLectureLink(lecture.id).then(setLectureLink)
+                backEnd.getLectureLink(lecture.id)
+                    .then((link) => {
+                        setLectureLink(link);
+                        dispatch({ type: ReducerAction.SET_LINK, payload: link })
+                        history.push("/session");
+                    })
 
                 sendJsonMessage({ event: "subscribe", data: { l_id: lecture.id } });
             })
         }
     };
+
+
     return (
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
@@ -108,9 +118,9 @@ export function CreateSessionView() {
                         className={classes.fabProgress}
                     />
                 )}
-                <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + lectureLink}>LectureLink: http://localhost:3001/{lectureLink}</a></div>
+
             </div>
-            <QuestionsListView/>
+            <QuestionsListView />
         </div>
     );
 }

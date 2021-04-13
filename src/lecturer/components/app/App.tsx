@@ -6,6 +6,8 @@ import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
+import { useBackEndSocket } from "../../services/BackEndService";
+import Store from "../../services/store/StoreService";
 
 const theme = createMuiTheme({
     palette: {
@@ -30,38 +32,37 @@ const theme = createMuiTheme({
     },
 });
 
-// THIS SHOULD BE DONE BETTER
-export const sessionId = {value:"none"};
-
 function App() {
-
+    useBackEndSocket(); //for keeping socket open
     return (
-        <Router>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                
-                <TopBar />
+        <Store>
+            <Router>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
 
-                <Switch>
-                    <Route exact path="/">
-                        <CreateSessionView />
-                    </Route>
+                    <TopBar />
 
-                    <Route path="/session">
-                        <StudentListView />
-                    </Route>
+                    <Switch>
+                        <Route exact path="/">
+                            <CreateSessionView />
+                        </Route>
 
-                    <Route path="/question">
-                        <CreateQuestionView/>
-                    </Route>
+                        <Route path="/session">
+                            <StudentListView />
+                        </Route>
 
-                    <Route path="/">
-                        <CreateSessionView />
-                        <Redirect to="/" />
-                    </Route>
-                </Switch>
-            </ThemeProvider>
-        </Router>
+                        <Route path="/question">
+                            <CreateQuestionView />
+                        </Route>
+
+                        <Route path="/">
+                            <CreateSessionView />
+                            <Redirect to="/" />
+                        </Route>
+                    </Switch>
+                </ThemeProvider>
+            </Router>
+        </Store>
     );
 }
 

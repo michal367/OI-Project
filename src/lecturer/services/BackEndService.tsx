@@ -56,8 +56,9 @@ const getStudentsForLecture = async (id: string) => {
 
 const BackEndContext = createContext<IBackEnd>({ createLecture, getLectureLink, getStudentsForLecture });
 
+const socketEmiter = new EventEmitter();
+
 export const useBackEndSocket = () => {
-    let socketEmiter = new EventEmitter();
 
     let onMessage = (event: MessageEvent<any>) => {
         if (event.data === "studentAdded") {
@@ -65,7 +66,16 @@ export const useBackEndSocket = () => {
             console.log("studentAdded");
         }
     }
-    return { socketEmiter, ...useWebSocket(SOCKET_URL, { onMessage, onOpen: () => console.log('opened'), share: true }) };
+
+    return {
+        socketEmiter,
+        ...useWebSocket(SOCKET_URL, {
+            onMessage,
+            onOpen: () => console.log('opened'),
+            onClose: () => console.log('opened'),
+            share: true
+        })
+    };
 };
 
 export const useBackEnd = () => {
