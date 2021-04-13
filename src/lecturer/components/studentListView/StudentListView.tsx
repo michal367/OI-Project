@@ -1,9 +1,10 @@
 /* Code adopted from: https://material-ui.com/components/tables/ */
 
 import { makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+import React, { useCallback, useEffect, useState } from "react";
+import { useBackEnd, useBackEndSocket } from "../../services/backEnd/BackEndService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
+import { sessionId } from "../app/App";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
 interface StudentListViewProps {
@@ -16,24 +17,38 @@ export interface StudentListRow extends Student {
 
 export function StudentListView(props: StudentListViewProps) {
     const backEnd = useBackEnd();
+    const { socketEmiter } = useBackEndSocket();
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
 
+
     const classes = makeStyles({
         root: {
-            maxWidth:"600px",
-            margin:"15px auto"
+            maxWidth: "600px",
+            margin: "15px auto"
         },
-      })();
+    })();
 
-    useEffect(() => {
-        backEnd.getStudentsForLecture(props.lecture?.id ?? "")
+    const refreshList = useCallback(() => {
+        console.log("refreshList");
+        backEnd.getStudentsForLecture(props.lecture?.id ?? sessionId.value)
             .then((list) => list.map((item, index) => {
                 return { orderIndex: index + 1, ...item }
             }))
             .then(setStudentList)
-    }, [backEnd, props.lecture?.id])
+            .catch((error) => console.log)
+    },
+        [backEnd, props.lecture?.id],
+    );
+
+    useEffect(() => {
+        socketEmiter.on("studentAdded", refreshList);
+    }, [refreshList, socketEmiter])
+
+    useEffect(() => {
+        refreshList()
+    }, [refreshList])
 
     const headCells: HeadCell<StudentListRow>[] = [
         { id: 'orderIndex', numeric: false, label: 'Nr' },

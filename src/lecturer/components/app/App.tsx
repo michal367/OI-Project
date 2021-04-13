@@ -27,6 +27,9 @@ const theme = createMuiTheme({
     },
 });
 
+// THIS SHOULD BE DONE BETTER
+export const sessionId = {value:"none"};
+
 function App() {
     return (
         <ThemeProvider theme={theme}>

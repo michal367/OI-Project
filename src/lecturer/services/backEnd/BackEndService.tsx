@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
-import studentListMock from "../../util/mockData";
+import useWebSocket from 'react-use-websocket';
+import EventEmitter from "events";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode
@@ -7,12 +8,14 @@ export interface IBackEndProps extends IBackEnd {
 
 export interface IBackEnd {
     createLecture: () => Promise<Lecture>
+    getLectureLink: (id: string) => Promise<string>
     getStudentsForLecture: (id: string) => Promise<Student[]>
 }
 
 export function BackEndService(props: IBackEndProps) {
     const value = {
         createLecture: props.createLecture || createLecture,
+        getLectureLink: props.getLectureLink || getLectureLink,
         getStudentsForLecture: props.getStudentsForLecture || getStudentsForLecture,
     };
 
@@ -24,23 +27,46 @@ export function BackEndService(props: IBackEndProps) {
 }
 
 const BASE_URL = "http://localhost:8000/api";
+const SOCKET_URL = "ws://localhost:8080/";
 
-const createLecture = () => {
-    return fetch(`${BASE_URL}/lectures`, {
+
+const createLecture = async () => {
+    const response = await fetch(`${BASE_URL}/lectures`, {
         method: "POST",
-        //TODO fix cors
         mode: 'cors'
-    })
-        .then(response => response.json())
+    });
+    return await response.json();
 };
 
-const getStudentsForLecture = (id: String) => {
-    return new Promise<Student[]>((resolve, reject) => {
-        resolve(studentListMock);
+const getLectureLink = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/lectures/link/${id}`, {
+        method: "GET",
+        mode: 'cors'
     });
-}
+    return await response.json();
+};
 
-const BackEndContext = createContext<IBackEnd>({ createLecture, getStudentsForLecture });
+const getStudentsForLecture = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/lectures/${id}/student-list`, {
+        method: "GET",
+        mode: 'cors'
+    });
+    return await response.json();
+};
+
+const BackEndContext = createContext<IBackEnd>({ createLecture, getLectureLink, getStudentsForLecture });
+
+export const useBackEndSocket = () => {
+    let socketEmiter = new EventEmitter();
+
+    let onMessage = (event: MessageEvent<any>) => {
+        if (event.data === "studentAdded") {
+            socketEmiter.emit("studentAdded");
+            console.log("studentAdded");
+        }
+    }
+    return { socketEmiter, ...useWebSocket(SOCKET_URL, { onMessage, onOpen: () => console.log('opened'), share: true }) };
+};
 
 export const useBackEnd = () => {
     return useContext(BackEndContext);

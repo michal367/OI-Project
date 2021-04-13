@@ -6,11 +6,15 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useBackEnd, useBackEndSocket } from "../../services/backEnd/BackEndService";
+import { sessionId } from "../app/App";
 
 export function CreateSessionView() {
     const theme = useTheme();
     const backEnd = useBackEnd();
+    const {
+        sendJsonMessage
+    } = useBackEndSocket();
 
     const classes = makeStyles({
         root: {
@@ -55,6 +59,7 @@ export function CreateSessionView() {
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
+    const [lectureLink, setLectureLink] = useState("");
 
     const handleButtonClick = () => {
         if (!loading) {
@@ -64,6 +69,12 @@ export function CreateSessionView() {
                 setSuccess(true);
                 setLoading(false);
                 console.log(lecture);
+
+                sessionId.value = lecture.id;
+
+                backEnd.getLectureLink(lecture.id).then(setLectureLink)
+
+                sendJsonMessage({ event: "subscribe", data: { l_id: lecture.id } });
             })
         }
     };
@@ -96,6 +107,7 @@ export function CreateSessionView() {
                         className={classes.fabProgress}
                     />
                 )}
+                <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + lectureLink}>LectureLink: http://localhost:3001/{lectureLink}</a></div>
             </div>
         </div>
     );

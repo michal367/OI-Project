@@ -20,7 +20,7 @@ class Lecture {
     setWebSocketClient(wsc: WebSocketClient): void{
         this.wsc = wsc;
         this.studentList.on("studentAdded", () => {
-            this.wsc?.send("studentAdded");
+            this.wsc?.send("studentAdded");        
         });
         this.studentList.on("studentDeleted", () =>{
             this.wsc?.send("studentDeleted");
