@@ -9,6 +9,8 @@ import "fontsource-roboto";
 import { useBackEnd, useBackEndSocket } from "../../services/backEnd/BackEndService";
 import { sessionId } from "../app/App";
 
+import { QuestionsListView } from "../questionsListView/QuestionsListView";
+
 export function CreateSessionView() {
     const theme = useTheme();
     const backEnd = useBackEnd();
@@ -78,7 +80,6 @@ export function CreateSessionView() {
             })
         }
     };
-
     return (
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
@@ -109,6 +110,7 @@ export function CreateSessionView() {
                 )}
                 <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + lectureLink}>LectureLink: http://localhost:3001/{lectureLink}</a></div>
             </div>
+            <QuestionsListView/>
         </div>
     );
 }

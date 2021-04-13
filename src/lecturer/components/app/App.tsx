@@ -3,6 +3,9 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import "fontsource-roboto";
 import { StudentListView } from "../studentListView/StudentListView";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import TopBar from "../topBar/topBar";
+import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 
 const theme = createMuiTheme({
     palette: {
@@ -31,12 +34,34 @@ const theme = createMuiTheme({
 export const sessionId = {value:"none"};
 
 function App() {
+
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <CreateSessionView />
-            <StudentListView />
-        </ThemeProvider>
+        <Router>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                
+                <TopBar />
+
+                <Switch>
+                    <Route exact path="/">
+                        <CreateSessionView />
+                    </Route>
+
+                    <Route path="/session">
+                        <StudentListView />
+                    </Route>
+
+                    <Route path="/question">
+                        <CreateQuestionView/>
+                    </Route>
+
+                    <Route path="/">
+                        <CreateSessionView />
+                        <Redirect to="/" />
+                    </Route>
+                </Switch>
+            </ThemeProvider>
+        </Router>
     );
 }
 
