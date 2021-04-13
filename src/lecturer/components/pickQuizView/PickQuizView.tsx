@@ -49,6 +49,7 @@ export function PickQuizView() {
             background: theme.palette.secondary.light,
             gap: "10px",
             minHeight: "100vh",
+            paddingTop: "35px",
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
@@ -161,12 +162,14 @@ export function PickQuizView() {
         setRight(right.concat(leftChecked));
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
+        setSuccess(false);
     };
 
     const handleCheckedLeft = () => {
         setLeft(left.concat(rightChecked));
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
+        setSuccess(false);
     };
 
     const customList = (
