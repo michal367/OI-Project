@@ -8,11 +8,12 @@ import { makeStyles, useTheme } from "@material-ui/core";
 import { useState } from "react";
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 export function CreateQuestionView(){
     const theme = useTheme();
-    const [inputList, setInputList] = useState([{ firstName: "", lastName: "" }]);
+    const [inputList, setInputList] = useState([{ answer: ""}]);
 
     const classes = makeStyles({
         root: {
@@ -45,7 +46,13 @@ export function CreateQuestionView(){
 
     const handleAddButtonClick = () => {
         console.log("Add");
-        setInputList([...inputList, { firstName: "", lastName: "" }]);
+        setInputList([...inputList, { answer: ""}]);
+    };
+    
+    const handleRemoveButtonClick = () => {
+        const list = [...inputList];
+        list.splice(list.length - 1, 1);
+        setInputList(list);
     };
 
     return (
@@ -79,16 +86,22 @@ export function CreateQuestionView(){
                                 </TextField>
                             </Grid>
                             <Grid item xs={6} sm={3}>
-                                <Checkbox
-                                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                                <FormControlLabel
+                                    value="end"
+                                    control={<Checkbox color="primary" />}
+                                    label="Poprawna"
+                                    labelPlacement="end"
                                 />
                             </Grid>
                         </Grid>
-                    );
+                    );                 
                 })}
                 <Fab color="primary" aria-label="add" onClick={handleAddButtonClick}>
                     <AddIcon />
                 </Fab>
+                {inputList.length !== 1 && <Button variant="contained" color="primary" href="#contained-buttons" onClick={handleRemoveButtonClick}>
+                    Usuń
+                </Button>}  
                 <div className={classes.right}>
                     <Button variant="contained" size="large" color="primary">
                         Zakończ
