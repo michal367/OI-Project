@@ -45,7 +45,6 @@ export function CreateQuestionView(){
     })();
 
     const handleAddButtonClick = () => {
-        console.log("Add");
         setInputList([...inputList, { answer: ""}]);
     };
     
@@ -69,7 +68,14 @@ export function CreateQuestionView(){
                 fullWidth>
                     hello
                 </TextField>
-                <FormLabel>Odpowiedzi:</FormLabel>
+                <Grid container spacing={1}>
+                    <Grid item xs={6} sm={9}>
+                    <FormLabel>Odpowiedzi:</FormLabel>
+                    </Grid>
+                    <Grid item xs={6} sm={3}>
+                    <FormLabel>Poprawne:</FormLabel>
+                    </Grid>
+                </Grid>
                 {inputList.map((x, i) => {
                     return (
                         <Grid container spacing={1}>
@@ -86,11 +92,9 @@ export function CreateQuestionView(){
                                 </TextField>
                             </Grid>
                             <Grid item xs={6} sm={3}>
-                                <FormControlLabel
-                                    value="end"
-                                    control={<Checkbox color="primary" />}
-                                    label="Poprawna"
-                                    labelPlacement="end"
+                                <Checkbox
+                                    color="primary"
+                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
                                 />
                             </Grid>
                         </Grid>
