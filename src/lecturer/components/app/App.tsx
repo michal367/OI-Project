@@ -5,6 +5,7 @@ import "fontsource-roboto";
 import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
+import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 
 const theme = createMuiTheme({
     palette: {
@@ -45,6 +46,10 @@ function App() {
 
                     <Route path="/session">
                         <StudentListView />
+                    </Route>
+
+                    <Route path="/question">
+                        <CreateQuestionView/>
                     </Route>
 
                     <Route path="/">
