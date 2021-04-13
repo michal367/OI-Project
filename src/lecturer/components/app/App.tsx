@@ -1,12 +1,15 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
+import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
 import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
+import { useBackEndSocket } from "../../services/BackEndService";
+import Store from "../../services/store/StoreService";
 
 const theme = createMuiTheme({
     palette: {
@@ -32,38 +35,42 @@ const theme = createMuiTheme({
 });
 
 function App() {
-
+    useBackEndSocket(); //for keeping socket open
     return (
-        <Router>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                
-                <TopBar />
+        <Store>
+            <Router>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
 
-                <Switch>
-                    <Route exact path="/">
-                        <CreateSessionView />
-                    </Route>
+                    <TopBar />
 
-                    <Route path="/session">
-                        <StudentListView />
-                    </Route>
+                    <Switch>
+                        <Route exact path="/">
+                            <CreateSessionView />
+                        </Route>
 
-                    <Route path="/question">
-                        <CreateQuestionView/>
-                    </Route>
+                        <Route path="/session">
+                            <StudentListView />
+                        </Route>
 
-                    <Route path="/import-export">
-                        <QuestionsListView/>
-                    </Route>
+                        <Route path="/quiz">
+                            <PickQuizView />
+                        </Route>
 
-                    <Route path="/">
-                        <CreateSessionView />
-                        <Redirect to="/" />
-                    </Route>
-                </Switch>
-            </ThemeProvider>
-        </Router>
+                        <Route path="/question">
+                            <CreateQuestionView />
+                        </Route>
+                      <Route path="/import-export">
+                          <QuestionsListView/>
+                      </Route>
+                        <Route path="/">
+                            <CreateSessionView />
+                            <Redirect to="/" />
+                        </Route>
+                    </Switch>
+                </ThemeProvider>
+            </Router>
+        </Store>
     );
 }
 

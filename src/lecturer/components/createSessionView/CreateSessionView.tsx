@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -7,10 +7,20 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { QuestionsListView } from "../questionsListView/QuestionsListView";
+import { useHistory } from "react-router-dom";
+import { Context } from "../../services/store/StoreService";
+import { ReducerAction } from "../../services/store/Reducer";
 
 export function CreateSessionView() {
+    const [, dispatch] = useContext(Context);
+    const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
+    const {
+        sendJsonMessage
+    } = useBackEndSocket();
 
     const classes = makeStyles({
         root: {
@@ -64,9 +74,21 @@ export function CreateSessionView() {
                 setSuccess(true);
                 setLoading(false);
                 console.log(lecture);
+
+                dispatch({ type: ReducerAction.SET_SESSION_ID, payload: lecture.id });
+
+                backEnd.getLectureLink(lecture.id)
+                    .then((link) => {
+                        dispatch({ type: ReducerAction.SET_LINK, payload: link })
+                        history.push("/session");
+                    })
+
+                sendJsonMessage({ event: "subscribe", data: { l_id: lecture.id } });
             })
         }
     };
+
+
     return (
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
@@ -95,6 +117,7 @@ export function CreateSessionView() {
                         className={classes.fabProgress}
                     />
                 )}
+
             </div>
         </div>
     );

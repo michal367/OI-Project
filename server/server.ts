@@ -10,9 +10,7 @@ const PORT = 8000;
 const app = new Application();
 
 app.use(
-    oakCors({
-        origin: /^.+localhost:(8000|3000)$/,
-    })
+    oakCors()
 );
 app.use(router.routes());
 app.use(router.allowedMethods());
@@ -28,8 +26,10 @@ app.use(async (ctx) => {
 const wss = new WebSocketServer(8080);
 wss.on("connection", function (ws: WebSocketClient) {
   ws.on("message", function (message: string) {
-    const parsed = JSON.parse(message); // {event: TYPE, data: {jason data}}
-    if(parsed.event === "subcribe"){
+    console.log(message);
+    const parsed = JSON.parse(message); // {event: TYPE, data: {jason dane}}
+    console.log(parsed);
+    if(parsed.event === "subscribe"){
         const selectedLecture: Lecture | undefined = lectures.get(parsed.data.l_id);
         selectedLecture?.setWebSocketClient(ws);
     }

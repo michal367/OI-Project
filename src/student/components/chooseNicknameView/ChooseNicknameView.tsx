@@ -7,8 +7,10 @@ import clsx from "clsx";
 import "fontsource-roboto";
 // import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { MatchParams } from "../../@types/types";
+import { useBackEnd } from "../../services/backEnd/BackEndService";
 
 export function ChooseNicknameView() {
+    const backEnd = useBackEnd();
     const theme = useTheme();
     // const backEnd = useBackEnd();
     const match = useRouteMatch<MatchParams>("/:session");
@@ -25,13 +27,13 @@ export function ChooseNicknameView() {
         wrapper: {
             position: "relative",
         },
-        form: { 
+        form: {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
             width: "350px",
-            "& > *":{
-                width: "100%", 
+            "& > *": {
+                width: "100%",
             }
         },
         buttonSuccess: {
@@ -64,16 +66,23 @@ export function ChooseNicknameView() {
     const [name, setName] = useState('');
     const [session, setSession] = useState(match?.params.session);
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-      setName(event.target.value);
+        setName(event.target.value);
     };
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            timer.current = window.setTimeout(() => {
+
+            let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
+            backEnd?.joinLecture(session || "", fakeStudent).then((response) => {
+                console.log(response);
                 setSuccess(true);
                 setLoading(false);
-            }, 2000);
+            }).catch((response) => {
+                console.error(response);
+            })
+
+
         }
     };
 
@@ -96,7 +105,7 @@ export function ChooseNicknameView() {
                         onClick={handleButtonClick}
                     >
                         {success ? (`${name} dołączył pomyślnie`) : (`Dołącz do sesji: ${session}`)}
-                        
+
                     </Button>
                     {loading && (
                         <CircularProgress
