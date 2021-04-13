@@ -15,8 +15,6 @@ import {
 } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
