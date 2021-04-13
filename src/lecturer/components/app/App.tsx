@@ -7,6 +7,7 @@ import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
+import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useBackEndSocket } from "../../services/BackEndService";
 import Store from "../../services/store/StoreService";
 
@@ -59,7 +60,9 @@ function App() {
                         <Route path="/question">
                             <CreateQuestionView />
                         </Route>
-
+                      <Route path="/import-export">
+                          <QuestionsListView/>
+                      </Route>
                         <Route path="/">
                             <CreateSessionView />
                             <Redirect to="/" />

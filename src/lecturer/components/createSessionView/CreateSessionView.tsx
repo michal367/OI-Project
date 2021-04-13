@@ -6,6 +6,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
+import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useHistory } from "react-router-dom";
@@ -118,7 +119,6 @@ export function CreateSessionView() {
                 )}
 
             </div>
-            <QuestionsListView />
         </div>
     );
 }
