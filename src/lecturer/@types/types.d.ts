@@ -12,10 +12,15 @@ interface Student {
 interface Answer {
     index: number;
     text: string;
-    iscorrect: boolean;
+    isCorrect: boolean;
 }
 interface Question {
     title: string;
     text: string;
     options: Answer[];
+}
+
+interface Quiz {
+    title: string;
+    questions: Question[];
 }
