@@ -5,10 +5,14 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import { makeStyles, useTheme } from "@material-ui/core";
+import { useState } from "react";
+import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
 
 
 export function CreateQuestionView(){
     const theme = useTheme();
+    const [inputList, setInputList] = useState([{ firstName: "", lastName: "" }]);
 
     const classes = makeStyles({
         root: {
@@ -41,6 +45,7 @@ export function CreateQuestionView(){
 
     const handleAddButtonClick = () => {
         console.log("Add");
+        setInputList([...inputList, { firstName: "", lastName: "" }]);
     };
 
     return (
@@ -57,7 +62,30 @@ export function CreateQuestionView(){
                 fullWidth>
                     hello
                 </TextField>
-                <FormLabel>Odpowiedzi</FormLabel>
+                <FormLabel>Odpowiedzi:</FormLabel>
+                {inputList.map((x, i) => {
+                    return (
+                        <Grid container spacing={1}>
+                            <Grid item xs={12} sm={9}>
+                                <TextField
+                                    label="Odpowiedź"
+                                    multiline={true}
+                                    rows={1}
+                                    required
+                                    variant={"outlined"}
+                                    className={classes.textarea}
+                                    fullWidth>
+                                        hello
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={6} sm={3}>
+                                <Checkbox
+                                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                                />
+                            </Grid>
+                        </Grid>
+                    );
+                })}
                 <Fab color="primary" aria-label="add" onClick={handleAddButtonClick}>
                     <AddIcon />
                 </Fab>
