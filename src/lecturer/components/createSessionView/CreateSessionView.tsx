@@ -64,7 +64,6 @@ export function CreateSessionView() {
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
-    const [lectureLink, setLectureLink] = useState("");
 
     const handleButtonClick = () => {
         if (!loading) {
@@ -79,7 +78,6 @@ export function CreateSessionView() {
 
                 backEnd.getLectureLink(lecture.id)
                     .then((link) => {
-                        setLectureLink(link);
                         dispatch({ type: ReducerAction.SET_LINK, payload: link })
                         history.push("/session");
                     })

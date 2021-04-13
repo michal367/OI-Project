@@ -17,7 +17,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { questionListMock } from "../../util/mockData";
 
 function not(a: number[], b: number[]) {
