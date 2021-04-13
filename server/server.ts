@@ -29,7 +29,7 @@ const wss = new WebSocketServer(8080);
 wss.on("connection", function (ws: WebSocketClient) {
   ws.on("message", function (message: string) {
     console.log(message);
-    const parsed = JSON.parse(message); // {event: TYPE, data: {jason dane}}
+    const parsed = JSON.parse(message); // {event: TYPE, data: {jason data}}
     console.log(parsed);
     if(parsed.event === "subcribe"){
         const selectedLecture: Lecture | undefined = lectures.get(parsed.data.l_id);
