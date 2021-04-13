@@ -1,8 +1,9 @@
 /* Code adopted from: https://material-ui.com/components/tables/ */
 
 import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { Context } from "../../services/store/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
@@ -16,6 +17,8 @@ export interface StudentListRow extends Student {
 
 export function StudentListView(props: StudentListViewProps) {
     const backEnd = useBackEnd();
+    const [state,] = useContext(Context);
+    const { socketEmiter } = useBackEndSocket();
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
@@ -45,13 +48,28 @@ export function StudentListView(props: StudentListViewProps) {
         }
     })();
 
-    useEffect(() => {
-        backEnd.getStudentsForLecture(props.lecture?.id ?? "")
+    const refreshList = useCallback(() => {
+        console.log("refreshList");
+        backEnd.getStudentsForLecture(props.lecture?.id ?? state.sessionId)
             .then((list) => list.map((item, index) => {
                 return { orderIndex: index + 1, ...item }
             }))
             .then(setStudentList)
-    }, [backEnd, props.lecture?.id])
+            .catch((error) => console.log)
+    },
+        [backEnd, props.lecture?.id, state.sessionId],
+    );
+
+    useEffect(() => {
+        socketEmiter.addListener("studentAdded", refreshList);
+        return () => {
+            socketEmiter.removeListener("studentAdded", refreshList);
+        }
+    }, [refreshList, socketEmiter])
+
+    useEffect(() => {
+        refreshList()
+    }, [refreshList])
 
     const headCells: HeadCell<StudentListRow>[] = [
         { id: 'orderIndex', numeric: false, label: 'Nr' },
@@ -68,6 +86,7 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
+            <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + state.link}>LectureLink: http://localhost:3001/{state.link}</a></div>
             <Table aria-label="tabela z listą studentów">
                 <StudentListHead
                     order={order}
