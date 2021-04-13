@@ -253,12 +253,15 @@ export function PickQuizView() {
                 title: name,
                 questions: questions,
             });
-            console.log(newQuizes);
-            setQuizes(newQuizes);
             timer.current = window.setTimeout(() => {
+                console.log(newQuizes);
+                setLeft(array);
+                setRight([]);
+                setChecked(not(checked, rightChecked));
+                setQuizes(newQuizes);
                 setSuccess(true);
                 setLoading(false);
-            }, 2000);
+            }, 500);
         }
     };
 
