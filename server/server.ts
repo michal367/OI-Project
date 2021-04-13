@@ -31,7 +31,6 @@ wss.on("connection", function (ws: WebSocketClient) {
     console.log(parsed);
     if(parsed.event === "subscribe"){
         const selectedLecture: Lecture | undefined = lectures.get(parsed.data.l_id);
-        console.log(selectedLecture);
         selectedLecture?.setWebSocketClient(ws);
     }
   });

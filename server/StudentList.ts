@@ -15,7 +15,7 @@ class StudentList extends EventEmitter{
 
     addStudent(student: Student): void {
         this.students.set(student.id, student);
-        this.emit("studentAdded"); // {event: "added", data: {student}} ??
+        this.emit("studentAdded"); 
     }
 
     getStudent(index: string): Student | undefined {
@@ -24,7 +24,8 @@ class StudentList extends EventEmitter{
 
     deleteStudent(id: string): void {
         this.students.delete(id);
-        this.emit("studentDeleted"); // tu mozna po przecinku wyslac studenta
+        this.emit("studentDeleted"); // it is possible to send whole student via socket
+        // this.emit("studentDeleted", deletedStudent); // like this
     }
 
     asArray() {
