@@ -47,7 +47,6 @@ export function PickQuizView() {
             background: theme.palette.secondary.light,
             gap: "10px",
             minHeight: "100vh",
-            paddingTop: "35px",
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
@@ -56,6 +55,8 @@ export function PickQuizView() {
             width: "100%",
             top: 0,
             zIndex: -1,
+            paddingTop: "55px",
+            paddingBottom: "10px",
         },
         wrapper: {
             width: 1000,
@@ -114,12 +115,6 @@ export function PickQuizView() {
     const [name, setName] = useState("");
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
-    };
-    const isInQuiz = (index: number) => {
-        right.forEach((value) => {
-            if (value == index) return true;
-        });
-        return false;
     };
     const [question, setQuestion] = useState<Question[]>(questionListMock);
 
