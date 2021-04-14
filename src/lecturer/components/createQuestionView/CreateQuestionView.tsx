@@ -1,25 +1,35 @@
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import Button from '@material-ui/core/Button';
+import {
+    TextField,
+    FormLabel,
+    Fab,
+    Button,
+    IconButton,
+    Checkbox,
+    Grid,
+    CircularProgress,
+} from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddIcon from "@material-ui/icons/Add";
 import { makeStyles, useTheme } from "@material-ui/core";
-import { ChangeEvent, useState } from "react";
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
-import {FormEvent} from 'react';
+import { ChangeEvent, useRef, useState } from "react";
+import { FormEvent } from "react";
+import { red, green } from "@material-ui/core/colors";
+import clsx from "clsx";
+import { relative } from "node:path";
 
-
-export function CreateQuestionView(){
+export function CreateQuestionView() {
     const theme = useTheme();
-    
+
     const [title, setTitle] = useState<string>("");
     const [question, setQuestion] = useState<string>("");
     const [inputList, setInputList] = useState<string[]>([]);
     const [checked, setChecked] = useState<boolean[]>([]);
-    const [errors, setErrors] = useState({title: "", question: "", noAnswers: "", emptyAnswers: []});
+    const [errors, setErrors] = useState({
+        title: "",
+        question: "",
+        noAnswers: "",
+        emptyAnswers: [],
+    });
 
     const classes = makeStyles({
         root: {
@@ -29,61 +39,117 @@ export function CreateQuestionView(){
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            paddingTop: "55px",
+            paddingBottom: "10px",
         },
         form: {
-            width: "500px",
-            '& > *': {
+            width: 600,
+            "& > *": {
                 display: "block-inline",
                 marginBottom: "15px",
                 margin: theme.spacing(1),
             },
         },
-        titleInput:{
+        answerRow: {
+            display: "flex",
+            gap: 10,
+            justifyContent: "space-between",
+            flexWrap: "nowrap",
+        },
+        titleInput: {
             width: "100%",
-            backgroundColor: "white"
         },
         textarea: {
             width: "100%",
-            backgroundColor: "white"
+        },
+        checkbox: {
+            width: 55.4,
+            height: 55.4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
         },
         right: {
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
+            position: "relative",
         },
         errorColor: {
-            color: "red"
-        }
+            color: red[500],
+        },
+        deleteBtn: {
+            color: red[700],
+            flexShrink: 0,
+            width: 55.4,
+        },
+        buttonSuccess: {
+            backgroundColor: green[500],
+            "&:hover": {
+                backgroundColor: green[700],
+            },
+        },
+        fabProgress: {
+            color: green[500],
+            position: "absolute",
+            top: "calc(50% - 19px)",
+            right: "calc(100px - 19px)",
+            zIndex: 1,
+        },
+        sessionBtn: {
+            width: 200,
+            marginLeft: "auto",
+            padding: "15px",
+            color: theme.palette.grey[50],
+        },
     })();
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        index: number
+    ) => {
         const { value } = e.target;
         const list = [...inputList];
         list[index] = value;
         setInputList(list);
     };
 
-    const handleTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const buttonClassname = clsx({
+        [classes.sessionBtn]: 1,
+        [classes.buttonSuccess]: success,
+    });
+
+    const handleTitleChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { value } = e.target;
         setTitle(value);
-    }
+    };
 
-    const handleTextAreaChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleTextAreaChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { value } = e.target;
         setQuestion(value);
-    }
+    };
 
     const handleCheckboxChange = (e: ChangeEvent<any>, index: number) => {
         const value = e.target.checked;
         const listcb = [...checked];
         listcb[index] = value;
         setChecked(listcb);
-    }
+    };
 
     const handleAddButtonClick = () => {
         setInputList([...inputList, ""]);
         setChecked([...checked, false]);
     };
-    
+
     const handleRemoveButtonClick = (index: number) => {
         const list = [...inputList];
         list.splice(index, 1);
@@ -97,65 +163,81 @@ export function CreateQuestionView(){
         temp.title = title ? "" : required;
         temp.question = question ? "" : required;
 
-        temp.noAnswers = inputList.length !== 0 ? "" : "Trzeba dodać odpowiedzi";
-        
+        temp.noAnswers =
+            inputList.length !== 0 ? "" : "Trzeba dodać odpowiedzi";
+
         temp.emptyAnswers = [];
-        for(let i=0; i < inputList.length; i++)
+        for (let i = 0; i < inputList.length; i++)
             temp.emptyAnswers.push(inputList[i] ? "" : required);
 
         setErrors(temp);
 
-        return (temp.title === "" && temp.question === "" && temp.noAnswers === "" &&
-                temp.emptyAnswers.every((x:string) => x === ""))
+        return (
+            temp.title === "" &&
+            temp.question === "" &&
+            temp.noAnswers === "" &&
+            temp.emptyAnswers.every((x: string) => x === "")
+        );
     };
 
+    const timer = useRef<number>();
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!loading) {
 
-        if(!validate()){
-            console.log("NOT ALL DATA ENTERED");
-            return;
-        }
+            if (!validate()) {
+                console.log("NOT ALL DATA ENTERED");
+                return;
+            }
+            setSuccess(false);
+            setLoading(true);
+
+            let options: Answer[] = [];
+            for (let i = 0; i < inputList.length; i++) {
+                options.push({
+                    index: i + 1,
+                    text: inputList[i],
+                    isCorrect: checked[i],
+                });
+            }
+
+            let obj: Question = {
+                title: title,
+                text: question,
+                options: options,
+            };
+            console.log(obj);
+
         
-        let options : Answer[] = [];
-        for(let i=0; i<inputList.length; i++){
-            options.push({
-                index: i+1,
-                text: inputList[i],
-                isCorrect: checked[i]
-            });
+            timer.current = window.setTimeout(() => {
+                setTitle("");
+                setQuestion("");
+                setInputList([]);
+                setSuccess(true);
+                setLoading(false);
+            }, 500);
         }
-        
-        let obj : Question = {
-            title: title,
-            text: question,
-            options: options
-        };
-        console.log(obj);
-
-
-        setTitle("");
-        setQuestion("");
-        setInputList([]);
-    }
-
-    
+    };
 
     return (
         <div className={classes.root}>
-            <form onSubmit={handleSubmit} className={classes.form} noValidate autoComplete="off">
-                <InputLabel>Tytuł</InputLabel>
+            <form
+                onSubmit={handleSubmit}
+                className={classes.form}
+                noValidate
+                autoComplete="off"
+            >
                 <TextField
                     id="standard-basic"
-                    variant={"outlined"}
+                    variant="filled"
+                    label="Tytuł"
                     value={title}
                     className={classes.titleInput}
                     required
                     error={errors.title !== ""}
                     helperText={errors.title}
                     onChange={handleTitleChange}
-                    />
-                <InputLabel>Pytanie</InputLabel>
+                />
                 <TextField
                     multiline={true}
                     rows={5}
@@ -163,60 +245,92 @@ export function CreateQuestionView(){
                     value={question}
                     error={errors.question !== ""}
                     helperText={errors.question}
-                    variant={"outlined"}
+                    variant="filled"
+                    label="Pytanie"
                     className={classes.textarea}
                     fullWidth
-                    onChange={handleTextAreaChange}>
-                </TextField>
-                <Grid container spacing={1}>
-                    <Grid item xs={6} sm={9}>
-                    <FormLabel>Odpowiedzi:</FormLabel>
+                    onChange={handleTextAreaChange}
+                ></TextField>
+                <Grid container className={classes.answerRow}>
+                    <Grid item>
+                        <FormLabel>Odpowiedzi:</FormLabel>
                     </Grid>
-                    <Grid item xs={6} sm={3}>
-                    <FormLabel>Poprawne:</FormLabel>
+                    <Grid item>
+                        <FormLabel>Poprawne:</FormLabel>
                     </Grid>
                 </Grid>
                 {inputList.map((x, i) => {
                     return (
-                        <Grid item key={i} container spacing={1}>
-                            {inputList.length !== 0 && <Fab color="primary" aria-label="add" onClick={() => handleRemoveButtonClick(i)}>
-                                 <DeleteIcon />
-                            </Fab>}
-                            <Grid item xs={12} sm={9}>
+                        <Grid
+                            item
+                            key={i}
+                            container
+                            className={classes.answerRow}
+                        >
+                            {inputList.length !== 0 && (
+                                <IconButton
+                                    aria-label="delete"
+                                    className={classes.deleteBtn}
+                                    onClick={() => handleRemoveButtonClick(i)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            )}
+                            <Grid item className={classes.textarea}>
                                 <TextField
                                     value={x}
-                                    onChange={e => handleInputChange(e, i)}
+                                    onChange={(e) => handleInputChange(e, i)}
                                     label="Odpowiedź"
                                     multiline={true}
                                     rows={1}
                                     required
-                                    variant={"outlined"}
-                                    className={classes.textarea}
                                     fullWidth
-                                    error={errors.emptyAnswers.length > i && errors.emptyAnswers[i] !== ""}
-                                    helperText={errors.emptyAnswers[i]}>
-                                </TextField>
+                                    error={
+                                        errors.emptyAnswers.length > i &&
+                                        errors.emptyAnswers[i] !== ""
+                                    }
+                                    helperText={errors.emptyAnswers[i]}
+                                ></TextField>
                             </Grid>
-                            <Grid item xs={6} sm={1}>
+                            <Grid item className={classes.checkbox}>
                                 <Checkbox
                                     color="primary"
                                     name="prrrr"
                                     checked={checked[i]}
-                                    onChange={e => handleCheckboxChange(e, i)}
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    onChange={(e) => handleCheckboxChange(e, i)}
+                                    inputProps={{
+                                        "aria-label": "secondary checkbox",
+                                    }}
                                 />
                             </Grid>
                         </Grid>
-                    );                 
+                    );
                 })}
-                <Fab color="primary" aria-label="add" onClick={handleAddButtonClick}>
-                     <AddIcon />
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    onClick={handleAddButtonClick}
+                >
+                    <AddIcon />
                 </Fab>
                 <span className={classes.errorColor}>{errors.noAnswers}</span>
                 <div className={classes.right}>
-                    <Button variant="contained" size="large" color="primary" type="submit">
-                        DODAJ PYTANIE
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        size="large"
+                        className={buttonClassname}
+                        disabled={loading}
+                        type="submit"
+                    >
+                        {success ? `Zapisano Pytanie` : `Zapisz Pytanie`}
                     </Button>
+                    {loading && (
+                        <CircularProgress
+                            size={38}
+                            className={classes.fabProgress}
+                        />
+                    )}
                 </div>
             </form>
         </div>

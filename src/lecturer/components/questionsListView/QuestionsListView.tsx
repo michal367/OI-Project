@@ -1,7 +1,25 @@
 import { importQuestions } from "../../services/FileService"
-import  Button  from '@material-ui/core/Button';
+import { Button, ButtonGroup } from '@material-ui/core';
+import { makeStyles, useTheme } from "@material-ui/core";
 export function QuestionsListView(){
+    const theme = useTheme();
 
+    const classes = makeStyles({
+        root: {
+            background: theme.palette.secondary.light,
+            gap: "50px",
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            paddingTop: "55px",
+            paddingBottom: "10px",
+        },
+    })();
     const onChange = (event:any) => {
         var files = event.target.files;
         var json;
@@ -21,16 +39,16 @@ export function QuestionsListView(){
             }
     }
 
-
     return(
-        <div>
-            <Button variant="contained" component="label">
-                Import<input type="file" hidden onChange={(e) => onChange(e)}/>
-            </Button>
-
-            <Button variant="contained" component="label">
-                Export
-            </Button>
+        <div className={classes.root}>
+            <ButtonGroup variant="contained" color="primary" size="large" aria-label="contained primary button group">
+                <Button>
+                    Import<input type="file" hidden onChange={(e) => onChange(e)}/>
+                </Button>
+                <Button disabled>
+                    Export
+                </Button>
+            </ButtonGroup>
         </div>
     );
 }
