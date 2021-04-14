@@ -29,6 +29,12 @@ export function CreateSessionView() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            paddingTop: "55px",
+            paddingBottom: "10px",
         },
         wrapper: {
             position: "relative",
