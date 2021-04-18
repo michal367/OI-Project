@@ -1,8 +1,15 @@
-import { importQuestions } from "../../services/FileService"
-import { Button, ButtonGroup } from '@material-ui/core';
+import { ButtonGroup } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { makeStyles, useTheme } from "@material-ui/core";
+import { StoreContext } from "../../services/StoreService";
+import { useContext, useRef } from "react";
+import { exportQuestions } from "../../services/FileService";
+import React from "react";
+import { styled } from '@material-ui/core/styles';
+
 export function QuestionsListView(){
     const theme = useTheme();
+    const store = useContext(StoreContext);
 
     const classes = makeStyles({
         root: {
@@ -20,34 +27,55 @@ export function QuestionsListView(){
             paddingBottom: "10px",
         },
     })();
-    const onChange = (event:any) => {
+
+    const onChangeImport = (event:any) => {
         var files = event.target.files;
-        var json;
         for (var i = 0, f; f = files[i]; i++) {
             var reader = new FileReader();
             reader.onload = (function (theFile) {
-                    return function (e:any) {
-                        try {
-                            json = JSON.parse(e.target.result);
-                            console.log(importQuestions(JSON.stringify(json))[0].text); // test
-                        } catch (ex) {
-                            alert(ex);
+                    return function (e:ProgressEvent<FileReader>) {
+                        if(e.target?.result != null){
+                            let jsonString = e.target.result as string
+                            store.questions = [...store.questions, ...JSON.parse(jsonString)];
                         }
                     }
                 })(f);
                 reader.readAsText(f);
             }
     }
+    const Input = styled('input')({
+        display: 'none',
+      });
+
+    const inputEl = useRef(null);
+
+    const handleImportButtonClick = () => {
+        document.getElementById("file_input")?.focus()
+    }
+
+    const handleExportButtonClick = () => {
+        exportQuestions(store.questions);
+        // for future use
+        //store.quizes.forEach(quiz => {
+        //    exportQuestions(quiz.questions, quiz.title+".json")
+        //})
+    }
 
     return(
         <div className={classes.root}>
             <ButtonGroup variant="contained" color="primary" size="large" aria-label="contained primary button group">
-                <Button>
-                    Import<input type="file" hidden onChange={(e) => onChange(e)}/>
+            
+            <label>
+            <Input accept=".json" id="contained-button-file" type="file"onChange={(e) => onChangeImport(e)} />
+            <Button variant="contained" component="span">
+                Import
                 </Button>
-                <Button disabled>
+            </label>
+            <label>
+                <Button onClick={ handleExportButtonClick } variant="contained">
                     Export
                 </Button>
+            </label>
             </ButtonGroup>
         </div>
     );
