@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -7,19 +7,16 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
-import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useHistory } from "react-router-dom";
-import { Context } from "../../services/store/StoreService";
-import { ReducerAction } from "../../services/store/Reducer";
+import { StoreContext } from "../../services/StoreService";
+
 
 export function CreateSessionView() {
-    const [, dispatch] = useContext(Context);
+    const store = useContext(StoreContext);
     const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
-    const {
-        sendJsonMessage
-    } = useBackEndSocket();
+    const { sendJsonMessage } = useBackEndSocket();
 
     const classes = makeStyles({
         root: {
@@ -80,11 +77,13 @@ export function CreateSessionView() {
                 setLoading(false);
                 console.log(lecture);
 
-                dispatch({ type: ReducerAction.SET_SESSION_ID, payload: lecture.id });
+
+
+                store.sessionId = lecture.id;
 
                 backEnd.getLectureLink(lecture.id)
                     .then((link) => {
-                        dispatch({ type: ReducerAction.SET_LINK, payload: link })
+                        store.link = link;
                         history.push("/session");
                     })
 

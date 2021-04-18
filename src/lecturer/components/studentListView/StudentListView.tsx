@@ -3,7 +3,7 @@
 import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
-import { Context } from "../../services/store/StoreService";
+import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
@@ -17,8 +17,9 @@ export interface StudentListRow extends Student {
 
 export function StudentListView(props: StudentListViewProps) {
     const backEnd = useBackEnd();
-    const [state,] = useContext(Context);
+    const store = useContext(StoreContext);
     const { socketEmiter } = useBackEndSocket();
+    
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
@@ -50,14 +51,14 @@ export function StudentListView(props: StudentListViewProps) {
 
     const refreshList = useCallback(() => {
         console.log("refreshList");
-        backEnd.getStudentsForLecture(props.lecture?.id ?? state.sessionId)
+        backEnd.getStudentsForLecture(props.lecture?.id ?? store.sessionId ?? "")
             .then((list) => list.map((item, index) => {
                 return { orderIndex: index + 1, ...item }
             }))
             .then(setStudentList)
             .catch((error) => console.log)
     },
-        [backEnd, props.lecture?.id, state.sessionId],
+        [backEnd, props.lecture?.id, store.sessionId],
     );
 
     useEffect(() => {
@@ -86,7 +87,7 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + state.link}>LectureLink: http://localhost:3001/{state.link}</a></div>
+            <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + store.link}>LectureLink: http://localhost:3001/{store.link}</a></div>
             <Table aria-label="tabela z listą studentów">
                 <StudentListHead
                     order={order}
