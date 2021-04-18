@@ -32,7 +32,7 @@ export function QuestionsListView(){
     const onChangeImport = (event:ChangeEvent<HTMLInputElement>) => {
         //const target = event.target as Element;
         var files = event.target.files;
-        if(files !== null){
+        if(files !== null && files.length !== 0){
 
             var f = files[0];
             var reader = new FileReader();
