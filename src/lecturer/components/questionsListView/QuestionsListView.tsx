@@ -6,6 +6,7 @@ import { useContext, useRef } from "react";
 import { exportQuestions } from "../../services/FileService";
 import React from "react";
 import { styled } from '@material-ui/core/styles';
+import { ChangeEvent } from 'react';
 
 export function QuestionsListView(){
     const theme = useTheme();
@@ -28,20 +29,23 @@ export function QuestionsListView(){
         },
     })();
 
-    const onChangeImport = (event:any) => {
+    const onChangeImport = (event:ChangeEvent<HTMLInputElement>) => {
+        //const target = event.target as Element;
         var files = event.target.files;
-        for (var i = 0, f; f = files[i]; i++) {
+        if(files !== null){
+
+            var f = files[0];
             var reader = new FileReader();
             reader.onload = (function (theFile) {
-                    return function (e:ProgressEvent<FileReader>) {
-                        if(e.target?.result != null){
-                            let jsonString = e.target.result as string
-                            store.questions = [...store.questions, ...JSON.parse(jsonString)];
-                        }
+                return function (e:ProgressEvent<FileReader>) {
+                    if(e.target?.result != null){
+                        let jsonString = e.target.result as string
+                        store.questions = [...store.questions, ...JSON.parse(jsonString)];
                     }
-                })(f);
-                reader.readAsText(f);
-            }
+                }
+            })(f);
+            reader.readAsText(f);
+        }
     }
     const Input = styled('input')({
         display: 'none',
@@ -60,7 +64,7 @@ export function QuestionsListView(){
             <ButtonGroup variant="contained" color="primary" size="large" aria-label="contained primary button group">
             
             <label>
-            <Input accept=".json" id="contained-button-file" type="file"onChange={(e) => onChangeImport(e)} />
+            <Input accept=".json" id="contained-button-file" type="file" onChange={(e) => onChangeImport(e)} />
             <Button variant="contained" component="span">
                 Import
                 </Button>
