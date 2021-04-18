@@ -47,12 +47,6 @@ export function QuestionsListView(){
         display: 'none',
       });
 
-    const inputEl = useRef(null);
-
-    const handleImportButtonClick = () => {
-        document.getElementById("file_input")?.focus()
-    }
-
     const handleExportButtonClick = () => {
         exportQuestions(store.questions);
         // for future use
