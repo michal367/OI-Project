@@ -9,7 +9,7 @@ import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useBackEndSocket } from "../../services/BackEndService";
-import Store from "../../services/store/StoreService";
+import Store from "../../services/StoreService";
 
 const theme = createMuiTheme({
     palette: {
