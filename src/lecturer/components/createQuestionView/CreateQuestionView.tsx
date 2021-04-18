@@ -11,14 +11,15 @@ import {
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles, useTheme } from "@material-ui/core";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useContext, useRef, useState } from "react";
 import { FormEvent } from "react";
 import { red, green } from "@material-ui/core/colors";
 import clsx from "clsx";
-import { relative } from "node:path";
+import { StoreContext } from "../../services/StoreService";
 
 export function CreateQuestionView() {
     const theme = useTheme();
+    const store = useContext(StoreContext);
 
     const [title, setTitle] = useState<string>("");
     const [question, setQuestion] = useState<string>("");
@@ -206,9 +207,11 @@ export function CreateQuestionView() {
                 text: question,
                 options: options,
             };
+
+            store.questions = [...store.questions, obj];
             console.log(obj);
 
-        
+
             timer.current = window.setTimeout(() => {
                 setTitle("");
                 setQuestion("");

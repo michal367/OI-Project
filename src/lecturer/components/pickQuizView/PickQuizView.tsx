@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent, useContext, useEffect } from "react";
 import {
     Grid,
     Card,
@@ -18,7 +18,10 @@ import { green } from "@material-ui/core/colors";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { questionListMock } from "../../util/mockData";
+import { StoreContext } from "../../services/StoreService";
 
+
+//TODO move this functions to some kind of util file 
 function not(a: number[], b: number[]) {
     return a.filter((value) => b.indexOf(value) === -1);
 }
@@ -31,7 +34,7 @@ function union(a: number[], b: number[]) {
     return [...a, ...not(b, a)];
 }
 
-function setArray(s: number) {
+function createIndexArray(s: number) {
     let array = [];
     for (let i = 0; i < s; i++) {
         array.push(i);
@@ -41,6 +44,7 @@ function setArray(s: number) {
 
 export function PickQuizView() {
     const theme = useTheme();
+    const store = useContext(StoreContext);
 
     const classes = makeStyles({
         root: {
@@ -107,16 +111,27 @@ export function PickQuizView() {
             maxWidth: "100%",
         },
     })();
-    const array = setArray(questionListMock.length);
+    const [indexArray, setIndexArray] = useState<number[]>([]);
     const [checked, setChecked] = useState<number[]>([]);
-    const [left, setLeft] = useState<number[]>(array);
+    const [left, setLeft] = useState<number[]>(indexArray);
     const [right, setRight] = useState<number[]>([]);
-    const [quizes, setQuizes] = useState<Quiz[]>([]);
-    const [name, setName] = useState("");
+    const [title, setTitle] = useState("");
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+        setTitle(event.target.value);
     };
-    const [question, setQuestion] = useState<Question[]>(questionListMock);
+    const [questions, setQuestions] = useState<Question[]>([]);
+
+
+    useEffect(() => {
+        setLeft(indexArray);
+    }, [indexArray]);
+
+    useEffect(() => {
+        setQuestions(store.questions);
+        setIndexArray(createIndexArray(store.questions.length));
+    }, [store.questions]);
+
+
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -165,6 +180,7 @@ export function PickQuizView() {
         setSuccess(false);
     };
 
+    //TODO move this to other file 
     const customList = (
         title: React.ReactNode,
         items: number[],
@@ -189,9 +205,8 @@ export function PickQuizView() {
                     />
                 }
                 title={title}
-                subheader={`${numberOfChecked(items)}/${
-                    items.length
-                } zaznaczonych`}
+                subheader={`${numberOfChecked(items)}/${items.length
+                    } zaznaczonych`}
             />
             {isQuiz ? (
                 <TextField
@@ -225,7 +240,7 @@ export function PickQuizView() {
                             </ListItemIcon>
                             <ListItemText
                                 id={labelId}
-                                primary={question[value].title}
+                                primary={questions[value].title}
                             />
                         </ListItem>
                     );
@@ -243,16 +258,14 @@ export function PickQuizView() {
             });
             setSuccess(false);
             setLoading(true);
-            var newQuizes:Quiz[] = quizes.concat({
-                title: name,
-                questions: questions,
-            });
+
+            store.quizes = [...store.quizes, { title, questions }]
+
             timer.current = window.setTimeout(() => {
-                console.log(newQuizes);
-                setLeft(array);
+                console.log(store.quizes);
+                setLeft(indexArray);
                 setRight([]);
                 setChecked(not(checked, rightChecked));
-                setQuizes(newQuizes);
                 setSuccess(true);
                 setLoading(false);
             }, 500);
