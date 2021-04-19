@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useContext, useState, useRef, ChangeEvent } from "react";
 import { TextField, Button, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -8,8 +8,10 @@ import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
 import { MatchParams } from "../../@types/types";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { StoreContext } from "../../services/StoreService";
 
 export function ChooseNicknameView() {
+    const store = useContext(StoreContext);
     const backEnd = useBackEnd();
     const theme = useTheme();
     const history = useHistory();
@@ -76,8 +78,8 @@ export function ChooseNicknameView() {
             let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
             backEnd?.joinLecture(session || "", fakeStudent).then((response) => {
                 console.log(response);
-                // setSuccess(true);
-                // setLoading(false);
+                store.studentNick = name;
+                store.invitation = session;
                 history.replace("/session");
             }).catch((response) => {
                 setLoading(false);
