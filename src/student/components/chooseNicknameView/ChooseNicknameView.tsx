@@ -108,8 +108,7 @@ export function ChooseNicknameView() {
                         disabled={loading}
                         onClick={handleButtonClick}
                     >
-                        {success ? (`${name} dołączył pomyślnie`) : (`Dołącz do sesji: ${session}`)}
-
+                        Dołącz do sesji
                     </Button>
                     {loading && (
                         <CircularProgress
