@@ -1,8 +1,10 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { ChooseNicknameView } from "../chooseNicknameView/ChooseNicknameView";
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "fontsource-roboto";
+import React from "react";
 
 const theme = createMuiTheme({
     palette: {
@@ -32,12 +34,16 @@ function App() {
         <Router>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Route path='/'>
-                <ChooseNicknameView />
-            </Route>
+                <Switch>
+                    <Route path="/session">
+                        <SessionDashboardView />
+                    </Route>
+                    <Route path='/'>
+                        <ChooseNicknameView />
+                    </Route>
+                </Switch>
         </ThemeProvider>
         </Router>
     );
 }
-
 export default App;
