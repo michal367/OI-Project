@@ -5,14 +5,14 @@ import { green } from "@material-ui/core/colors";
 import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
-// import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useHistory } from "react-router-dom";
 import { MatchParams } from "../../@types/types";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 
 export function ChooseNicknameView() {
     const backEnd = useBackEnd();
     const theme = useTheme();
-    // const backEnd = useBackEnd();
+    const history = useHistory();
     const match = useRouteMatch<MatchParams>("/:session");
     const classes = makeStyles({
         root: {
@@ -76,9 +76,11 @@ export function ChooseNicknameView() {
             let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
             backEnd?.joinLecture(session || "", fakeStudent).then((response) => {
                 console.log(response);
-                setSuccess(true);
-                setLoading(false);
+                // setSuccess(true);
+                // setLoading(false);
+                history.replace("/session");
             }).catch((response) => {
+                setLoading(false);
                 console.error(response);
             })
 
