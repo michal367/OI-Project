@@ -60,7 +60,7 @@ function App() {
                         <Route path="/question">
                             <CreateQuestionView />
                         </Route>
-                      <Route path="/import-export">
+                      <Route path="/questions">
                           <QuestionsListView/>
                       </Route>
                         <Route path="/">
