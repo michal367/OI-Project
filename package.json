@@ -52,8 +52,9 @@
     "server": "npm run open-browser & npm run deno",
     "deno": "deno run --allow-read --allow-net server/server.ts",
 
-    "launch": "npm run start-all & (npm run build-all && start npm run deno)",
-    
+    "launch": "npm run start-all & start npm run deno",
+    "launch-full": "npm run start-all & (npm run build-all && start npm run deno)",
+
     "open-browser": "deno run --allow-run scripts/open-browser.ts"
   },
   "eslintConfig": {
