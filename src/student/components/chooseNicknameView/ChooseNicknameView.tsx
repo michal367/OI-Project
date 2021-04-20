@@ -1,18 +1,20 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useContext, useState, useRef, ChangeEvent } from "react";
 import { TextField, Button, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
-// import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useHistory } from "react-router-dom";
 import { MatchParams } from "../../@types/types";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { StoreContext } from "../../services/StoreService";
 
 export function ChooseNicknameView() {
+    const store = useContext(StoreContext);
     const backEnd = useBackEnd();
     const theme = useTheme();
-    // const backEnd = useBackEnd();
+    const history = useHistory();
     const match = useRouteMatch<MatchParams>("/:session");
     const classes = makeStyles({
         root: {
@@ -76,9 +78,11 @@ export function ChooseNicknameView() {
             let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
             backEnd?.joinLecture(session || "", fakeStudent).then((response) => {
                 console.log(response);
-                setSuccess(true);
-                setLoading(false);
+                store.studentNick = name;
+                store.invitation = session;
+                history.replace("/session");
             }).catch((response) => {
+                setLoading(false);
                 console.error(response);
             })
 
@@ -104,8 +108,7 @@ export function ChooseNicknameView() {
                         disabled={loading}
                         onClick={handleButtonClick}
                     >
-                        {success ? (`${name} dołączył pomyślnie`) : (`Dołącz do sesji: ${session}`)}
-
+                        Dołącz do sesji
                     </Button>
                     {loading && (
                         <CircularProgress
