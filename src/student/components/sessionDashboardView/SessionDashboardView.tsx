@@ -1,20 +1,12 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableRow,
     Button,
     Backdrop,
     CardContent,
     Card,
 } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionChatView from "../sessionChatView/SessionChatView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
@@ -69,7 +61,7 @@ export function SessionDashboardView() {
             height: 400,
         }
     })();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleClose = () => {
         setOpen(false);
     };

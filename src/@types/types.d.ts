@@ -24,3 +24,6 @@ interface Quiz {
     title: string;
     questions: Question[];
 }
+interface MatchParams {
+    session: string;
+}
