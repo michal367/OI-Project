@@ -37,23 +37,17 @@
   },
   "scripts": {
     "eject": "react-scripts eject",
-
     "start-lecturer": "react-app-rewired start src/lecturer",
     "build-lecturer": "react-app-rewired build src/lecturer build/lecturer",
     "test-lecturer": "react-app-rewired test src/lecturer",
-
     "start-student": "react-app-rewired start src/student",
     "build-student": "react-app-rewired build src/student build/student",
     "test-student": "react-app-rewired test src/student",
-
     "start-all": "start npm run start-lecturer & timeout 5 /nobreak & start npm run start-student",
     "build-all": "npm run build-lecturer & npm run build-student",
-
     "server": "npm run open-browser & npm run deno",
     "deno": "deno run --allow-read --allow-net server/server.ts",
-
     "launch": "npm run start-all & (npm run build-all && start npm run deno)",
-
     "open-browser": "deno run --allow-run scripts/open-browser.ts"
   },
   "eslintConfig": {

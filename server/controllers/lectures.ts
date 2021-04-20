@@ -110,6 +110,7 @@ const addStudentToLecture = async ({
         response.status = 200;
         response.body = {
             msg: "Student connection successfull!",
+            student_id: student.id,
         };
     } else {
         response.status = 404;
