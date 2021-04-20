@@ -1,3 +1,12 @@
+## **howToReadApiDoc**
+
+    Wyjaśnia jak rozumieć podane pola.
+
+-   **Requirements:** `wymagane metody, które muszą być wykonane wcześniej`
+-   **Event type:** `jedno ze stringowych pól w payloadzie`
+-   **Payload Content:** `co ma zostać przysłane`
+-   **Emitted Payload Content:** `co zostanie przesłane dalej`
+
 ## **subscribeToLecture**
 
     Ustanawia połączenie między widokiem wykładu a obiektem wykładu po stronie serwera.
@@ -14,6 +23,7 @@
         }
     }
     ```
+-   **Emitted Payload Content:** `None`
 
 ## **subscribeStudentToLecture**
 
@@ -32,6 +42,7 @@
         }
     }
     ```
+-   **Emitted Payload Content:** `None`
 
 ## **sendQuizToStudents**
 
