@@ -155,6 +155,9 @@ export function CreateQuestionView() {
         const list = [...inputList];
         list.splice(index, 1);
         setInputList(list);
+        const list2 = [...checked];
+        list2.splice(index, 1);
+        setChecked(list2);
     };
 
     const validate = () => {
@@ -216,6 +219,7 @@ export function CreateQuestionView() {
                 setTitle("");
                 setQuestion("");
                 setInputList([]);
+                setChecked([]);
                 setSuccess(true);
                 setLoading(false);
             }, 500);
