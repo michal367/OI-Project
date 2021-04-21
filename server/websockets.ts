@@ -2,17 +2,12 @@ import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@
 import Lecture from "./Lecture.ts";
 import { lectures } from "./controllers/lectures.ts";
 import Student from "./Student.ts";
-import {
-    LectureSubPayload,
-    StudentSubPayload,
-    QuizRequestPayload,
-    QuizResponsePayload
-} from "./@types/payloads/types.d.ts";
+import { StudentSubPayload, LectureSubPayload, Payload } from "payloads";
 
 const setupWebSocketServer = () => {
     const wss = new WebSocketServer(8080);
     wss.on("connection", function (ws: WebSocketClient) {
-        ws.on("message", function (message: string) {
+        const subMessageHandler = (message: string) => {
             const parsed = JSON.parse(message);
             switch (parsed.event) {
                 case "subscribe_lecture":
@@ -21,46 +16,50 @@ const setupWebSocketServer = () => {
                 case "subscribe_student":
                     handlerSubscribeStudent(parsed, ws);
                     break;
-                case "send_quiz":
-                    handlerSendQuiz(parsed);
-                    break;
-                case "send_quiz_response":
-                    handlerSendQuizResponse(parsed);
-                    break;
                 default:
                     console.log("Websockets: Unexpected type of event")
 
             }
-        });
+            ws.removeListener("message", subMessageHandler);
+        };
+        ws.on("message", subMessageHandler);
     });
     wss.on("error", function (error: Error) {
         console.log(error.message);
     });
 };
 
-function handlerSendQuizResponse(parsed: QuizResponsePayload) {
-    const selectedLecture: Lecture | undefined = [...lectures.values()].find((lecture) => lecture.link === parsed.data.lecture_link);
-    delete parsed.data.lecture_link;
-    selectedLecture?.wsc?.send(JSON.stringify(parsed));
-}
-
-function handlerSendQuiz(parsed: QuizRequestPayload) {
-    const selectedLecture: Lecture | undefined = lectures.get(parsed.data.lecture_id);
-    const selectedStudents: Student[] | undefined = selectedLecture?.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
-    delete parsed.data.lecture_id;
-    delete parsed.data.student_ids;
-    selectedStudents?.forEach((student: Student) => student.wsc?.send(JSON.stringify(parsed)));
-}
-
 function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {
     const selectedLecture: Lecture | undefined = [...lectures.values()].find((lecture) => lecture.link === parsed.data.lecture_link);
     const selectedStudent: Student | undefined = selectedLecture?.studentList.getStudent(parsed.data.student_id);
-    selectedStudent?.setWebSocketClient(ws);
+    if (selectedStudent) {
+        selectedStudent.setWebSocketClient(ws);
+        const payload: Payload = {
+            event: "student_subscribed"
+        }
+        ws.send(JSON.stringify(payload))
+    } else {
+        const payload: Payload = {
+            event: "student_not_subscribed"
+        }
+        ws.send(JSON.stringify(payload))
+    }
 }
 
 function handlerSubscribeLecture(parsed: LectureSubPayload, ws: WebSocketClient) {
     const selectedLecture: Lecture | undefined = lectures.get(parsed.data.lecture_id);
-    selectedLecture?.setWebSocketClient(ws);
+    if (selectedLecture) {
+        selectedLecture.setWebSocketClient(ws);
+        const payload: Payload = {
+            event: "lecture_subscribed"
+        }
+        ws.send(JSON.stringify(payload))
+    } else {
+        const payload: Payload = {
+            event: "lecture_not_subscribed"
+        }
+        ws.send(JSON.stringify(payload))
+    }
 }
 
 export { setupWebSocketServer };

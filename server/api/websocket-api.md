@@ -5,6 +5,8 @@
 -   **Requirements:** `wymagane metody, które muszą być wykonane wcześniej`
 -   **Event type:** `jedno ze stringowych pól w payloadzie`
 -   **Payload Content:** `co ma zostać przysłane`
+-   **Succes Payload Content** `co odeśle po udanej operacji`
+-   **Error Payload Content** `co odeśle po nieudanej operacji`
 -   **Emitted Payload Content:** `co zostanie przesłane dalej`
 
 ## **subscribeToLecture**
@@ -19,10 +21,27 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "af9320ed-9ea5-44fe-a9c0-1d40d91bce29"
+            "lecture_id": "3de2a841-697a-4623-9607-d89ad85d1a6d"
         }
     }
     ```
+
+-   **Succes Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_subscribed"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_not_subscribed"
+    }
+    ```
+
 -   **Emitted Payload Content:** `None`
 
 ## **subscribeStudentToLecture**
@@ -37,11 +56,28 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "82fde8f0-d01c-4175-8324-f58907d7c1d1",
-            "lecture_link": "6240584"
+            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "lecture_link": "6097751"
         }
     }
     ```
+    
+-   **Succes Response Payload:**
+
+    ```json
+    {
+        "event": "student_subscribed"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_not_subscribed"
+    }
+    ```
+
 -   **Emitted Payload Content:** `None`
 
 ## **sendQuizToStudents**
@@ -56,9 +92,8 @@
     {
         "event": "send_quiz",
         "data": {
-            "lecture_id": "af9320ed-9ea5-44fe-a9c0-1d40d91bce29",
             "student_ids": [
-                "82fde8f0-d01c-4175-8324-f58907d7c1d1",
+                "185f192f-3c51-4855-a46e-868756d66c6c",
                 "30dd5a67-e59d-4f1f-bf42-05ece01cfc36"
             ],
             "questions": "literally any type"
@@ -66,6 +101,21 @@
     }
     ```
 
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "quiz_sent_to",
+        "data": {
+            "student_ids": [
+                "185f192f-3c51-4855-a46e-868756d66c6c",
+                "30dd5a67-e59d-4f1f-bf42-05ece01cfc36"
+            ]
+        }
+    }
+    ```
+
+-   **Error Response Payload:** `None`
 -   **Emitted Payload Content:**
 
     ```json
@@ -89,8 +139,6 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "lecture_link": "6240584",
-            "student_id": "82fde8f0-d01c-4175-8324-f58907d7c1d1",
             "answers": "literally any type"
         }
     }

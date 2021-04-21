@@ -1,41 +1,61 @@
 declare module 'payloads' {
-    interface LectureSubPayload {
-        event: string,
+
+    interface Payload {
+        event: string
+    }
+    interface LectureSubPayload extends Payload {
         data: {
             lecture_id: string
         }
     }
 
-    interface StudentSubPayload {
-        event: string,
+    interface StudentSubPayload extends Payload {
         data: {
             student_id: string,
             lecture_link: string
         }
     }
 
-    interface QuizRequestPayload {
-        event: string,
+    interface QuizRequestPayload extends Payload {
         data: {
-            lecture_id: string,
             student_ids: string[],
             questions: any
         }
     }
 
-    interface QuizResponsePayload {
-        event: string,
+    interface ServerQuizSendToPayload extends Payload{
         data: {
-            lecture_link: string,
+            student_ids: string[],
+        }
+    }
+
+    interface ServerQuizRequestPayload extends Payload {
+        data: {
+            questions: any
+        }
+    }
+
+    interface QuizResponsePayload extends Payload {
+        data: {
+            answers: any
+        }
+    }
+
+    interface ServerQuizResponsePayload extends Payload {
+        data: {
             student_id: string,
             answers: any
         }
     }
 
     export {
+        Payload,
         LectureSubPayload,
         StudentSubPayload,
         QuizRequestPayload,
-        QuizResponsePayload
+        QuizResponsePayload,
+        ServerQuizRequestPayload, 
+        ServerQuizResponsePayload,
+        ServerQuizSendToPayload
     };
 }

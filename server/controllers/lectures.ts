@@ -102,7 +102,8 @@ const addStudentToLecture = async ({
         const student = new Student(
             jsonData["nick"],
             jsonData["name"],
-            jsonData["surname"]
+            jsonData["surname"],
+            selectedLecture
         );
         
         selectedLecture.studentList.addStudent(student);
