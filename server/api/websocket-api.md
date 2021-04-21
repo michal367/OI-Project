@@ -12,7 +12,7 @@
     Ustanawia połączenie między widokiem wykładu a obiektem wykładu po stronie serwera.
 
 -   **Requirements:** `None`
--   **Event type:** `subscribe`
+-   **Event type:** `subscribe_lecture`
 -   **Payload Content:**
 
     ```json
