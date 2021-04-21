@@ -104,13 +104,27 @@ const addStudentToLecture = async ({
             jsonData["name"],
             jsonData["surname"]
         );
+        var add = true
+        var array = selectedLecture.studentList.asArray()
+        for(var i = 0; i < array.length; i++){
+            if (selectedLecture.studentList.compareTwoStudents(student, array[i])){
+                response.status = 404;
+                response.body = {
+                    msg: "Student already added",
+                };
+                add = false;
+                break;
+            }
+        }
         
-        console.log(student);
-        selectedLecture.studentList.addStudent(student);
-        response.status = 200;
-        response.body = {
-            msg: "Student connection successfull!",
-        };
+        if (add){
+            console.log(student);
+            selectedLecture.studentList.addStudent(student);
+            response.status = 200;
+            response.body = {
+                msg: "Student connection successfull!",
+            };
+        }
     } else {
         response.status = 404;
         response.body = {

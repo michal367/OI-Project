@@ -3,6 +3,8 @@ import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0
 import StudentList from "./StudentList.ts";
 import { WebSocketClient} from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 
+var links = new Map();
+
 class Lecture {
     tutor: string;
     id: string;
@@ -13,7 +15,14 @@ class Lecture {
     constructor(tutor: string) {
         this.tutor = tutor;
         this.id = v4.generate();
-        this.link = cryptoRandomString({ length: 7, type: "numeric" });
+        while (true){
+            this.link = this.link = cryptoRandomString({ length: 7, type: "numeric" });
+            if (!links.has(this.link)){
+                links.set(this.link, true);
+                break;
+            }
+        }
+        
         this.studentList = new StudentList();
     }
 

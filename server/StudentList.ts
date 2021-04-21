@@ -37,5 +37,9 @@ class StudentList extends EventEmitter{
         return new StudentList();
     }
 
+    compareTwoStudents(student1: Student, student2 : Student) : boolean {
+        return (student1.name == student2.name && student1.surname == student2.surname && student1.nick == student2.nick)
+    }
+
 }
 export default StudentList;
