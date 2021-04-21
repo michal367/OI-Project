@@ -105,12 +105,11 @@ const addStudentToLecture = async ({
             jsonData["surname"]
         );
         
-        console.log(student);
         selectedLecture.studentList.addStudent(student);
         response.status = 200;
         response.body = {
             msg: "Student connection successfull!",
-            student_id: student.id,
+            student_id: student.id
         };
     } else {
         response.status = 404;
