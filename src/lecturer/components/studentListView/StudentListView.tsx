@@ -1,4 +1,4 @@
-import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Grid, Button } from "@material-ui/core";
+import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Button } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
@@ -92,14 +92,6 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <Grid container spacing={4} >
-                <Grid item xs={6} container justify="center">
-                    <a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + store.link}>http://localhost:3001/{store.link}</a>
-                </Grid>
-                <Grid xs={6} container justify="center">
-                <Button variant="contained" color="primary" href="#contained-buttons" onClick={handleButtonClick}> COPY </Button>
-                </Grid>
-            </Grid>
             <Table aria-label="tabela z listą studentów">
                 <StudentListHead
                     order={order}
@@ -119,9 +111,11 @@ export function StudentListView(props: StudentListViewProps) {
                                 </TableRow>
                             );
                         })}
-
                 </TableBody>
             </Table>
+        <Button fullWidth={true} variant="contained" color="primary" href="#contained-buttons"  onClick={handleButtonClick}>
+                COPY LINK
+        </Button>
         </TableContainer>
     );
 }

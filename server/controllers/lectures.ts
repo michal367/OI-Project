@@ -104,8 +104,8 @@ const addStudentToLecture = async ({
             jsonData["name"],
             jsonData["surname"]
         );
-        var add = true
-        var array = selectedLecture.studentList.asArray()
+        let add = true
+        const array = selectedLecture.studentList.asArray()
         for(var i = 0; i < array.length; i++){
             if (selectedLecture.studentList.compareTwoStudents(student, array[i])){
                 response.status = 404;
