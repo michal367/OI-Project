@@ -18,33 +18,39 @@ declare module 'payloads' {
 
     interface QuizRequestPayload extends Payload {
         data: {
+            quiz_id: string,
             student_ids: string[],
+            time_seconds: number,
             questions: any
-        }
-    }
-
-    interface ServerQuizSendToPayload extends Payload{
-        data: {
-            student_ids: string[],
         }
     }
 
     interface ServerQuizRequestPayload extends Payload {
         data: {
+            quiz_id: string,
             questions: any
         }
     }
 
     interface QuizResponsePayload extends Payload {
         data: {
+            quiz_id: string,
             answers: any
         }
     }
 
     interface ServerQuizResponsePayload extends Payload {
         data: {
+            quiz_id: string,
             student_id: string,
             answers: any
+        }
+    }
+
+    interface QuizEndedPayload extends Payload {
+        data: {
+            quiz_id: string,
+            reason: string
         }
     }
 
@@ -56,6 +62,6 @@ declare module 'payloads' {
         QuizResponsePayload,
         ServerQuizRequestPayload, 
         ServerQuizResponsePayload,
-        ServerQuizSendToPayload
+        QuizEndedPayload
     };
 }

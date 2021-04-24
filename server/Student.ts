@@ -1,7 +1,8 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient} from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { QuizResponsePayload, ServerQuizResponsePayload } from "payloads";
+import { Payload, QuizResponsePayload, ServerQuizResponsePayload } from "./@types/payloads/types.d.ts";
+import Quiz from "./Quiz.ts";
 
 class Student {
     id: string;
@@ -39,14 +40,19 @@ class Student {
         });
     }
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
-        const serverResponse: ServerQuizResponsePayload = {
-            event: parsed.event,
-            data:{
-                student_id: this.id,
-                answers: parsed.data.answers
+        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quiz_id);
+        if(quiz?.isActive()){
+            quiz.addStudentAnswers(this, parsed.data.answers);
+            const response: Payload = {
+                event: "student_answers_added"
             }
+            this.wsc?.send(JSON.stringify(response));
+        }else{
+            const response: Payload = {
+                event: "student_answers_not_added"
+            }
+            this.wsc?.send(JSON.stringify(response));
         }
-        this.lecture.wsc?.send(JSON.stringify(serverResponse));
     }
 }
 

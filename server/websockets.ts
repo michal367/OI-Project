@@ -2,7 +2,7 @@ import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@
 import Lecture from "./Lecture.ts";
 import { lectures } from "./controllers/lectures.ts";
 import Student from "./Student.ts";
-import { StudentSubPayload, LectureSubPayload, Payload } from "payloads";
+import { StudentSubPayload, LectureSubPayload, Payload } from "./@types/payloads/types.d.ts";
 
 const setupWebSocketServer = () => {
     const wss = new WebSocketServer(8080);
@@ -36,13 +36,13 @@ function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient)
         selectedStudent.setWebSocketClient(ws);
         const payload: Payload = {
             event: "student_subscribed"
-        }
-        ws.send(JSON.stringify(payload))
+        };
+        ws.send(JSON.stringify(payload));
     } else {
         const payload: Payload = {
             event: "student_not_subscribed"
-        }
-        ws.send(JSON.stringify(payload))
+        };
+        ws.send(JSON.stringify(payload));
     }
 }
 
@@ -52,13 +52,13 @@ function handlerSubscribeLecture(parsed: LectureSubPayload, ws: WebSocketClient)
         selectedLecture.setWebSocketClient(ws);
         const payload: Payload = {
             event: "lecture_subscribed"
-        }
-        ws.send(JSON.stringify(payload))
+        };
+        ws.send(JSON.stringify(payload));
     } else {
         const payload: Payload = {
             event: "lecture_not_subscribed"
-        }
-        ws.send(JSON.stringify(payload))
+        };
+        ws.send(JSON.stringify(payload));
     }
 }
 
