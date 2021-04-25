@@ -9,6 +9,9 @@ export interface IStore {
     sessionId?: string,
     questions: Question[],
     quizes: Quiz[],
+    selectedQuiz: number,
+    selectedStudents: string[],
+    sendQuizStep: number,
 }
 
 const Store = (props: StoreProps) => {
@@ -16,6 +19,9 @@ const Store = (props: StoreProps) => {
     const [sessionId, setSessionId] = useState("");
     const [questions, setQuestions] = useState<Question[]>([]);
     const [quizes, setQuizes] = useState<Quiz[]>([]);
+    const [selectedQuiz, setSelectedQuiz] = useState(-1);
+    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    const [sendQuizStep, setSendQuizStep] = useState(0);
 
     const value = {
         get link() {
@@ -44,7 +50,28 @@ const Store = (props: StoreProps) => {
         },
         set quizes(newValue: Quiz[]) {
             setQuizes([...newValue]);
-        }
+        }, 
+        
+        get selectedQuiz() {
+            return selectedQuiz
+        },
+        set selectedQuiz(newValue: number) {
+            setSelectedQuiz(newValue);
+        },
+
+        get sendQuizStep() {
+            return sendQuizStep
+        },
+        set sendQuizStep(newValue: number) {
+            setSendQuizStep(newValue);
+        },
+
+        get selectedStudents() {
+            return selectedStudents
+        },
+        set selectedStudents(newValue: string[]) {
+            setSelectedStudents([...newValue]);
+        },
     };
 
     return (
@@ -56,7 +83,10 @@ const Store = (props: StoreProps) => {
 
 const initialValue: IStore = {
     quizes: [],
-    questions: []
+    questions: [],
+    selectedQuiz: -1,
+    selectedStudents: [],
+    sendQuizStep: 0,
 }
 
 export const StoreContext = createContext<IStore>(initialValue);
