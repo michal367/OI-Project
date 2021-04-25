@@ -1,11 +1,26 @@
-import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import {
+    makeStyles,
+    useTheme,
+    Paper,
+    List,
+    ListItem,
+    Typography,
+    ListItemIcon,
+    ListItemText,
+} from "@material-ui/core";
+import {
+    MouseEvent as Mouse,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 
 interface StudentListViewProps {
-    lecture?: Lecture
+    lecture?: Lecture;
 }
 
 export interface StudentListRow extends Student {
@@ -18,36 +33,33 @@ export function QuizListView(props: StudentListViewProps) {
     const theme = useTheme();
 
     const classes = makeStyles({
-        root: {
-            maxWidth: "500px",
+        wrapper: {
             margin: "15px auto",
             background: theme.palette.secondary.light,
-            borderRadius: "0"
-        },
-        row: {
-            "& td": {
-                padding: "15px",
-                textAlign: "left",
-                verticalAlign: "middle",
-                fontWeight: 300,
-                fontSize: "14px",
-                color: "#000",
-                borderBottom: "solid 1px rgba(255,255,255,0.1)"
-            },
-            "&:nth-of-type(odd)": {
-                background: "#fedf9d;"
-            }
-        },
-        details: {
-            padding: 20,
-            height: "100%",
-            maxHeight: "100%",
+            maxHeight: "50%",
+            overflow: "auto",
         }
     })();
-
+    const handleListItemClick = (
+        event: Mouse<HTMLDivElement, MouseEvent>,
+        index: number
+    ) => {
+        store.selectedQuiz = index;
+    };
     return (
-        <Paper className={classes.details} variant="outlined" square >
-            QuizListView
-        </Paper>
+        <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
+            {store.quizes.map((value: Quiz) => {
+                return (
+                    <ListItem
+                        button
+                        selected={store.selectedQuiz === store.quizes.indexOf(value)}
+                        onClick={(event) => handleListItemClick(event, store.quizes.indexOf(value))}
+                    >
+                        <ListItemText primary={value.title} />
+                    </ListItem>
+                );
+            })}
+            {store.quizes.length === 0 && (<Typography>Nie ma żadnego Quizu</Typography>)}
+        </List>
     );
 }
