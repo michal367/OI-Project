@@ -1,21 +1,24 @@
 import {
-    TextField,
-    FormLabel,
-    Fab,
     Button,
-    IconButton,
+    ButtonGroup,
     Checkbox,
-    Grid,
     CircularProgress,
-} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
-import { makeStyles, useTheme } from "@material-ui/core";
-import { ChangeEvent, useContext, useRef, useState } from "react";
-import { FormEvent } from "react";
-import { red, green } from "@material-ui/core/colors";
-import clsx from "clsx";
-import { StoreContext } from "../../services/StoreService";
+    Fab,
+    FormLabel,
+    Grid,
+    IconButton,
+    makeStyles,
+    TextField,
+    useTheme,
+} from '@material-ui/core';
+import { green, red } from '@material-ui/core/colors';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import clsx from 'clsx';
+import { ChangeEvent, useContext, useRef, useState } from 'react';
+import { FormEvent } from 'react';
+
+import { StoreContext } from '../../services/StoreService';
 
 export function CreateQuestionView() {
     const theme = useTheme();
@@ -54,6 +57,7 @@ export function CreateQuestionView() {
                 marginBottom: "15px",
                 margin: theme.spacing(1),
             },
+
         },
         answerRow: {
             display: "flex",
@@ -106,17 +110,31 @@ export function CreateQuestionView() {
             padding: "15px",
             color: theme.palette.grey[50],
         },
+        closedAnswers: {
+            "& > *": {
+                display: "block-inline",
+                marginBottom: "15px",
+                margin: theme.spacing(1),
+            }
+        },
+        buttonActive: {
+            backgroundColor: theme.palette.primary.main,
+            color: "black",
+            height: "50px",
+            textTransform: "none",
+            width: "100px",
+            "&:hover": {
+                backgroundColor: theme.palette.primary.dark,
+            }
+        },
+        buttonNonactive: {
+            height: "50px",
+            width: "100px",
+            textTransform: "none"
+        }
     })();
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        index: number
-    ) => {
-        const { value } = e.target;
-        const list = [...inputList];
-        list[index] = value;
-        setInputList(list);
-    };
+
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -137,6 +155,16 @@ export function CreateQuestionView() {
     ) => {
         const { value } = e.target;
         setQuestion(value);
+    };
+
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        index: number
+    ) => {
+        const { value } = e.target;
+        const list = [...inputList];
+        list[index] = value;
+        setInputList(list);
     };
 
     const handleCheckboxChange = (e: ChangeEvent<any>, index: number) => {
@@ -168,11 +196,11 @@ export function CreateQuestionView() {
         temp.question = question ? "" : required;
 
         temp.noAnswers =
-            inputList.length !== 0 ? "" : "Trzeba dodać odpowiedzi";
+            inputList.length !== 0 || mode === 2 ? "" : "Trzeba dodać odpowiedzi";
 
         temp.emptyAnswers = [];
         for (let i = 0; i < inputList.length; i++)
-            temp.emptyAnswers.push(inputList[i] ? "" : required);
+            temp.emptyAnswers.push(inputList[i] || mode === 2 ? "" : required);
 
         setErrors(temp);
 
@@ -196,20 +224,23 @@ export function CreateQuestionView() {
             setSuccess(false);
             setLoading(true);
 
-            let options: Answer[] = [];
-            for (let i = 0; i < inputList.length; i++) {
-                options.push({
-                    index: i + 1,
-                    text: inputList[i],
-                    isCorrect: checked[i],
-                });
-            }
-
             let obj: Question = {
                 title: title,
-                text: question,
-                options: options,
+                text: question
             };
+
+            if (mode === 1) {
+                let options: Answer[] = [];
+                for (let i = 0; i < inputList.length; i++) {
+                    options.push({
+                        index: i + 1,
+                        text: inputList[i],
+                        isCorrect: checked[i],
+                    });
+                }
+
+                obj.options = options;
+            }
 
             store.questions = [...store.questions, obj];
             console.log(obj);
@@ -225,6 +256,8 @@ export function CreateQuestionView() {
             }, 500);
         }
     };
+
+    const [mode, setMode] = useState<number>(1);
 
     return (
         <div className={classes.root}>
@@ -258,69 +291,96 @@ export function CreateQuestionView() {
                     fullWidth
                     onChange={handleTextAreaChange}
                 ></TextField>
-                <Grid container className={classes.answerRow}>
-                    <Grid item>
-                        <FormLabel>Odpowiedzi:</FormLabel>
-                    </Grid>
-                    <Grid item>
-                        <FormLabel>Poprawne:</FormLabel>
-                    </Grid>
-                </Grid>
-                {inputList.map((x, i) => {
-                    return (
-                        <Grid
-                            item
-                            key={i}
-                            container
-                            className={classes.answerRow}
-                        >
-                            {inputList.length !== 0 && (
-                                <IconButton
-                                    aria-label="delete"
-                                    className={classes.deleteBtn}
-                                    onClick={() => handleRemoveButtonClick(i)}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            )}
-                            <Grid item className={classes.textarea}>
-                                <TextField
-                                    value={x}
-                                    onChange={(e) => handleInputChange(e, i)}
-                                    label="Odpowiedź"
-                                    multiline={true}
-                                    rows={1}
-                                    required
-                                    fullWidth
-                                    error={
-                                        errors.emptyAnswers.length > i &&
-                                        errors.emptyAnswers[i] !== ""
-                                    }
-                                    helperText={errors.emptyAnswers[i]}
-                                ></TextField>
-                            </Grid>
-                            <Grid item className={classes.checkbox}>
-                                <Checkbox
-                                    color="primary"
-                                    name="prrrr"
-                                    checked={checked[i]}
-                                    onChange={(e) => handleCheckboxChange(e, i)}
-                                    inputProps={{
-                                        "aria-label": "secondary checkbox",
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-                    );
-                })}
-                <Fab
+
+                <ButtonGroup
+                    variant="outlined"
                     color="primary"
-                    aria-label="add"
-                    onClick={handleAddButtonClick}
+                    aria-label="contained primary button group"
                 >
-                    <AddIcon />
-                </Fab>
-                <span className={classes.errorColor}>{errors.noAnswers}</span>
+                    <Button
+                        color={mode === 1 ? "primary" : "default"}
+                        className={mode === 1 ? classes.buttonActive : classes.buttonNonactive}
+                        onClick={() => setMode(1)} >
+                        Zamknięte
+                    </Button>
+                    <Button
+                        color={mode === 2 ? "primary" : "default"}
+                        className={mode === 2 ? classes.buttonActive : classes.buttonNonactive}
+                        onClick={() => setMode(2)}
+                        style={{ marginLeft: 0 }} >
+                        Otwarte
+                    </Button>
+                </ButtonGroup>
+
+                <div hidden={mode === 2} className={classes.closedAnswers}>
+                    <Grid container className={classes.answerRow}>
+                        <Grid item>
+                            <FormLabel>Odpowiedzi:</FormLabel>
+                        </Grid>
+                        <Grid item>
+                            <FormLabel>Poprawne:</FormLabel>
+                        </Grid>
+                    </Grid>
+
+                    {inputList.map((x, i) => {
+                        return (
+                            <Grid
+                                item
+                                key={'answer' + i}
+                                container
+                                className={classes.answerRow}
+                            >
+                                {inputList.length !== 0 && (
+                                    <IconButton
+                                        aria-label="delete"
+                                        className={classes.deleteBtn}
+                                        onClick={() => handleRemoveButtonClick(i)}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                )}
+                                <Grid item className={classes.textarea}>
+                                    <TextField
+                                        value={x}
+                                        onChange={(e) => handleInputChange(e, i)}
+                                        label="Odpowiedź"
+                                        multiline={true}
+                                        rows={1}
+                                        required
+                                        fullWidth
+                                        error={
+                                            errors.emptyAnswers.length > i &&
+                                            errors.emptyAnswers[i] !== ""
+                                        }
+                                        helperText={errors.emptyAnswers[i]}
+                                    ></TextField>
+                                </Grid>
+                                <Grid item className={classes.checkbox}>
+                                    <Checkbox
+                                        color="primary"
+                                        checked={checked[i]}
+                                        onChange={(e) => handleCheckboxChange(e, i)}
+                                        inputProps={{
+                                            "aria-label": "secondary checkbox",
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+                        );
+                    })}
+                    <span className={classes.errorColor}>{errors.noAnswers}</span>
+
+                    <Fab
+                        color="primary"
+                        aria-label="add"
+                        onClick={handleAddButtonClick}
+                    >
+                        <AddIcon />
+                    </Fab>
+                </div>
+
+
+
                 <div className={classes.right}>
                     <Button
                         variant="contained"

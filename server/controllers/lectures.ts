@@ -102,7 +102,8 @@ const addStudentToLecture = async ({
         const student = new Student(
             jsonData["nick"],
             jsonData["name"],
-            jsonData["surname"]
+            jsonData["surname"],
+            selectedLecture
         );
         let add = true
         const array = selectedLecture.studentList.asArray()
@@ -118,11 +119,11 @@ const addStudentToLecture = async ({
         }
         
         if (add){
-            console.log(student);
             selectedLecture.studentList.addStudent(student);
             response.status = 200;
             response.body = {
                 msg: "Student connection successfull!",
+                student_id: student.id
             };
         }
     } else {
