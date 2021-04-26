@@ -86,7 +86,6 @@ export function StudentListView(props: StudentListViewProps) {
 
     const handleButtonClick = () => {
         copy("http://localhost:3001/" + store.link, {
-            debug: true,
             message: 'Press #{key} to copy',});
     }
 
@@ -113,7 +112,7 @@ export function StudentListView(props: StudentListViewProps) {
                         })}
                 </TableBody>
             </Table>
-        <Button fullWidth={true} variant="contained" color="primary" href="#contained-buttons"  onClick={handleButtonClick}>
+        <Button fullWidth={true} variant="contained" color="primary" onClick={handleButtonClick}>
                 COPY LINK
         </Button>
         </TableContainer>

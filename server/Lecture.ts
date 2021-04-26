@@ -3,7 +3,7 @@ import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0
 import StudentList from "./StudentList.ts";
 import { WebSocketClient} from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 
-var links = new Map();
+let links = new Map();
 
 class Lecture {
     tutor: string;
