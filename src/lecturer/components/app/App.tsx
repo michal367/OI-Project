@@ -3,13 +3,13 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
-import { StudentListView } from "../studentListView/StudentListView";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useBackEndSocket } from "../../services/BackEndService";
 import Store from "../../services/StoreService";
+import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 
 const theme = createMuiTheme({
     palette: {
@@ -50,7 +50,7 @@ function App() {
                         </Route>
 
                         <Route path="/session">
-                            <StudentListView />
+                            <SessionDashboardView />
                         </Route>
 
                         <Route path="/quiz">

@@ -6,7 +6,6 @@ import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
-import { MatchParams } from "../../@types/types";
 import { useBackEnd } from "../../services/backEnd/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 

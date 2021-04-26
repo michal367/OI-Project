@@ -1,5 +1,3 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
