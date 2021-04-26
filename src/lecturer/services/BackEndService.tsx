@@ -71,9 +71,15 @@ export const useBackEndSocket = () => {
         socketEmiter,
         ...useWebSocket(SOCKET_URL, {
             onMessage,
-            onOpen: () => console.log('opened'),
-            onClose: () => console.log('opened'),
-            share: true
+            onOpen: () => console.log('onOpen'),
+            onClose: () => console.log('onClose'),
+            share: true,
+            shouldReconnect: (closeEvent) => {
+                console.log("closeEvent");
+                return true;
+            },
+            reconnectAttempts: Number.POSITIVE_INFINITY,
+            reconnectInterval: 3000,
         })
     };
 };
