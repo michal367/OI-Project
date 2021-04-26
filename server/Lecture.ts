@@ -51,7 +51,7 @@ class Lecture {
         this.wsc?.send(JSON.stringify(response));
 
         const quiz: Quiz = new Quiz(parsed.data.quiz_id, parsed.data.time_seconds, parsed.data.questions, parsed.data.student_ids);
-        this.quizes.set(quiz.server_id, quiz);
+        this.quizes.set(quiz.IDFromServer, quiz);
 
         const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
 
@@ -59,7 +59,7 @@ class Lecture {
             const serverResponse: ServerQuizResponsePayload = {
                 event: "quiz_answers_added",
                 data: {
-                    quiz_id: quiz.id_from_lecturer,
+                    quiz_id: quiz.IDFromLecturer,
                     student_id: student.id,
                     answers: answers
                 }
@@ -72,13 +72,13 @@ class Lecture {
             const serverResponse: QuizEndedPayload = {
                 event: "quiz_ended",
                 data: {
-                    quiz_id: quiz.id_from_lecturer,
+                    quiz_id: quiz.IDFromLecturer,
                     reason: reason
                 }
             };
             this.wsc?.send(JSON.stringify(serverResponse));
             if (reason === "quiz_timeout") {
-                serverResponse.data.quiz_id = quiz.server_id;
+                serverResponse.data.quiz_id = quiz.IDFromServer;
                 const remainingStudents: Student[] = selectedStudents.filter((student: Student) => !quiz.answeredStudents().includes(student.id));
                 remainingStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverResponse)));
             }
@@ -90,7 +90,7 @@ class Lecture {
         const serverRequest: ServerQuizRequestPayload = {
             event: parsed.event,
             data: {
-                quiz_id: quiz.server_id,
+                quiz_id: quiz.IDFromServer,
                 questions: parsed.data.questions
             }
         };
