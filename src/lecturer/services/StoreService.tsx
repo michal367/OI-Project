@@ -12,6 +12,7 @@ export interface IStore {
     selectedQuiz: number,
     selectedStudents: string[],
     sendQuizStep: number,
+    selectedQuestion: number
 }
 
 const Store = (props: StoreProps) => {
@@ -22,6 +23,7 @@ const Store = (props: StoreProps) => {
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
     const [sendQuizStep, setSendQuizStep] = useState(0);
+    const [selectedQuestion, setSelectedQuestion] = useState(-1);
 
     const value = {
         get link() {
@@ -72,6 +74,13 @@ const Store = (props: StoreProps) => {
         set selectedStudents(newValue: string[]) {
             setSelectedStudents([...newValue]);
         },
+
+        get selectedQuestion() {
+            return selectedQuestion
+        },
+        set selectedQuestion(newValue: number) {
+            setSelectedQuestion(newValue);
+        }
     };
 
     return (
@@ -87,6 +96,7 @@ const initialValue: IStore = {
     selectedQuiz: -1,
     selectedStudents: [],
     sendQuizStep: 0,
+    selectedQuestion: -1
 }
 
 export const StoreContext = createContext<IStore>(initialValue);
