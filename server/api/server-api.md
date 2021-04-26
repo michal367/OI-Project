@@ -195,7 +195,7 @@
 ----
     Tworzy studenta z przesłanych w body danych i dodaje go do sesji wykładowej o podanym linku.
 
-* **URL** /api/lectures/:id/student-login
+* **URL** /api/lectures/:link/student-login
 
 * **Method:** `POST`
   
