@@ -26,7 +26,7 @@ import { useHistory } from 'react-router-dom';
 import { exportQuestions } from '../../services/FileService';
 import { StoreContext } from '../../services/StoreService';
 
-export function QuestionsListView(){
+export function QuestionsListView() {
     const theme = useTheme();
     const store = useContext(StoreContext);
     const history = useHistory();
@@ -69,22 +69,26 @@ export function QuestionsListView(){
     })();
 
 
-    const handleRemoveButtonClick = (index: number) =>{
+    const handleRemoveButtonClick = (index: number) => {
         const list = store.questions;
         list.splice(index, 1);
         store.questions = list;
     }
+    const selectQuestion = (index: number) => {
+        store.selectedQuestion = index;
+        history.push("/question");
+    }
 
-    const onChangeImport = (event:ChangeEvent<HTMLInputElement>) => {
+    const onChangeImport = (event: ChangeEvent<HTMLInputElement>) => {
         //const target = event.target as Element;
         var files = event.target.files;
-        if(files !== null && files.length !== 0){
+        if (files !== null && files.length !== 0) {
 
             var f = files[0];
             var reader = new FileReader();
             reader.onload = (function (theFile) {
-                return function (e:ProgressEvent<FileReader>) {
-                    if(e.target?.result != null){
+                return function (e: ProgressEvent<FileReader>) {
+                    if (e.target?.result != null) {
                         let jsonString = e.target.result as string
                         store.questions = [...store.questions, ...JSON.parse(jsonString)];
                     }
@@ -95,7 +99,7 @@ export function QuestionsListView(){
     }
     const Input = styled('input')({
         display: 'none',
-      });
+    });
 
     const handleExportButtonClick = () => {
         exportQuestions(store.questions);
@@ -105,23 +109,24 @@ export function QuestionsListView(){
         //})
     }
 
-    return(
+    return (
         <div className={classes.root}>
-            
+
             <Card>
-                <CardHeader 
+                <CardHeader
                     title="Lista pytań"
                     subheader={`${store.questions.length} pytań`}
                 />
                 <List className={classes.list}>
-                    <Divider/>
+                    <Divider />
                     {store.questions.map((item, i) => ([
                         <ListItem
                             key={item.title}
                             button
+                            onClick={() => selectQuestion(i)}
                         >
-                            <ListItemIcon>{item.options ? <DoneAllIcon/> : <DescriptionIcon/>}</ListItemIcon>
-                            <ListItemText primary={item.title}/>
+                            <ListItemIcon>{item.options ? <DoneAllIcon /> : <DescriptionIcon />}</ListItemIcon>
+                            <ListItemText primary={item.title} />
                             <ListItemSecondaryAction>
                                 <IconButton
                                     aria-label="delete"
@@ -132,9 +137,9 @@ export function QuestionsListView(){
                                 </IconButton>
                             </ListItemSecondaryAction>
                         </ListItem>,
-                        <Divider/>
+                        <Divider />
                     ]))}
-                    
+
                 </List>
             </Card>
 
@@ -142,23 +147,23 @@ export function QuestionsListView(){
                 <Fab
                     color="primary"
                     aria-label="add"
-                    onClick={() => history.push("/question")}
+                    onClick={() => {store.selectedQuestion = -1; history.push("/question");}}
                 >
                     <AddIcon />
                 </Fab>
 
                 <ButtonGroup color="primary" size="large" aria-label="contained primary button group">
-                <label>
-                    <Input accept=".json" id="contained-button-file" type="file" onChange={(e) => onChangeImport(e)} />
-                    <Button color="primary" variant="contained" component="span">
-                        Import
+                    <label>
+                        <Input accept=".json" id="contained-button-file" type="file" onChange={(e) => onChangeImport(e)} />
+                        <Button color="primary" variant="contained" component="span">
+                            Import
                     </Button>
-                </label>
-                <label>
-                    <Button color="primary" onClick={ handleExportButtonClick } variant="contained">
-                        Export
+                    </label>
+                    <label>
+                        <Button color="primary" onClick={handleExportButtonClick} variant="contained">
+                            Export
                     </Button>
-                </label>
+                    </label>
                 </ButtonGroup>
             </div>
         </div>
