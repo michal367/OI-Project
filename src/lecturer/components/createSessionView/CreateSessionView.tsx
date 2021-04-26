@@ -77,8 +77,6 @@ export function CreateSessionView() {
                 setLoading(false);
                 console.log(lecture);
 
-
-
                 store.sessionId = lecture.id;
                 store.selectedStudents = [];
                 store.selectedQuiz = -1;
@@ -89,7 +87,7 @@ export function CreateSessionView() {
                         history.push("/session");
                     })
 
-                sendJsonMessage({ event: "subscribe", data: { l_id: lecture.id } });
+                sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
             })
         }
     };

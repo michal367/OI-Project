@@ -6,7 +6,7 @@ import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
 
-let links = new Map();
+const links = new Map();
 
 class Lecture {
     tutor: string;
@@ -14,21 +14,21 @@ class Lecture {
     link: string;
     studentList: StudentList;
     wsc?: WebSocketClient;
-    quizes: Map<String, Quiz>;
+    quizes: Map<string, Quiz>;
 
     constructor(tutor: string) {
         this.tutor = tutor;
         this.id = v4.generate();
-        while (true){
+        while (true) {
             this.link = this.link = cryptoRandomString({ length: 7, type: "numeric" });
-            if (!links.has(this.link)){
+            if (!links.has(this.link)) {
                 links.set(this.link, true);
                 break;
             }
         }
-        
+
         this.studentList = new StudentList();
-        this.quizes = new Map;
+        this.quizes = new Map();
     }
 
     setWebSocketClient(wsc: WebSocketClient): void {
@@ -39,17 +39,24 @@ class Lecture {
         this.studentList.on("studentDeleted", () => {
             this.wsc?.send("studentDeleted");
         });
-        const selectedLecture: Lecture = this;
-        this.wsc.on("message", function (message: string) {
+
+
+        this.wsc.on("message", (message: string) => {
             const parsed = JSON.parse(message);
             switch (parsed.event) {
                 case "send_quiz":
-                    selectedLecture.handlerSendQuiz(parsed);
+                    this.handlerSendQuiz(parsed);
                     break;
                 default:
-                    console.log("Lecture Websockets: Unexpected type of event")
+                    console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 
             }
+        });
+
+        this.wsc.on("close", () => {
+            console.log("Lecture Websockets closed");
+            this.wsc = undefined;
+            //TODO: cleanup after closing websocket connection
         });
     }
 
@@ -77,7 +84,7 @@ class Lecture {
         };
         quiz.on("answersAdded", answersAddedHandler);
 
-        const quizEndedHandler = (reason: String) => {
+        const quizEndedHandler = (reason: string) => {
             const serverResponse: QuizEndedPayload = {
                 event: "quiz_ended",
                 data: {

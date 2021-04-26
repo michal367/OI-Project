@@ -1,8 +1,8 @@
 declare module 'payloads' {
-
     interface Payload {
         event: string
     }
+
     interface LectureSubPayload extends Payload {
         data: {
             lecture_id: string
@@ -53,15 +53,4 @@ declare module 'payloads' {
             reason: string
         }
     }
-
-    export {
-        Payload,
-        LectureSubPayload,
-        StudentSubPayload,
-        QuizRequestPayload,
-        QuizResponsePayload,
-        ServerQuizRequestPayload, 
-        ServerQuizResponsePayload,
-        QuizEndedPayload
-    };
 }

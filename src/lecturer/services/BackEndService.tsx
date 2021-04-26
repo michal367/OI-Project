@@ -61,10 +61,8 @@ const socketEmiter = new EventEmitter();
 export const useBackEndSocket = () => {
 
     let onMessage = (event: MessageEvent<any>) => {
-        if (event.data === "studentAdded") {
-            socketEmiter.emit("studentAdded");
-            console.log("studentAdded");
-        }
+        socketEmiter.emit(event.data);
+        console.log("onMessage", event.data);
     }
 
     return {
@@ -72,9 +70,12 @@ export const useBackEndSocket = () => {
         ...useWebSocket(SOCKET_URL, {
             onMessage,
             onOpen: () => console.log('onOpen'),
-            onClose: () => console.log('onClose'),
+            onClose: () => {
+                socketEmiter.emit('onClose');
+                console.log('onClose');
+            },
             share: true,
-            shouldReconnect: (closeEvent) => {
+            shouldReconnect: (closeEvent) => {                
                 console.log("closeEvent");
                 return true;
             },
