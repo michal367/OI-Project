@@ -17,7 +17,7 @@ interface Answer {
 interface Question {
     title: string;
     text: string;
-    options: Answer[];
+    options?: Answer[];
 }
 
 interface Quiz {
