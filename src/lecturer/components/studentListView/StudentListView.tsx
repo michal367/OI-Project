@@ -10,12 +10,14 @@ import {
     TableContainer,
     Checkbox,
     TableRow,
+    Button,
 } from "@material-ui/core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
+import copy from "copy-to-clipboard";
 import clsx from "clsx";
 import { CollectionsBookmark } from "@material-ui/icons";
 
@@ -101,6 +103,12 @@ export function StudentListView(props: StudentListViewProps) {
         setOrderBy(property);
     };
 
+    const handleButtonClick = () => {
+        copy("http://localhost:3001/" + store.link, {
+            message: "Press #{key} to copy",
+        });
+    };
+
     const handleToggle = (value: string) => () => {
         let currentIndex = store.selectedStudents.indexOf(value);
         let newChecked = [...store.selectedStudents];
@@ -168,6 +176,14 @@ export function StudentListView(props: StudentListViewProps) {
                     )}
                 </TableBody>
             </Table>
+            <Button
+                fullWidth={true}
+                variant="contained"
+                color="primary"
+                onClick={handleButtonClick}
+            >
+                COPY LINK
+            </Button>
         </TableContainer>
     );
 }

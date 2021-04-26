@@ -10,6 +10,7 @@ import { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionChatView from "../sessionChatView/SessionChatView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
+import { ReactionName } from "../sessionReactionView/ReactionItem";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 
 export function SessionDashboardView() {
@@ -61,13 +62,20 @@ export function SessionDashboardView() {
             height: 400,
         }
     })();
+
     const [open, setOpen] = useState(false);
+
     const handleClose = () => {
         setOpen(false);
     };
+
     const handleToggle = () => {
         setOpen(!open);
     };
+
+    const handleReaction = (reaction: ReactionName) => {
+        console.log(reaction);
+    }
 
     return (
         <div className={classes.root}>
@@ -85,14 +93,14 @@ export function SessionDashboardView() {
                 </Button>
             </div>
             <div className={classes.footer}>
-                <SessionReactionView />
+                <SessionReactionView onReaction={handleReaction} />
             </div>
             <Backdrop
                 className={classes.backdrop}
                 open={open}
                 onClick={handleClose}
             >
-                
+
                 <Card className={classes.overlay}>
                     <CardContent>
                         <QuizView />
