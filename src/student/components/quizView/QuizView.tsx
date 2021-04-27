@@ -71,7 +71,7 @@ export default function QuizView() {
     ];
 
     const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber : number) => {
-        console.log("close question number: ", questionNumber, "answer number: ", questionNumber, "value: ", e.target.checked);
+        console.log("close question number: ", questionNumber, "answer number: ", answerNumber, "value: ", e.target.checked);
     }
     
     const handleTextAreaChange = ( e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, questionNumber : number) => {
