@@ -100,13 +100,12 @@ export function SessionDashboardView() {
             <Backdrop
                 className={classes.backdrop}
                 open={open}
-                onClick={handleClose}
             >
 
                 <Card className={classes.overlay}>
                     <CardContent>
                         <QuizView />
-
+                        <Button onClick={handleClose}>close</Button>
                     </CardContent>
                 </Card>
             </Backdrop>
