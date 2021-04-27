@@ -1,7 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { Payload, QuizResponsePayload, ServerQuizResponsePayload } from "./@types/payloads/types.d.ts";
+import { Payload, QuizResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 
 class Student {
@@ -26,7 +26,7 @@ class Student {
 
     setWebSocketClient(wsc: WebSocketClient): void {
         this.wsc = wsc;
-        const selectedStudent: Student = this;
+
         this.wsc.on("message", (message: string) => {
             const parsed = JSON.parse(message);
             switch (parsed.event) {
@@ -37,6 +37,12 @@ class Student {
                     console.log("Student Websockets: Unexpected type of event")
 
             }
+        });
+
+        this.wsc.on("close", () => {
+            console.log("Student Websockets closed");
+            this.wsc = undefined;
+            //TODO: cleanup after closing websocket connection
         });
     }
 

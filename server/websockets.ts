@@ -17,7 +17,7 @@ const setupWebSocketServer = () => {
                     handlerSubscribeStudent(parsed, ws);
                     break;
                 default:
-                    console.log("Websockets: Unexpected type of event")
+                    console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 
             }
             ws.removeListener("message", subMessageHandler);
