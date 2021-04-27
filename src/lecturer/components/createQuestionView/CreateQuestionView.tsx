@@ -15,15 +15,17 @@ import { green, red } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { FormEvent } from 'react';
+import { Location } from 'history';
+import { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { StoreContext } from '../../services/StoreService';
+
 
 export function CreateQuestionView() {
     const theme = useTheme();
     const store = useContext(StoreContext);
-
+    const location: Location<Object> = useLocation();
 
     enum QuestionType {
         CLOSED,
@@ -36,8 +38,10 @@ export function CreateQuestionView() {
     let answersVal: string[] = [];
     let isCorrectVal: boolean[] = [];
 
-    if (store.selectedQuestion != -1) {
-        let index = store.selectedQuestion;
+    let data: any = location.state;
+    if(data !== undefined){
+        let index = data.questionIndex;
+
         titleVal = store.questions[index].title;
         questionVal = store.questions[index].text;
 
@@ -273,8 +277,8 @@ export function CreateQuestionView() {
             }
 
             console.log(obj);
-            if (store.selectedQuestion != -1) {
-                store.questions[store.selectedQuestion] = obj;
+            if (data !== undefined) {
+                store.questions[data.questionIndex] = obj;
 
                 timer.current = window.setTimeout(() => {
                     setSuccess(true);
