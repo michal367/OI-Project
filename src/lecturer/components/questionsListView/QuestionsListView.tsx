@@ -26,6 +26,7 @@ import { useHistory } from 'react-router-dom';
 import { exportQuestions } from '../../services/FileService';
 import { StoreContext } from '../../services/StoreService';
 
+
 export function QuestionsListView() {
     const theme = useTheme();
     const store = useContext(StoreContext);
@@ -75,8 +76,10 @@ export function QuestionsListView() {
         store.questions = list;
     }
     const selectQuestion = (index: number) => {
-        store.selectedQuestion = index;
-        history.push("/question");
+        history.push({
+            pathname: "/question",
+            state: {questionIndex: index}
+        });
     }
 
     const onChangeImport = (event: ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +150,7 @@ export function QuestionsListView() {
                 <Fab
                     color="primary"
                     aria-label="add"
-                    onClick={() => {store.selectedQuestion = -1; history.push("/question");}}
+                    onClick={() => { history.push("/question"); }}
                 >
                     <AddIcon />
                 </Fab>
