@@ -46,6 +46,15 @@ export function StudentListView(props: StudentListViewProps) {
                 background: "#fedf9d;"
             }
         },
+        buttonDiv: {
+            maxWidth: "500px",
+            margin: "15px auto",
+            borderRadius: "0",
+            display: "flex"
+        },
+        btn: {
+            marginLeft: "auto",
+        },
     })();
 
     const refreshList = useCallback(() => {
@@ -90,31 +99,36 @@ export function StudentListView(props: StudentListViewProps) {
     }
 
     return (
-        <TableContainer component={Paper} className={classes.root}>
-            <Table aria-label="tabela z listą studentów">
-                <StudentListHead
-                    order={order}
-                    orderBy={orderBy}
-                    onRequestSort={handleRequestSort}
-                    cells={headCells}
-                />
-                <TableBody>
-                    {stableSort(studentList, getComparator(order, orderBy))
-                        .map((row, index) => {
-                            return (
-                                <TableRow key={row.id} className={classes.row}>
-                                    <TableCell>{row.orderIndex}</TableCell>
-                                    <TableCell>{row.nick}</TableCell>
-                                    <TableCell>{row.name}</TableCell>
-                                    <TableCell>{row.surname}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                </TableBody>
-            </Table>
-        <Button fullWidth={true} variant="contained" color="primary" onClick={handleButtonClick}>
-                COPY LINK
-        </Button>
-        </TableContainer>
+        <>
+            <TableContainer component={Paper} className={classes.root}>
+                <Table aria-label="tabela z listą studentów">
+                    <StudentListHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                        cells={headCells}
+                    />
+                    <TableBody>
+                        {stableSort(studentList, getComparator(order, orderBy))
+                            .map((row, index) => {
+                                return (
+                                    <TableRow key={row.id} className={classes.row}>
+                                        <TableCell>{row.orderIndex}</TableCell>
+                                        <TableCell>{row.nick}</TableCell>
+                                        <TableCell>{row.name}</TableCell>
+                                        <TableCell>{row.surname}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <div className={classes.buttonDiv}>
+                <Button className={classes.btn} variant="contained" color="primary"  onClick={handleButtonClick}>
+                        COPY LINK
+                </Button>
+            </div>
+        </>
+
     );
 }
