@@ -6,7 +6,7 @@ import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
-import { useBackEnd } from "../../services/backEnd/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 
 export function ChooseNicknameView() {
@@ -63,7 +63,7 @@ export function ChooseNicknameView() {
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
-    const timer = useRef<number>();
+
     const [name, setName] = useState('');
     const [session, setSession] = useState(match?.params.session);
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,15 +75,17 @@ export function ChooseNicknameView() {
             setLoading(true);
 
             let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
-            backEnd?.joinLecture(session || "", fakeStudent).then((response) => {
-                console.log(response);
-                store.studentNick = name;
-                store.invitation = session;
-                history.replace("/session");
-            }).catch((response) => {
-                setLoading(false);
-                console.error(response);
-            })
+
+            if (session)
+                backEnd?.joinLecture(session, fakeStudent).then((response) => {
+                    console.log(response);
+                    store.studentNick = name;
+                    store.invitation = session;
+                    history.replace("/session");
+                }).catch((response) => {
+                    setLoading(false);
+                    console.error(response);
+                });
 
 
         }

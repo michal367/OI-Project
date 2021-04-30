@@ -5,6 +5,7 @@ import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardVi
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "fontsource-roboto";
 import React from "react";
+import Store from "../../services/StoreService";
 
 const theme = createMuiTheme({
     palette: {
@@ -31,19 +32,21 @@ const theme = createMuiTheme({
 
 function App() {
     return (
-        <Router>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-                <Switch>
-                    <Route path="/session">
-                        <SessionDashboardView />
-                    </Route>
-                    <Route path='/'>
-                        <ChooseNicknameView />
-                    </Route>
-                </Switch>
-        </ThemeProvider>
-        </Router>
+        <Store>
+            <Router>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Switch>
+                        <Route path="/session">
+                            <SessionDashboardView />
+                        </Route>
+                        <Route path='/'>
+                            <ChooseNicknameView />
+                        </Route>
+                    </Switch>
+                </ThemeProvider>
+            </Router>
+        </Store>
     );
 }
 export default App;
