@@ -60,9 +60,11 @@ function App() {
                         <Route path="/question">
                             <CreateQuestionView />
                         </Route>
-                      <Route path="/questions">
-                          <QuestionsListView/>
-                      </Route>
+
+                        <Route path="/questions">
+                            <QuestionsListView />
+                        </Route>
+
                         <Route path="/">
                             <CreateSessionView />
                             <Redirect to="/" />

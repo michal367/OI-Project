@@ -10,11 +10,10 @@ export interface IStore {
     quizes: Quiz[],
 }
 
-enum StorageKey {
-    invitation,
-    studentNick,
-    quizes
-}
+type StorageKey =
+    "invitation" |
+    "studentNick" |
+    "quizes";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.student." + key;
@@ -39,9 +38,9 @@ const initialValue: IStore = {
 
 const loadFromStorage = () => {
     let obj: IStore = {
-        invitation: loadKey(StorageKey.invitation) ?? initialValue.invitation,
-        studentNick: loadKey(StorageKey.studentNick) ?? initialValue.studentNick,
-        quizes: loadKey(StorageKey.quizes) ?? initialValue.quizes,
+        invitation: loadKey("invitation") ?? initialValue.invitation,
+        studentNick: loadKey("studentNick") ?? initialValue.studentNick,
+        quizes: loadKey("quizes") ?? initialValue.quizes,
     }
 
     return obj;
@@ -50,11 +49,16 @@ const loadFromStorage = () => {
 
 
 const Store = (props: StoreProps) => {
-    let loaded = loadFromStorage();
+    const [invitation, setInvitation] = useState(initialValue.invitation);
+    const [studentNick, setStudentNick] = useState(initialValue.studentNick);
+    const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
 
-    const [invitation, setInvitation] = useState(loaded.invitation);
-    const [studentNick, setStudentNick] = useState(loaded.studentNick);
-    const [quizes, setQuizes] = useState<Quiz[]>(loaded.quizes);
+    useEffect(() => {
+        let initial = loadFromStorage();
+        setInvitation(initial.invitation);
+        setStudentNick(initial.studentNick);
+        setQuizes(initial.quizes);
+    }, [])
 
     const value = {
         get invitation() {
@@ -62,7 +66,7 @@ const Store = (props: StoreProps) => {
         },
         set invitation(newValue: string) {
             setInvitation(newValue);
-            saveKey(StorageKey.invitation, newValue);
+            saveKey("invitation", newValue);
         },
 
         get studentNick() {
@@ -70,7 +74,7 @@ const Store = (props: StoreProps) => {
         },
         set studentNick(newValue: string) {
             setStudentNick(newValue);
-            saveKey(StorageKey.studentNick, newValue);
+            saveKey("studentNick", newValue);
         },
 
         get quizes() {
@@ -79,7 +83,7 @@ const Store = (props: StoreProps) => {
         set quizes(newValue: Quiz[]) {
             let array = [...newValue];
             setQuizes(array);
-            saveKey(StorageKey.quizes, array);
+            saveKey("quizes", array);
         }
     };
 
