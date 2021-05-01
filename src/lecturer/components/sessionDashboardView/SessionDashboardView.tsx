@@ -2,9 +2,9 @@ import {
     makeStyles,
     useTheme,
 } from "@material-ui/core";
-import { useState } from "react";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
 import { StudentListView } from "../studentListView/StudentListView";
+import { CopyLinkButton } from "../studentListView/CopyLinkButton";
 
 export function SessionDashboardView() {
     const theme = useTheme();
@@ -36,6 +36,7 @@ export function SessionDashboardView() {
             gap: 10,
             minHeight: 100,
             padding: "0 10px",
+            flexDirection: "column",
         },
         aside: {
             width: "100%",
@@ -55,9 +56,12 @@ export function SessionDashboardView() {
 
     return (
         <div className={classes.root}>
+
             <div className={classes.main}>
                 <StudentListView />
+                <CopyLinkButton />
             </div>
+           
             <div className={classes.aside}>
                 <SendQuizView />
             </div>
