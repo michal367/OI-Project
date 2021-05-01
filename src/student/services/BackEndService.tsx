@@ -1,4 +1,7 @@
+import EventEmitter from "events";
 import { createContext, ReactNode, useContext } from "react";
+import useWebSocket from "react-use-websocket";
+import { API_URL, SOCKET_URL } from "../../common/util/config";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode
@@ -20,11 +23,10 @@ export function BackEndService(props: IBackEndProps) {
     );
 }
 
-const BASE_URL = "http://localhost:8000/api";
 
 
 const joinLecture = async (link: string, student: Student) => {
-    const response = await fetch(`${BASE_URL}/lectures/${link}/student-login`, {
+    const response = await fetch(`${API_URL}/lectures/${link}/student-login`, {
         method: "POST",
         mode: 'cors',
         body: JSON.stringify( student )
@@ -32,6 +34,35 @@ const joinLecture = async (link: string, student: Student) => {
     return await response.json();
 };
 
+
+const socketEmiter = new EventEmitter();
+
+export const useBackEndSocket = () => {
+
+    let onMessage = (event: MessageEvent<any>) => {
+        socketEmiter.emit(event.data);
+        console.log("onMessage", event.data);
+    }
+
+    return {
+        socketEmiter,
+        ...useWebSocket(SOCKET_URL, {
+            onMessage,
+            onOpen: () => console.log('onOpen'),
+            onClose: () => {
+                socketEmiter.emit('onClose');
+                console.log('onClose');
+            },
+            share: true,
+            shouldReconnect: (closeEvent) => {                
+                console.log("closeEvent");
+                return true;
+            },
+            reconnectAttempts: Number.POSITIVE_INFINITY,
+            reconnectInterval: 3000,
+        })
+    };
+};
 
 
 const BackEndContext = createContext<IBackEnd>({ joinLecture });

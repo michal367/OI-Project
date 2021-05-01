@@ -72,7 +72,7 @@ const Store = (props: StoreProps) => {
         get link() {
             return link;
         },
-        set link(newValue: string) {
+        set link(newValue: string) {           
             setLink(newValue);
             saveKey("link", newValue);
         },

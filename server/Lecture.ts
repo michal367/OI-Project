@@ -6,7 +6,7 @@ import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
 
-const links = new Map();
+export const linkLectureMap = new Map();
 
 class Lecture {
     tutor: string;
@@ -21,8 +21,8 @@ class Lecture {
         this.id = v4.generate();
         while (true) {
             this.link = this.link = cryptoRandomString({ length: 7, type: "numeric" });
-            if (!links.has(this.link)) {
-                links.set(this.link, true);
+            if (!linkLectureMap.has(this.link)) {
+                linkLectureMap.set(this.link, this);
                 break;
             }
         }

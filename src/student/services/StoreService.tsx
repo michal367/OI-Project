@@ -7,12 +7,14 @@ export interface StoreProps {
 export interface IStore {
     invitation: string,
     studentNick: string,
+    studentId: string,
     quizes: Quiz[],
 }
 
 type StorageKey =
     "invitation" |
     "studentNick" |
+    "studentId"|
     "quizes";
 
 const stringKey = (key: StorageKey) => {
@@ -33,6 +35,7 @@ const saveKey = (key: StorageKey, value: any) => {
 const initialValue: IStore = {
     invitation: "",
     studentNick: "",
+    studentId: "",
     quizes: [],
 }
 
@@ -41,6 +44,7 @@ const loadFromStorage = () => {
         invitation: loadKey("invitation") ?? initialValue.invitation,
         studentNick: loadKey("studentNick") ?? initialValue.studentNick,
         quizes: loadKey("quizes") ?? initialValue.quizes,
+        studentId: loadKey("studentId") ?? initialValue.studentId,
     }
 
     return obj;
@@ -51,6 +55,7 @@ const loadFromStorage = () => {
 const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
     const [studentNick, setStudentNick] = useState(initialValue.studentNick);
+    const [studentId, setStudentId] = useState(initialValue.studentId);
     const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
 
     useEffect(() => {
@@ -75,6 +80,14 @@ const Store = (props: StoreProps) => {
         set studentNick(newValue: string) {
             setStudentNick(newValue);
             saveKey("studentNick", newValue);
+        },
+
+        get studentId() {
+            return studentId;
+        },
+        set studentId(newValue: string) {
+            setStudentId(newValue);
+            saveKey("studentId", newValue);
         },
 
         get quizes() {

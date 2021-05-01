@@ -1,4 +1,4 @@
-import { useContext, useState, useRef, ChangeEvent } from "react";
+import { useContext, useState, ChangeEvent } from "react";
 import { TextField, Button, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -6,12 +6,13 @@ import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
-import { useBackEnd } from "../../services/BackEndService";
+import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 
 export function ChooseNicknameView() {
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
+    const { sendJsonMessage } = useBackEndSocket();
     const theme = useTheme();
     const history = useHistory();
     const match = useRouteMatch<MatchParams>("/:session");
@@ -65,7 +66,7 @@ export function ChooseNicknameView() {
     });
 
     const [name, setName] = useState('');
-    const [session, setSession] = useState(match?.params.session);
+    const [session, ] = useState(match?.params.session);
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     };
@@ -81,6 +82,17 @@ export function ChooseNicknameView() {
                     console.log(response);
                     store.studentNick = name;
                     store.invitation = session;
+                    store.studentId = response.student_id;
+
+                    let event: StudentSubPayload = {
+                        event: "subscribe_student",
+                        data: {
+                            student_id: response.student_id,
+                            lecture_link: session
+                        }
+                    }
+                    sendJsonMessage(event);
+
                     history.replace("/session");
                 }).catch((response) => {
                     setLoading(false);

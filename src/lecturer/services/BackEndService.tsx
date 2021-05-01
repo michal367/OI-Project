@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext } from "react";
 import useWebSocket from 'react-use-websocket';
 import EventEmitter from "events";
+import { API_URL, SOCKET_URL } from "../../common/util/config";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode
@@ -26,12 +27,9 @@ export function BackEndService(props: IBackEndProps) {
     );
 }
 
-const BASE_URL = "http://localhost:8000/api";
-const SOCKET_URL = "ws://localhost:8080/";
-
 
 const createLecture = async () => {
-    const response = await fetch(`${BASE_URL}/lectures`, {
+    const response = await fetch(`${API_URL}/lectures`, {
         method: "POST",
         mode: 'cors'
     });
@@ -39,7 +37,7 @@ const createLecture = async () => {
 };
 
 const getLectureLink = async (id: string) => {
-    const response = await fetch(`${BASE_URL}/lectures/link/${id}`, {
+    const response = await fetch(`${API_URL}/lectures/link/${id}`, {
         method: "GET",
         mode: 'cors'
     });
@@ -47,7 +45,7 @@ const getLectureLink = async (id: string) => {
 };
 
 const getStudentsForLecture = async (id: string) => {
-    const response = await fetch(`${BASE_URL}/lectures/${id}/student-list`, {
+    const response = await fetch(`${API_URL}/lectures/${id}/student-list`, {
         method: "GET",
         mode: 'cors'
     });
