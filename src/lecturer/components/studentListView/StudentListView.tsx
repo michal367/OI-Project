@@ -18,11 +18,10 @@ import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 import copy from "copy-to-clipboard";
-import clsx from "clsx";
-import { CollectionsBookmark } from "@material-ui/icons";
 
 interface StudentListViewProps {
-    lecture?: Lecture;
+    studentList?: StudentListRow[];
+    students?: [string[],any];
 }
 
 export interface StudentListRow extends Student {
@@ -32,11 +31,21 @@ export interface StudentListRow extends Student {
 export function StudentListView(props: StudentListViewProps) {
     const backEnd = useBackEnd();
     const store = useContext(StoreContext);
+    const studentList:StudentListRow[] = props.studentList ?? [];
+    let [selectedStudents, toggleStudentSelection]:[string[], any] = props.students ?? [[], ()=>{}]
+    const [students, setStudents] = useState<string[]>(selectedStudents);
     const { socketEmiter } = useBackEndSocket();
 
-    const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
+    const changeSelectedStudents = (index:string) => () =>{
+        toggleStudentSelection(index);
+    }
+
+    useEffect(() => {
+        [selectedStudents, toggleStudentSelection] = props.students ?? [[], ()=>{}];
+        setStudents(selectedStudents);
+    }, [props.students]);
 
     const theme = useTheme();
     const classes = makeStyles({
@@ -63,30 +72,6 @@ export function StudentListView(props: StudentListViewProps) {
         },
     })();
 
-    const refreshList = useCallback(() => {
-        console.log("refreshList");
-        backEnd
-            .getStudentsForLecture(props.lecture?.id ?? store.sessionId ?? "")
-            .then((list) =>
-                list.map((item, index) => {
-                    return { orderIndex: index + 1, ...item };
-                })
-            )
-            .then(setStudentList)
-            .catch((error) => console.log);
-    }, [backEnd, props.lecture?.id, store.sessionId]);
-
-    useEffect(() => {
-        socketEmiter.addListener("studentAdded", refreshList);
-        return () => {
-            socketEmiter.removeListener("studentAdded", refreshList);
-        };
-    }, [refreshList, socketEmiter]);
-
-    useEffect(() => {
-        refreshList();
-    }, [refreshList]);
-
     const headCells: HeadCell<StudentListRow>[] = [
         { id: "orderIndex", numeric: false, label: "Nr" },
         { id: "nick", numeric: false, label: "Nick" },
@@ -107,20 +92,6 @@ export function StudentListView(props: StudentListViewProps) {
         copy("http://localhost:3001/" + store.link, {
             message: "Press #{key} to copy",
         });
-    };
-
-    const handleToggle = (value: string) => () => {
-        let currentIndex = store.selectedStudents.indexOf(value);
-        let newChecked = [...store.selectedStudents];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        console.log(newChecked);
-        store.selectedStudents = newChecked;
     };
 
     return (
@@ -151,12 +122,12 @@ export function StudentListView(props: StudentListViewProps) {
                                         {store.sendQuizStep >= 2 && (
                                             <Checkbox
                                                 disabled={
-                                                    store.sendQuizStep === 3
+                                                    store.sendQuizStep >= 3
                                                 }
                                                 color="primary"
-                                                onChange={handleToggle(row.id)}
+                                                onChange={changeSelectedStudents(row.id)}
                                                 checked={
-                                                    store.selectedStudents.indexOf(
+                                                    students.indexOf(
                                                         row.id
                                                     ) !== -1
                                                 }
