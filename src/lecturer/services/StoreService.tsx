@@ -9,9 +9,9 @@ export interface IStore {
     sessionId?: string,
     questions: Question[],
     quizes: Quiz[],
-    selectedQuiz: number,
-    selectedStudents: string[],
-    sendQuizStep: number
+    sendQuizStep: number,
+    sendQuiz: ScheduledQuiz;
+    quizesInProgress: ScheduledQuiz[];
 }
 
 const Store = (props: StoreProps) => {
@@ -19,59 +19,62 @@ const Store = (props: StoreProps) => {
     const [sessionId, setSessionId] = useState("");
     const [questions, setQuestions] = useState<Question[]>([]);
     const [quizes, setQuizes] = useState<Quiz[]>([]);
-    const [selectedQuiz, setSelectedQuiz] = useState(-1);
-    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-    const [sendQuizStep, setSendQuizStep] = useState(0);
+    const [sendQuizStep, setSendQuizStep] = useState(0); 
+    const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>({
+        students: [],
+        canShowResults: true,
+    });
+    const [quizesInProgress, setQuizesInProgress] = useState<ScheduledQuiz[]>([]);
 
     const value = {
         get link() {
-            return link
+            return link;
         },
         set link(newValue: string) {
             setLink(newValue);
         },
 
         get sessionId() {
-            return sessionId
+            return sessionId;
         },
         set sessionId(newValue: string) {
             setSessionId(newValue);
         },
 
         get questions() {
-            return questions
+            return questions;
         },
         set questions(newValue: Question[]) {
             setQuestions([...newValue]);
         },
 
         get quizes() {
-            return quizes
+            return quizes;
         },
         set quizes(newValue: Quiz[]) {
             setQuizes([...newValue]);
         }, 
-        
-        get selectedQuiz() {
-            return selectedQuiz
+
+        get quizesInProgress() {
+            return quizesInProgress;
         },
-        set selectedQuiz(newValue: number) {
-            setSelectedQuiz(newValue);
+        set quizesInProgress(newValue: ScheduledQuiz[]) {
+            setQuizesInProgress([...newValue]);
+        },
+
+        get sendQuiz() {
+            return sendQuiz;
+        },
+        set sendQuiz(newValue: ScheduledQuiz) {
+            setSendQuiz(newValue);
         },
 
         get sendQuizStep() {
-            return sendQuizStep
+            return sendQuizStep;
         },
         set sendQuizStep(newValue: number) {
             setSendQuizStep(newValue);
         },
-
-        get selectedStudents() {
-            return selectedStudents
-        },
-        set selectedStudents(newValue: string[]) {
-            setSelectedStudents([...newValue]);
-        }
     };
 
     return (
@@ -84,9 +87,12 @@ const Store = (props: StoreProps) => {
 const initialValue: IStore = {
     quizes: [],
     questions: [],
-    selectedQuiz: -1,
-    selectedStudents: [],
-    sendQuizStep: 0
+    sendQuizStep: 0,
+    quizesInProgress: [],
+    sendQuiz: {
+        students: [],
+        canShowResults: true,
+    }
 }
 
 export const StoreContext = createContext<IStore>(initialValue);
