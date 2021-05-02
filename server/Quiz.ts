@@ -3,15 +3,15 @@ import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import Student from "./Student.ts";
 
 class Quiz extends EventEmitter {
-    IDFromLecturer: String;
-    IDFromServer: String;
+    IDFromLecturer: string;
+    IDFromServer: string;
     timeSeconds: number;
     questions: any;
-    studentIDs: String[];
-    studentAnswers: Map<String, any>;
+    studentIDs: string[];
+    studentAnswers: Map<string, any>;
     active: boolean;
 
-    constructor(IDFromLecturer: String, timeSeconds: number, questions: any, studentIDs: String[]) {
+    constructor(IDFromLecturer: string, timeSeconds: number, questions: any, studentIDs: string[]) {
         super();
         this.IDFromLecturer = IDFromLecturer;
         this.timeSeconds = timeSeconds;
@@ -39,12 +39,12 @@ class Quiz extends EventEmitter {
     addStudentAnswers(student: Student, answers: any): void {
         this.studentAnswers.set(student.id, answers);
         this.emit("answersAdded", student, answers);
-        if(this.studentIDs.length == this.answeredStudents().length){
+        if (this.studentIDs.length === this.answeredStudents().length) {
             this.emit("quizEnded", "all_answered");
         }
     }
 
-    answeredStudents(): String[] {
+    answeredStudents(): string[] {
         return [...this.studentAnswers.keys()];
     }
 

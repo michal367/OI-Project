@@ -15,19 +15,55 @@ import { green, red } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { FormEvent } from 'react';
+import { Location } from 'history';
+import { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { StoreContext } from '../../services/StoreService';
+
 
 export function CreateQuestionView() {
     const theme = useTheme();
     const store = useContext(StoreContext);
+    const location: Location<Object> = useLocation();
 
-    const [title, setTitle] = useState<string>("");
-    const [question, setQuestion] = useState<string>("");
-    const [inputList, setInputList] = useState<string[]>([]);
-    const [checked, setChecked] = useState<boolean[]>([]);
+    enum QuestionType {
+        CLOSED,
+        OPEN
+    }
+
+    let titleVal = "";
+    let questionVal = "";
+    let modeVal = QuestionType.CLOSED;
+    let answersVal: string[] = [];
+    let isCorrectVal: boolean[] = [];
+
+    let data: any = location.state;
+    if(data !== undefined){
+        let index = data.questionIndex;
+
+        titleVal = store.questions[index].title;
+        questionVal = store.questions[index].text;
+
+        if (store.questions[index].options !== undefined) {
+            modeVal = QuestionType.CLOSED;
+
+            let options = store.questions[index].options;
+            if (options !== undefined) {
+                answersVal = options.map(({ text }) => text);
+                isCorrectVal = options.map(({ isCorrect }) => isCorrect);
+            }
+        }
+        else {
+            modeVal = QuestionType.OPEN;
+        }
+    }
+
+    const [title, setTitle] = useState<string>(titleVal);
+    const [question, setQuestion] = useState<string>(questionVal);
+    const [mode, setMode] = useState<number>(modeVal);
+    const [inputList, setInputList] = useState<string[]>(answersVal);
+    const [checked, setChecked] = useState<boolean[]>(isCorrectVal);
     const [errors, setErrors] = useState({
         title: "",
         question: "",
@@ -134,8 +170,6 @@ export function CreateQuestionView() {
         }
     })();
 
-
-
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const buttonClassname = clsx({
@@ -196,11 +230,11 @@ export function CreateQuestionView() {
         temp.question = question ? "" : required;
 
         temp.noAnswers =
-            inputList.length !== 0 || mode === 2 ? "" : "Trzeba dodać odpowiedzi";
+            inputList.length !== 0 || mode === QuestionType.OPEN ? "" : "Trzeba dodać odpowiedzi";
 
         temp.emptyAnswers = [];
         for (let i = 0; i < inputList.length; i++)
-            temp.emptyAnswers.push(inputList[i] || mode === 2 ? "" : required);
+            temp.emptyAnswers.push(inputList[i] || mode === QuestionType.OPEN ? "" : required);
 
         setErrors(temp);
 
@@ -229,7 +263,7 @@ export function CreateQuestionView() {
                 text: question
             };
 
-            if (mode === 1) {
+            if (mode === QuestionType.CLOSED) {
                 let options: Answer[] = [];
                 for (let i = 0; i < inputList.length; i++) {
                     options.push({
@@ -242,22 +276,30 @@ export function CreateQuestionView() {
                 obj.options = options;
             }
 
-            store.questions = [...store.questions, obj];
             console.log(obj);
+            if (data !== undefined) {
+                store.questions[data.questionIndex] = obj;
 
+                timer.current = window.setTimeout(() => {
+                    setSuccess(true);
+                    setLoading(false);
+                }, 500);
+            }
+            else {
+                store.questions = [...store.questions, obj];
 
-            timer.current = window.setTimeout(() => {
-                setTitle("");
-                setQuestion("");
-                setInputList([]);
-                setChecked([]);
-                setSuccess(true);
-                setLoading(false);
-            }, 500);
+                timer.current = window.setTimeout(() => {
+                    setTitle("");
+                    setQuestion("");
+                    setInputList([]);
+                    setChecked([]);
+                    setSuccess(true);
+                    setLoading(false);
+                }, 500);
+            }
         }
     };
 
-    const [mode, setMode] = useState<number>(1);
 
     return (
         <div className={classes.root}>
@@ -298,21 +340,21 @@ export function CreateQuestionView() {
                     aria-label="contained primary button group"
                 >
                     <Button
-                        color={mode === 1 ? "primary" : "default"}
-                        className={mode === 1 ? classes.buttonActive : classes.buttonNonactive}
-                        onClick={() => setMode(1)} >
+                        color={mode === QuestionType.CLOSED ? "primary" : "default"}
+                        className={mode === QuestionType.CLOSED ? classes.buttonActive : classes.buttonNonactive}
+                        onClick={() => setMode(QuestionType.CLOSED)} >
                         Zamknięte
                     </Button>
                     <Button
-                        color={mode === 2 ? "primary" : "default"}
-                        className={mode === 2 ? classes.buttonActive : classes.buttonNonactive}
-                        onClick={() => setMode(2)}
+                        color={mode === QuestionType.OPEN ? "primary" : "default"}
+                        className={mode === QuestionType.OPEN ? classes.buttonActive : classes.buttonNonactive}
+                        onClick={() => setMode(QuestionType.OPEN)}
                         style={{ marginLeft: 0 }} >
                         Otwarte
                     </Button>
                 </ButtonGroup>
 
-                <div hidden={mode === 2} className={classes.closedAnswers}>
+                <div hidden={mode === QuestionType.OPEN} className={classes.closedAnswers}>
                     <Grid container className={classes.answerRow}>
                         <Grid item>
                             <FormLabel>Odpowiedzi:</FormLabel>
