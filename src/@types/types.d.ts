@@ -27,3 +27,10 @@ interface Quiz {
 interface MatchParams {
     session: string;
 }
+
+interface ScheduledQuiz {
+    quiz?: Quiz;
+    students: Students[];
+    timeInMin?: number;
+    canShowResults: boolean;
+}
