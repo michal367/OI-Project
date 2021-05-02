@@ -13,23 +13,23 @@ import {
     StepContent,
     Typography,
     Button,
-    TextField,
     Checkbox,
     FormControlLabel,
+    FormControl,
+    MenuItem,
+    Select,
+    InputLabel,
 } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useContext, useState, useEffect, ChangeEvent } from "react";
 import { StoreContext } from "../../services/StoreService";
-import { getComparator, Order, stableSort } from "../../util/comparators";
 import { QuizListView } from "./QuizListView";
 
-// interface StudentListViewProps {
-//     lecture?: Lecture
-// }
-
-// export interface StudentListRow extends Student {
-//     orderIndex: number;
-// }
+interface SendQuizViewProps {
+    studentList?: Student[];
+    students?: [string[],any];
+    time?: [number|undefined,any];
+    quiz?: [Quiz|undefined,any];
+}
 function getSteps() {
     return [
         "Wybierz quiz do przesłania",
@@ -38,9 +38,39 @@ function getSteps() {
         "Wyślij quiz",
     ];
 }
-export function SendQuizView() {
+export function SendQuizView(props: SendQuizViewProps) {
     const store = useContext(StoreContext);
+    let [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], ()=>{}];
+    const studentList = props.studentList ?? [];
+    const studentCount = studentList.length;
+    const [students, setStudents] = useState<string[]>(selectedStudents);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 0);
+    const [quiz, setQuiz] = useState<Quiz|undefined>(store.sendQuiz.quiz);
+    const [checked, setChecked] = useState<boolean>(!(store.sendQuiz.timeInMin));
+
+    useEffect(() => {
+        [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], ()=>{}];
+        setStudents(selectedStudents);
+    }, [props.students]);
+
     const theme = useTheme();
+    const setSelectedQuiz = (quiz:Quiz|undefined) => {
+        store.sendQuiz.quiz = quiz;
+        store.sendQuiz = store.sendQuiz;
+        setQuiz(quiz);
+    }
+    const setSelectedTime = (value: unknown) => {
+        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        tmpQuiz.timeInMin = value as number;
+        store.sendQuiz = tmpQuiz;
+        setTime(store.sendQuiz.timeInMin ?? 0);
+    }    
+    const handlePicker = (event: ChangeEvent<{ value: unknown }>) => {
+        setSelectedTime(event.target.value);
+    };
+    const changeSelectedStudents = (isFull:boolean) => () =>{
+        toggleAllSelectedStudents(isFull);
+    }
     const classes = makeStyles({
         details: {
             padding: 20,
@@ -52,7 +82,7 @@ export function SendQuizView() {
             flexWrap: "wrap",
             flexDirection: "column",
             alignItems: "center",
-            width: "fit-content"
+            width: "fit-content",
         },
         textField: {
             marginLeft: theme.spacing(1),
@@ -77,25 +107,30 @@ export function SendQuizView() {
     const getStepContent = (step: number) => {
         switch (step) {
             case 0:
-                return <QuizListView />;
+                return <QuizListView quiz={[quiz,setSelectedQuiz]}/>;
             case 1:
                 return (
-                    <form className={classes.container} noValidate>
-                        <TextField
-                            disabled={checked}
-                            id="time"
-                            label="Czas na rozwiązanie"
-                            type="time"
-                            defaultValue={time}
-                            onChange={handlePicker}
+                    <FormControl className={classes.container}>
+                        <InputLabel id="time-select">
+                            Czas na wypełnienie
+                        </InputLabel>
+                        <Select
+                            labelId="time-select"
                             className={classes.textField}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            inputProps={{
-                                step: 300, // 5 min
-                            }}
-                        />
+                            id="time-select"
+                            value={time > 0 ? time : ""}
+                            onChange={handlePicker}
+                            disabled={checked}
+                            autoFocus={!checked}
+                        >
+                            <MenuItem value={10}>10 min</MenuItem>
+                            <MenuItem value={20}>20 min</MenuItem>
+                            <MenuItem value={40}>40 min</MenuItem>
+                            <MenuItem value={60}>1 h</MenuItem>
+                            <MenuItem value={90}>1.5 h</MenuItem>
+                            <MenuItem value={180}>3 h</MenuItem>
+                        </Select>
+
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -107,17 +142,26 @@ export function SendQuizView() {
                             }
                             label="Bez limitu"
                         />
-                    </form>
+                    </FormControl>
                 );
             case 2:
                 return (
-                    <Button
-                        disabled
-                        className={classes.button}
-                        variant="contained"
-                    >
-                        Wybór losowy
-                    </Button>
+                    <>
+                        <Button
+                            disabled
+                            className={classes.button}
+                            variant="contained"
+                        >
+                            Wybór losowy
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            onClick={changeSelectedStudents(students.length === studentCount)}
+                        >
+                            {students.length === studentCount ? 'Odznacz wszystkich':'Zaznacz wszystkich'}
+                        </Button>
+                    </>
                 );
             case 3:
                 return (
@@ -126,11 +170,11 @@ export function SendQuizView() {
                             {`Upewnij się, że wszystko jest prawidłowo ustawione i wyślij quiz:`}
                         </Typography>
                         <List>
-                        <ListItem>
+                            <ListItem>
                                 <ListItemText
                                     primary="Nazwa przydzielonego quizu:"
                                     secondary={
-                                        (store.quizes[store.selectedQuiz] != undefined) ? store.quizes[store.selectedQuiz].title : ""
+                                        (quiz ?? {title:""}).title
                                     }
                                 />
                             </ListItem>
@@ -138,16 +182,14 @@ export function SendQuizView() {
                                 <ListItemText
                                     primary="Ilość przeznaczonego czasu:"
                                     secondary={
-                                        checked ? "nieograniczone" : time
+                                        time > 0 ? time :  "nieograniczone"
                                     }
                                 />
                             </ListItem>
                             <ListItem>
                                 <ListItemText
                                     primary="Ilość przydzielonych studentów:"
-                                    secondary={
-                                        store.selectedStudents.length
-                                    }
+                                    secondary={students.length}
                                 />
                             </ListItem>
                         </List>
@@ -157,17 +199,22 @@ export function SendQuizView() {
                 return `Unknown step`;
         }
     };
-    const [checked, setChecked] = React.useState(true);
-    const [time, setTime] = React.useState('02:00');
-    const handlePicker = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTime(event.target.value);
-    };
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
+        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        delete tmpQuiz.timeInMin;
+        store.sendQuiz = tmpQuiz;
+        setTime(0);
     };
     const steps = getSteps();
 
+
+
     const handleNext = () => {
+        if (store.sendQuizStep === steps.length - 1) {
+            console.log("scheduled quiz", store.sendQuiz);
+        }
         store.sendQuizStep = store.sendQuizStep + 1;
     };
 
@@ -177,23 +224,26 @@ export function SendQuizView() {
 
     const handleReset = () => {
         store.sendQuizStep = 0;
-        store.selectedStudents = [];
-        store.selectedQuiz = -1;
+        setSelectedTime(undefined);
+        setSelectedQuiz(undefined);
+        changeSelectedStudents(true);
     };
 
     const isStepReady = (step: number) => {
         switch (step) {
-            case 0:
-                return store.selectedQuiz < 0;
-            case 1:
             case 3:
                 return false;
+            case 0:
+                return quiz === undefined
+            case 1:
+                return !(time > 0 || checked)
             case 2:
-                return store.selectedStudents.length === 0;
+                return students.length === 0;
             default:
                 return true;
         }
     };
+
     return (
         <Paper className={classes.details} variant="outlined" square>
             <Stepper

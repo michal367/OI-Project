@@ -1,36 +1,33 @@
 import {
     makeStyles,
     useTheme,
-    Paper,
     List,
     ListItem,
     Typography,
-    ListItemIcon,
     ListItemText,
 } from "@material-ui/core";
 import {
     MouseEvent as Mouse,
-    useCallback,
     useContext,
     useEffect,
     useState,
 } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
-import { getComparator, Order, stableSort } from "../../util/comparators";
 
-interface StudentListViewProps {
-    lecture?: Lecture;
+interface QuizListViewProps {
+    quiz?: [Quiz | undefined, any];
 }
 
-export interface StudentListRow extends Student {
-    orderIndex: number;
-}
-
-export function QuizListView(props: StudentListViewProps) {
+export function QuizListView(props: QuizListViewProps) {
     const backEnd = useBackEnd();
+    let [selectedQuiz, setSelectedQuiz]= props.quiz ?? [undefined,()=>{}];
+    const [quiz, setQuiz] = useState<Quiz|undefined>(selectedQuiz);
     const store = useContext(StoreContext);
     const theme = useTheme();
+    const handleQuiz = (value:Quiz) => () => {
+        setSelectedQuiz(value);
+    };
 
     const classes = makeStyles({
         wrapper: {
@@ -40,20 +37,20 @@ export function QuizListView(props: StudentListViewProps) {
             overflow: "auto",
         }
     })();
-    const handleListItemClick = (
-        event: Mouse<HTMLDivElement, MouseEvent>,
-        index: number
-    ) => {
-        store.selectedQuiz = index;
-    };
+
+    useEffect(() => {
+        [selectedQuiz, setSelectedQuiz]= props.quiz ?? [undefined,()=>{}];
+        setQuiz(selectedQuiz);
+    }, [props.quiz]);
+
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
             {store.quizes.map((value: Quiz) => {
                 return (
                     <ListItem
                         button
-                        selected={store.selectedQuiz === store.quizes.indexOf(value)}
-                        onClick={(event) => handleListItemClick(event, store.quizes.indexOf(value))}
+                        selected={quiz === value}
+                        onClick={handleQuiz(value)}
                     >
                         <ListItemText primary={value.title} />
                     </ListItem>

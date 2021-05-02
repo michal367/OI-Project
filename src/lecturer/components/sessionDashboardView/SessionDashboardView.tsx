@@ -2,11 +2,49 @@ import {
     makeStyles,
     useTheme,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
-import { StudentListView } from "../studentListView/StudentListView";
+import { StudentListView, StudentListRow } from "../studentListView/StudentListView";
 
 export function SessionDashboardView() {
+    const backEnd = useBackEnd();
+    const store = useContext(StoreContext);
+    const { socketEmiter } = useBackEndSocket();
+
+    const [studentList, setStudentList] = useState<StudentListRow[]>([]);
+    const [selectedStudents, setSelectedStudents] = useState<string[]>(store.sendQuiz.students);
+    
+    const toggleAllSelectedStudents = (checked:boolean) => {
+        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        let mapById = (student:Student) => student.id;
+        if(checked){
+            tmpQuiz.students = [];
+        }else{
+            tmpQuiz.students = [...studentList.map(mapById)];
+        }
+
+        store.sendQuiz = tmpQuiz;
+        console.log(store.sendQuiz.students.length);
+        setSelectedStudents(tmpQuiz.students);
+    }
+    const toggleStudentSelection = (id:string) => {
+        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        let currentIndex = store.sendQuiz.students.indexOf(id);
+        let newSelected = [...store.sendQuiz.students];
+
+        if (currentIndex === -1) {
+            newSelected.push(id);
+        } else {
+            newSelected.splice(currentIndex, 1);
+        }
+
+        tmpQuiz.students = newSelected;
+        store.sendQuiz = tmpQuiz;
+        console.log(store.sendQuiz.students.length);
+        setSelectedStudents(tmpQuiz.students);
+    }
     const theme = useTheme();
 
     const classes = makeStyles({
@@ -36,6 +74,7 @@ export function SessionDashboardView() {
             gap: 10,
             minHeight: 100,
             padding: "0 10px",
+            flexDirection: "column",
         },
         aside: {
             width: "100%",
@@ -53,13 +92,38 @@ export function SessionDashboardView() {
         }
     })();
 
+    const refreshList = useCallback(() => {
+        console.log("refreshList");
+        backEnd
+            .getStudentsForLecture(store.sessionId ?? "")
+            .then((list) =>
+                list.map((item, index) => {
+                    return { orderIndex: index + 1, ...item };
+                })
+            )
+            .then(setStudentList)
+            .catch((error) => console.log);
+    }, [backEnd, store.sessionId]);
+
+    useEffect(() => {
+        socketEmiter.addListener("studentAdded", refreshList);
+        return () => {
+            socketEmiter.removeListener("studentAdded", refreshList);
+        };
+    }, [refreshList, socketEmiter]);
+
+    useEffect(() => {
+        refreshList();
+    }, [refreshList]);
+
     return (
         <div className={classes.root}>
+        {selectedStudents.length}
             <div className={classes.main}>
-                <StudentListView />
+                <StudentListView studentList={studentList} students={[selectedStudents, toggleStudentSelection]} />
             </div>
             <div className={classes.aside}>
-                <SendQuizView />
+                <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents]}/>
             </div>
         </div>
     );
