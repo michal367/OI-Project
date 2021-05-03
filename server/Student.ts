@@ -1,23 +1,30 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { Payload, QuizResponsePayload } from "./@types/payloads/types.d.ts";
+import { Payload, QuizResponsePayload, ReactionRequestPayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
+import EventEmitter from "https://deno.land/x/events/mod.ts";
 
-class Student {
+class Student extends EventEmitter {
     id: string;
     nick: string;
     name: string;
     surname: string;
     lecture: Lecture;
     wsc?: WebSocketClient;
+    reactions: Map<Date, string>;
+    canSendReaction: boolean;
+    REACTION_TIMEOUT: number = 1000;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
+        super();
         this.id = v4.generate();
         this.nick = nick;
         this.name = name;
         this.surname = surname;
         this.lecture = lecture;
+        this.reactions = new Map();
+        this.canSendReaction = true;
     }
 
     idEquals(id: string): boolean {
@@ -32,6 +39,9 @@ class Student {
             switch (parsed.event) {
                 case "send_quiz_response":
                     this.handlerSendQuizResponse(parsed);
+                    break;
+                case "send_reaction":
+                    this.handlerSendReaction(parsed);
                     break;
                 default:
                     console.log("Student Websockets: Unexpected type of event")
@@ -61,6 +71,25 @@ class Student {
             this.wsc?.send(JSON.stringify(response));
         }
     }
+
+    handlerSendReaction(parsed: ReactionRequestPayload) {
+        if(this.canSendReaction){
+            this.canSendReaction = false;
+            this.reactions.set(new Date(), parsed.data.reaction);
+            this.emit("reaction_added", parsed.data.reaction); 
+            const response: Payload = {
+                event: "student_reaction_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+            setTimeout(() => this.canSendReaction = true, this.REACTION_TIMEOUT);
+        }else{
+            const response: Payload = {
+                event: "student_reaction_not_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+        }
+    }
+
 }
 
 export default Student;

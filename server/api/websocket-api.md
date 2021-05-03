@@ -22,7 +22,7 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "7101b8b4-acd2-4838-9464-1da7aeff5335"
+            "lecture_id": "4630f745-0a10-47ec-b1c8-cddb3fcf598b"
         }
     }
     ```
@@ -69,8 +69,8 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "20d7a5c9-f4f6-45ca-87a4-39ac97df3499",
-            "lecture_link": "1765661"
+            "student_id": "4fef1e0f-e77f-4302-aab6-d0cc67811368",
+            "lecture_link": "8341568"
         }
     }
     ```
@@ -210,3 +210,51 @@
     ```
 
 -   **Emitted Payload Content:** `None`
+
+
+## **sendReactionFromStudent**
+
+    Odsyła odpowiedzi na zadany quiz.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `send_reaction`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "send_reaction",
+        "data": {
+            "reaction": "POG"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "student_reaction_sent"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_reaction_not_sent"
+    }
+    ```
+
+-   **Payload Content Emitted On Event:** `student added reaction`
+
+    ```json
+    {
+        "event": "send_student_reaction",
+        "data": {
+            "reaction": "POG",
+            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c"
+        }
+    }
+    ```
+
+  
