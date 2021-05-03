@@ -7,6 +7,7 @@ import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
 import { StudentListView, StudentListRow } from "../studentListView/StudentListView";
+import { CopyLinkButton } from "../studentListView/CopyLinkButton";
 
 export function SessionDashboardView() {
     const backEnd = useBackEnd();
@@ -118,10 +119,11 @@ export function SessionDashboardView() {
 
     return (
         <div className={classes.root}>
-        {selectedStudents.length}
             <div className={classes.main}>
                 <StudentListView studentList={studentList} students={[selectedStudents, toggleStudentSelection]} />
+                <CopyLinkButton />
             </div>
+           
             <div className={classes.aside}>
                 <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents]}/>
             </div>

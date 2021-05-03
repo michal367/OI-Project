@@ -10,7 +10,6 @@ import {
     TableContainer,
     Checkbox,
     TableRow,
-    Button,
 } from "@material-ui/core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
@@ -88,23 +87,8 @@ export function StudentListView(props: StudentListViewProps) {
         setOrderBy(property);
     };
 
-    const handleButtonClick = () => {
-        copy("http://localhost:3001/" + store.link, {
-            message: "Press #{key} to copy",
-        });
-    };
-
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <div>
-                <a
-                    target="_blank"
-                    rel="noreferrer"
-                    href={"http://localhost:3001/" + store.link}
-                >
-                    LectureLink: http://localhost:3001/{store.link}
-                </a>
-            </div>
             <Table aria-label="tabela z listą studentów">
                 <StudentListHead
                     order={order}
@@ -147,14 +131,6 @@ export function StudentListView(props: StudentListViewProps) {
                     )}
                 </TableBody>
             </Table>
-            <Button
-                fullWidth={true}
-                variant="contained"
-                color="primary"
-                onClick={handleButtonClick}
-            >
-                COPY LINK
-            </Button>
         </TableContainer>
     );
 }
