@@ -1,21 +1,22 @@
-import { makeStyles, Paper, useTheme } from '@material-ui/core';
+import { makeStyles, Paper } from '@material-ui/core';
+import { QuestionsList } from './QuestionsList';
+
 
 export default function QuizView() {
-    
-    const theme = useTheme();
 
     const classes = makeStyles({
-        details: {
-            padding: 20,
-            height: "100%",
-            maxHeight: "100%",
-        }
+        overlay : {
+            maxWidth: '100%',
+            maxHeight: '100%',
+            width: 900,
+            height: 450,
+            overflow: "auto",
+        },
     })();
-
+    
     return (
-        <Paper className={classes.details} variant="outlined" square >
-            QuizView
+        <Paper className={classes.overlay}>
+            <QuestionsList></QuestionsList>
         </Paper>
     );
 }
-
