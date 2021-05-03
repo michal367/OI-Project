@@ -10,20 +10,21 @@
 -   **Emitted Payload Content:** `co zostanie przesłane dalej`
 -   **Payload Content Emitted On Event:** `co zostanie wyslane przy zaistnieniu eventu`
 
-## **subscribeToLecture**
+## **createLecture**
 
-    Ustanawia połączenie między widokiem wykładu a obiektem wykładu po stronie serwera.
+    Tworzy obiekt wykładu po stronie serwera i subskrybuje go na różne zdarzenia.
 
 -   **Requirements:** `None`
--   **Event type:** `subscribe_lecture`
+-   **Event type:** `create_lecture`
 -   **Payload Content:**
 
     ```json
     {
-        "event": "subscribe_lecture",
+        "event": "create_lecture",
         "data": {
-            "lecture_id": "7101b8b4-acd2-4838-9464-1da7aeff5335"
-        }
+            "lecturer": "Apple I-Dzik"
+        }         
+
     }
     ```
 
@@ -31,7 +32,11 @@
 
     ```json
     {
-        "event": "lecture_subscribed"
+        "event": "lecture_created",
+        "data": {
+            "lecture_id": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "lecture_link": "1765661"
+        }        
     }
     ```
 
@@ -39,7 +44,7 @@
 
     ```json
     {
-        "event": "lecture_not_subscribed"
+        "event": "lecture_not_created"
     }
     ```
 
@@ -62,15 +67,17 @@
     Ustanawia połączenie między widokiem studenta a obiektem studenta po stronie serwera.
 
 -   **Requirements:** `None`
--   **Event type:** `subscribe_student`
+-   **Event type:** `create_student`
 -   **Payload Content:**
 
     ```json
     {
-        "event": "subscribe_student",
+        "event": "create_student",
         "data": {
-            "student_id": "20d7a5c9-f4f6-45ca-87a4-39ac97df3499",
-            "lecture_link": "1765661"
+            "lecture_link": "1765661",
+            "nick": "nickomowicz",
+            "name": "namowicz",
+            "surname": "surnamowicz"
         }
     }
     ```
@@ -79,7 +86,10 @@
 
     ```json
     {
-        "event": "student_subscribed"
+        "event": "student_created",
+        "data": {
+            "student_id": "059bc853-0522-4c06-bc04-bff704fb34f5"
+        }
     }
     ```
 
@@ -87,7 +97,7 @@
 
     ```json
     {
-        "event": "student_not_subscribed"
+        "event": "student_not_created"
     }
     ```
 

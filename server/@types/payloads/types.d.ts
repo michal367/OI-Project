@@ -3,19 +3,32 @@ declare module 'payloads' {
         event: string
     }
 
-    interface LectureSubPayload extends Payload {
+    interface LectureCreateRequestPayload extends Payload {
         data: {
-            lecture_id: string
+            lecturer: string
         }
     }
-
-    interface StudentSubPayload extends Payload {
+    interface LectureCreateResponsePayload extends Payload {
         data: {
-            student_id: string,
+            lecture_id: string,
             lecture_link: string
         }
     }
 
+    interface StudentCreateRequestPayload extends Payload {
+        data: {
+            lecture_link: string,
+            nick: string,
+            name: string,
+            surname: string
+        }
+    }
+
+    interface StudentCreateResponsePayload extends Payload {
+        data: {
+            student_id: string,
+        }
+    }
     interface QuizRequestPayload extends Payload {
         data: {
             quiz_id: string,

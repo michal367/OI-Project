@@ -1,8 +1,8 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { lectures } from "./controllers/lectures.ts";
 import Student from "./Student.ts";
-import { StudentSubPayload, LectureSubPayload, Payload } from "./@types/payloads/types.d.ts";
+import { StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload } from "./@types/payloads/types.d.ts";
+const lectures = new Map();
 
 const setupWebSocketServer = () => {
     const wss = new WebSocketServer(8080);
@@ -10,10 +10,10 @@ const setupWebSocketServer = () => {
         const subMessageHandler = (message: string) => {
             const parsed = JSON.parse(message);
             switch (parsed.event) {
-                case "subscribe_lecture":
-                    handlerSubscribeLecture(parsed, ws);
+                case "create_lecture":
+                    handlerCreateLecture(parsed, ws);
                     break;
-                case "subscribe_student":
+                case "create_student":
                     handlerSubscribeStudent(parsed, ws);
                     break;
                 default:
@@ -29,34 +29,43 @@ const setupWebSocketServer = () => {
     });
 };
 
-function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {
+function handlerSubscribeStudent(parsed: StudentCreateRequestPayload, ws: WebSocketClient) {
     const selectedLecture: Lecture | undefined = [...lectures.values()].find((lecture) => lecture.link === parsed.data.lecture_link);
-    const selectedStudent: Student | undefined = selectedLecture?.studentList.getStudent(parsed.data.student_id);
-    if (selectedStudent) {
-        selectedStudent.setWebSocketClient(ws);
-        const payload: Payload = {
-            event: "student_subscribed"
+    if (selectedLecture) {
+        const student: Student = new Student(parsed.data.nick, parsed.data.name, parsed.data.surname, selectedLecture);
+        selectedLecture.studentList.addStudent(student);
+        student.setWebSocketClient(ws);
+        const payload: StudentCreateResponsePayload = {
+            event: "student_created",
+            data: {
+                student_id: student.id
+            }
         };
         ws.send(JSON.stringify(payload));
     } else {
         const payload: Payload = {
-            event: "student_not_subscribed"
+            event: "student_not_created"
         };
         ws.send(JSON.stringify(payload));
     }
 }
 
-function handlerSubscribeLecture(parsed: LectureSubPayload, ws: WebSocketClient) {
-    const selectedLecture: Lecture | undefined = lectures.get(parsed.data.lecture_id);
-    if (selectedLecture) {
-        selectedLecture.setWebSocketClient(ws);
-        const payload: Payload = {
-            event: "lecture_subscribed"
+function handlerCreateLecture(parsed: LectureCreateRequestPayload, ws: WebSocketClient) {
+    const lecture: Lecture = new Lecture(parsed.data.lecturer);
+    lectures.set(lecture.id, lecture);
+    if (lecture) {
+        lecture.setWebSocketClient(ws);
+        const payload: LectureCreateResponsePayload = {
+            event: "lecture_created",
+            data: {
+                lecture_id: lecture.id,
+                lecture_link: lecture.link
+            }
         };
         ws.send(JSON.stringify(payload));
     } else {
         const payload: Payload = {
-            event: "lecture_not_subscribed"
+            event: "lecture_not_created"
         };
         ws.send(JSON.stringify(payload));
     }
