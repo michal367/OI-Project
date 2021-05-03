@@ -62,9 +62,9 @@
     ```
 
 
-## **subscribeStudentToLecture**
+## **createStudent**
 
-    Ustanawia połączenie między widokiem studenta a obiektem studenta po stronie serwera.
+    Tworzy obiekt studenta po stronie serwera i umieszcza go we właściwym wykładzie.
 
 -   **Requirements:** `None`
 -   **Event type:** `create_student`
@@ -74,7 +74,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "1765661",
+            "lecture_link": "0258055",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -118,10 +118,9 @@
         "data": {
             "quiz_id": "some identifiable string",
             "student_ids": [
-                "059bc853-0522-4c06-bc04-bff704fb34f5",
-                "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
+                "aee9f548-836a-49c2-bc30-c4e6be14e879"
             ],
-            "time_seconds": 90,
+            "time_seconds": 60,
             "questions": "literally any type"
         }
     }
@@ -197,7 +196,7 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "quiz_id": "2e847f59-aa76-4621-a853-b0af852998e3",
+            "quiz_id": "6fda732a-281d-4e9e-989a-132bd74eea08",
             "answers": "literally any type"
         }
     }
