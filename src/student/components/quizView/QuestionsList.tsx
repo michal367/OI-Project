@@ -20,9 +20,9 @@ export function QuestionsList() {
     
         if( !answers.has(questionNumber)) {
             const len = quiz.questions[questionNumber].options?.length;
-            if (len === undefined) { return; }
+            if (len === undefined) return;
             
-            let array = []
+            let array = [];
             for (let i = 0; i < len; i++) {
                 array.push(false);
             }
@@ -59,9 +59,7 @@ export function QuestionsList() {
             <Paper className={classes.details} variant="outlined" square >
                 {i + 1}
                 <div >
-                        <div >
-                            <div className='question-text'>{question.text}</div>
-                        </div>
+                        <div className='question-text'>{question.text}</div>
                         <div className='answer-section'>
                             <Grid container spacing={1}>
                                 {question.options ? (question.options.map((option, j) => (
