@@ -6,7 +6,6 @@ import {
     Typography,
     ListItemText,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
 import {
     useContext,
 } from "react";

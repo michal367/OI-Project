@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext,  ReactNode,  useEffect, useState } from "react";
 
 export interface StoreProps {
     children: ReactNode
@@ -9,12 +9,13 @@ export interface IStore {
     studentNick: string,
     studentId: string,
     quizes: Quiz[],
+    isLoading: boolean
 }
 
 type StorageKey =
     "invitation" |
     "studentNick" |
-    "studentId"|
+    "studentId" |
     "quizes";
 
 const stringKey = (key: StorageKey) => {
@@ -37,10 +38,12 @@ const initialValue: IStore = {
     studentNick: "",
     studentId: "",
     quizes: [],
+    isLoading: true,
 }
 
 const loadFromStorage = () => {
     let obj: IStore = {
+        ...initialValue,
         invitation: loadKey("invitation") ?? initialValue.invitation,
         studentNick: loadKey("studentNick") ?? initialValue.studentNick,
         quizes: loadKey("quizes") ?? initialValue.quizes,
@@ -51,12 +54,12 @@ const loadFromStorage = () => {
 }
 
 
-
 const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
     const [studentNick, setStudentNick] = useState(initialValue.studentNick);
     const [studentId, setStudentId] = useState(initialValue.studentId);
-    const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
+    const [quizes, setQuizes] = useState(initialValue.quizes);
+    const [isLoading, setIsLoading] = useState(initialValue.isLoading);
 
     useEffect(() => {
         let initial = loadFromStorage();
@@ -97,7 +100,14 @@ const Store = (props: StoreProps) => {
             let array = [...newValue];
             setQuizes(array);
             saveKey("quizes", array);
-        }
+        },
+
+        get isLoading() {
+            return isLoading;
+        },
+        set isLoading(newValue: boolean) {
+            setIsLoading(newValue);
+        },
     };
 
     return (
