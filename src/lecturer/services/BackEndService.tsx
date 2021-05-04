@@ -67,10 +67,11 @@ export const useBackEndSocket = () => {
         socketEmiter,
         ...useWebSocket(SOCKET_URL, {
             onMessage,
-            onOpen: () => console.log('onOpen'),
+            onOpen: () => {
+                socketEmiter.emit('onOpen');
+            },
             onClose: () => {
                 socketEmiter.emit('onClose');
-                console.log('onClose');
             },
             share: true,
             shouldReconnect: (closeEvent) => {                
