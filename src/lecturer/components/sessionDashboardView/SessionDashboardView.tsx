@@ -16,22 +16,29 @@ export function SessionDashboardView() {
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<string[]>(store.sendQuiz.students);
-    
-    const toggleAllSelectedStudents = (checked:boolean) => {
-        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
-        let mapById = (student:Student) => student.id;
-        if(checked){
+
+    const toggleAllSelectedStudents = (checked: boolean) => {
+        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
+        let mapById = (student: Student) => student.id;
+        if (checked) {
             tmpQuiz.students = [];
-        }else{
+        } else {
             tmpQuiz.students = [...studentList.map(mapById)];
         }
 
         store.sendQuiz = tmpQuiz;
-        console.log(store.sendQuiz.students.length);
         setSelectedStudents(tmpQuiz.students);
     }
-    const toggleStudentSelection = (id:string) => {
-        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+    const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
+        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
+        let selectedStudents = randomNumbers.map(i => studentList[i])
+        let mapById = (student: Student) => student.id;
+        tmpQuiz.students = [...selectedStudents.map(mapById)];
+        store.sendQuiz = tmpQuiz;
+        setSelectedStudents(tmpQuiz.students);
+    }
+    const toggleStudentSelection = (id: string) => {
+        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
         let newSelected = [...store.sendQuiz.students];
 
@@ -43,7 +50,6 @@ export function SessionDashboardView() {
 
         tmpQuiz.students = newSelected;
         store.sendQuiz = tmpQuiz;
-        console.log(store.sendQuiz.students.length);
         setSelectedStudents(tmpQuiz.students);
     }
     const theme = useTheme();
@@ -123,9 +129,9 @@ export function SessionDashboardView() {
                 <StudentListView studentList={studentList} students={[selectedStudents, toggleStudentSelection]} />
                 <CopyLinkButton />
             </div>
-           
+
             <div className={classes.aside}>
-                <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents]}/>
+                <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents]} />
             </div>
         </div>
     );
