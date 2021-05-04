@@ -1,12 +1,12 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload } from "./@types/payloads/types.d.ts";
+import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
 
-const links = new Map();
+export const linkLectureMap = new Map();
 
 class Lecture {
     tutor: string;
@@ -21,8 +21,8 @@ class Lecture {
         this.id = v4.generate();
         while (true) {
             this.link = this.link = cryptoRandomString({ length: 7, type: "numeric" });
-            if (!links.has(this.link)) {
-                links.set(this.link, true);
+            if (!linkLectureMap.has(this.link)) {
+                linkLectureMap.set(this.link, this);
                 break;
             }
         }
@@ -33,7 +33,18 @@ class Lecture {
 
     setWebSocketClient(wsc: WebSocketClient): void {
         this.wsc = wsc;
-        this.studentList.on("studentAdded", () => {
+        this.studentList.on("studentAdded", (student: Student) => {
+            const reactionHandler = (reaction: string) =>{
+                const payload: ReactionResponsePayload = {
+                    event: "send_student_reaction",
+                    data: {
+                        reaction: reaction,
+                        student_id: student.id
+                    }
+                };
+                this.wsc?.send(JSON.stringify(payload));
+            };
+            student.on("reaction_added", reactionHandler);
             this.wsc?.send("studentAdded");
         });
         this.studentList.on("studentDeleted", () => {

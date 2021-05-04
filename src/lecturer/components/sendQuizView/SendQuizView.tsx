@@ -19,16 +19,18 @@ import {
     MenuItem,
     Select,
     InputLabel,
+    TextField
 } from "@material-ui/core";
 import { useContext, useState, useEffect, ChangeEvent } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
+import { getRandomIndexes } from "../../util/random";
 
 interface SendQuizViewProps {
     studentList?: Student[];
-    students?: [string[],any];
-    time?: [number|undefined,any];
-    quiz?: [Quiz|undefined,any];
+    students?: [string[], any, any];
+    time?: [number | undefined, any];
+    quiz?: [Quiz | undefined, any];
 }
 function getSteps() {
     return [
@@ -40,36 +42,58 @@ function getSteps() {
 }
 export function SendQuizView(props: SendQuizViewProps) {
     const store = useContext(StoreContext);
-    let [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], ()=>{}];
+    let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
     const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 0);
-    const [quiz, setQuiz] = useState<Quiz|undefined>(store.sendQuiz.quiz);
+    const [quiz, setQuiz] = useState<Quiz | undefined>(store.sendQuiz.quiz);
     const [checked, setChecked] = useState<boolean>(!(store.sendQuiz.timeInMin));
+    const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
 
     useEffect(() => {
-        [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], ()=>{}];
+        [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], () => { }];
         setStudents(selectedStudents);
     }, [props.students]);
 
     const theme = useTheme();
-    const setSelectedQuiz = (quiz:Quiz|undefined) => {
+    const setSelectedQuiz = (quiz: Quiz | undefined) => {
         store.sendQuiz.quiz = quiz;
         store.sendQuiz = store.sendQuiz;
         setQuiz(quiz);
     }
     const setSelectedTime = (value: unknown) => {
-        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         tmpQuiz.timeInMin = value as number;
         store.sendQuiz = tmpQuiz;
         setTime(store.sendQuiz.timeInMin ?? 0);
-    }    
+    }
     const handlePicker = (event: ChangeEvent<{ value: unknown }>) => {
         setSelectedTime(event.target.value);
     };
-    const changeSelectedStudents = (isFull:boolean) => () =>{
+    const handleRandomStudentsNumber = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        let numberStr = e.target.value.replace(/[^0-9]/g, '');
+        setRandomStudentsNumber(numberStr);
+    };
+    const changeSelectedStudents = (isFull: boolean) => () => {
         toggleAllSelectedStudents(isFull);
+    }
+    const drawSelectedStudents = () => {
+        let number = Number(randomStudentsNumber);
+        if (!isNaN(number)) {
+            if (number > 0 && number < studentCount) {
+                let randomStudents = getRandomIndexes(studentCount, number);
+                toggleRandomSelectedStudents(randomStudents);
+            }
+            else if (number >= studentCount) {
+                toggleAllSelectedStudents(false);
+            }
+            else if (number == 0) {
+                toggleAllSelectedStudents(true);
+            }
+        }
     }
     const classes = makeStyles({
         details: {
@@ -107,7 +131,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const getStepContent = (step: number) => {
         switch (step) {
             case 0:
-                return <QuizListView quiz={[quiz,setSelectedQuiz]}/>;
+                return <QuizListView quiz={[quiz, setSelectedQuiz]} />;
             case 1:
                 return (
                     <FormControl className={classes.container}>
@@ -148,18 +172,25 @@ export function SendQuizView(props: SendQuizViewProps) {
                 return (
                     <>
                         <Button
-                            disabled
                             className={classes.button}
                             variant="contained"
+                            onClick={drawSelectedStudents}
                         >
                             Wybór losowy
                         </Button>
+                        <TextField
+                            label="Liczba"
+                            value={randomStudentsNumber}
+                            onChange={handleRandomStudentsNumber}
+                            style={{ width: "75px" }} />
+                        <br />
+
                         <Button
                             className={classes.button}
                             variant="contained"
                             onClick={changeSelectedStudents(students.length === studentCount)}
                         >
-                            {students.length === studentCount ? 'Odznacz wszystkich':'Zaznacz wszystkich'}
+                            {students.length === studentCount ? 'Odznacz wszystkich' : 'Zaznacz wszystkich'}
                         </Button>
                     </>
                 );
@@ -174,7 +205,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                 <ListItemText
                                     primary="Nazwa przydzielonego quizu:"
                                     secondary={
-                                        (quiz ?? {title:""}).title
+                                        (quiz ?? { title: "" }).title
                                     }
                                 />
                             </ListItem>
@@ -182,7 +213,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                 <ListItemText
                                     primary="Ilość przeznaczonego czasu:"
                                     secondary={
-                                        time > 0 ? time :  "nieograniczone"
+                                        time > 0 ? time : "nieograniczone"
                                     }
                                 />
                             </ListItem>
@@ -202,7 +233,7 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
-        let tmpQuiz:ScheduledQuiz = store.sendQuiz;
+        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         delete tmpQuiz.timeInMin;
         store.sendQuiz = tmpQuiz;
         setTime(0);

@@ -66,4 +66,17 @@ declare module 'payloads' {
             reason: string
         }
     }
+
+    interface ReactionRequestPayload extends Payload{
+        data:{
+            reaction: string
+        }
+    }
+
+    interface ReactionResponsePayload extends Payload{
+        data: {
+            reaction: string,
+            student_id: string
+        }
+    }
 }
