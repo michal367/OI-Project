@@ -1,5 +1,5 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import Lecture from "./Lecture.ts";
+import Lecture, { linkLectureMap } from "./Lecture.ts";
 import { lectures } from "./controllers/lectures.ts";
 import Student from "./Student.ts";
 import { StudentSubPayload, LectureSubPayload, Payload } from "./@types/payloads/types.d.ts";
@@ -30,8 +30,9 @@ const setupWebSocketServer = () => {
 };
 
 function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {
-    const selectedLecture: Lecture | undefined = [...lectures.values()].find((lecture) => lecture.link === parsed.data.lecture_link);
+    const selectedLecture: Lecture | undefined = linkLectureMap.get(parsed.data.lecture_link);
     const selectedStudent: Student | undefined = selectedLecture?.studentList.getStudent(parsed.data.student_id);
+
     if (selectedStudent) {
         selectedStudent.setWebSocketClient(ws);
         const payload: Payload = {

@@ -34,7 +34,7 @@ class Student {
                     this.handlerSendQuizResponse(parsed);
                     break;
                 default:
-                    console.log("Student Websockets: Unexpected type of event")
+                    console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
 
             }
         });

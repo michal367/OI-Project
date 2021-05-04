@@ -1,5 +1,6 @@
 interface Payload {
     event: string
+    data: any
 }
 interface LectureSubPayload extends Payload {
     data: {

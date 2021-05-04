@@ -6,27 +6,23 @@ import {
     Typography,
     ListItemText,
 } from "@material-ui/core";
+import { useEffect, useState } from "react";
 import {
-    MouseEvent as Mouse,
     useContext,
-    useEffect,
-    useState,
 } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 
 interface QuizListViewProps {
+    //TODO slit to 2 props 
     quiz?: [Quiz | undefined, any];
 }
 
 export function QuizListView(props: QuizListViewProps) {
-    const backEnd = useBackEnd();
-    let [selectedQuiz, setSelectedQuiz]= props.quiz ?? [undefined,()=>{}];
-    const [quiz, setQuiz] = useState<Quiz|undefined>(selectedQuiz);
     const store = useContext(StoreContext);
     const theme = useTheme();
-    const handleQuiz = (value:Quiz) => () => {
-        setSelectedQuiz(value);
+    const handleQuiz = (value: Quiz) => () => {
+        if (props.quiz)
+            props.quiz[1](value);
     };
 
     const classes = makeStyles({
@@ -38,18 +34,13 @@ export function QuizListView(props: QuizListViewProps) {
         }
     })();
 
-    useEffect(() => {
-        [selectedQuiz, setSelectedQuiz]= props.quiz ?? [undefined,()=>{}];
-        setQuiz(selectedQuiz);
-    }, [props.quiz]);
-
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
             {store.quizes.map((value: Quiz) => {
                 return (
                     <ListItem
                         button
-                        selected={quiz === value}
+                        selected={props.quiz && props.quiz[0] === value}
                         onClick={handleQuiz(value)}
                     >
                         <ListItemText primary={value.title} />
