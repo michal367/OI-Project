@@ -4,8 +4,11 @@ import { JoinSessionView } from "../joinSessionView/JoinSessionView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "fontsource-roboto";
-import Store from "../../services/StoreService";
+import Store, { StoreContext } from "../../services/StoreService";
 import { useBackEndSocket } from "../../services/BackEndService";
+import Backdrop from '@material-ui/core/Backdrop';
+import GridLoader from "react-spinners/GridLoader";
+import { useContext, useEffect } from "react";
 
 const theme = createMuiTheme({
     palette: {
@@ -31,12 +34,33 @@ const theme = createMuiTheme({
 });
 
 function App() {
-    useBackEndSocket(); //for keeping socket open
+    const store = useContext(StoreContext);
+    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+
+    useEffect(() => {
+        const onClose = () => {
+            store.isLoading = true;
+        };
+        const onOpen = () => {
+            store.isLoading = false;
+        };
+        socketEmiter.on("onClose", onClose);
+        socketEmiter.on("onOpen", onOpen);
+        return () => {
+            socketEmiter.off("onClose", onClose);
+            socketEmiter.off("onOpen", onOpen);
+        }
+    }, [socketEmiter, store]);
+    
     return (
         <Store>
             <Router>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
+                    <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
+                        <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
+                    </Backdrop>
+
                     <Switch>
                         <Route path="/session">
                             <SessionDashboardView />

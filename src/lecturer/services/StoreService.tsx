@@ -47,8 +47,9 @@ export interface IStore {
     questions: Question[],
     quizes: Quiz[],
     sendQuizStep: number,
-    sendQuiz: ScheduledQuiz;
-    quizesInProgress: ScheduledQuiz[];
+    sendQuiz: ScheduledQuiz,
+    quizesInProgress: ScheduledQuiz[],
+    isLoading: boolean
 }
 
 const Store = (props: StoreProps) => {
@@ -60,6 +61,7 @@ const Store = (props: StoreProps) => {
     const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
+    const [isLoading, setIsLoading] = useState(initialValue.isLoading);
 
     useEffect(() => {
         let initial = loadFromStorage();
@@ -73,7 +75,7 @@ const Store = (props: StoreProps) => {
         get link() {
             return link;
         },
-        set link(newValue: string) {           
+        set link(newValue: string) {
             setLink(newValue);
             saveKey("link", newValue);
         },
@@ -133,6 +135,13 @@ const Store = (props: StoreProps) => {
             setSendQuizStep(newValue);
             saveKey("sendQuizStep", newValue);
         },
+
+        get isLoading() {
+            return isLoading;
+        },
+        set isLoading(newValue: boolean) {
+            setIsLoading(newValue);
+        },
     };
 
     return (
@@ -152,7 +161,8 @@ const initialValue: IStore = {
     sendQuiz: {
         students: [],
         canShowResults: true,
-    }
+    },
+    isLoading: true
 }
 
 export const StoreContext = createContext<IStore>(initialValue);

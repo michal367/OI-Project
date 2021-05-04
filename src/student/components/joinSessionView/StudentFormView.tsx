@@ -18,6 +18,7 @@ export function StudentFormView(props: StudentFormViewProps) {
     const { sendJsonMessage } = useBackEndSocket();
     const theme = useTheme();
     const history = useHistory();
+
     const classes = makeStyles({
         wrapper: {
             position: "relative",
@@ -54,6 +55,7 @@ export function StudentFormView(props: StudentFormViewProps) {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+
     const buttonClassname = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
@@ -62,39 +64,40 @@ export function StudentFormView(props: StudentFormViewProps) {
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [session, setSession] = useState(props?.session ?? "");
+
     const handleChangeSession = (event: ChangeEvent<HTMLInputElement>) => {
         let sessionInvNumber = event.target.value.replace(/[^0-9]/gi, "");
 
-        if(sessionInvNumber.length <= 7)
-            setSession(sessionInvNumber);
+        if (sessionInvNumber.length <= 7) setSession(sessionInvNumber);
     };
+
+    const changeToCapitalCase = (value: string) => {
+        let input = "";
+        value
+            .toLowerCase()
+            .replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
+            .split(" ")
+            .forEach((word) => {
+                if (input.length != 0) input += " ";
+                if (word.length > 0)
+                    input += word[0].toUpperCase() + word.substring(1);
+                else input += word;
+            });
+        return input;
+    };
+
     const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-        let nameInput = "";
-        event.target.value.toLowerCase().replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚ ]/gi, "").split(" ").forEach(word => {
-            if(nameInput.length != 0)
-                nameInput += " ";
-            if(word.length > 0)
-                nameInput += word[0].toUpperCase() + word.substring(1);
-            else
-                nameInput += word;
-        });
-        setName(nameInput);
+        setName(changeToCapitalCase(event.target.value));
     };
+
     const handleChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
-        let surnameInput = "";
-        event.target.value.toLowerCase().replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚ ]/gi, "").split(" ").forEach(word => {
-            if(surnameInput.length != 0)
-                surnameInput += " ";
-            if(word.length > 0)
-                surnameInput += word[0].toUpperCase() + word.substring(1);
-            else
-                surnameInput += word;
-        });
-        setSurname(surnameInput);
+        setSurname(changeToCapitalCase(event.target.value));
     };
+
     const isFromCompleted = () => {
-        return (session.length < 7) || (name.length === 0) || (surname.length === 0)
-    }
+        return session.length < 7 || name.length === 0 || surname.length === 0;
+    };
+
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
@@ -108,13 +111,12 @@ export function StudentFormView(props: StudentFormViewProps) {
             };
 
             if (session)
-                backEnd
-                    ?.joinLecture(session, fakeStudent)
+                backEnd?.joinLecture(session, fakeStudent)
                     .then((response) => {
                         console.log(response);
                         store.studentNick = fakeStudent.nick;
                         store.invitation = session;
-                        store.studentId = "1";//response.student_id;
+                        store.studentId = response.student_id;
 
                         let event: StudentSubPayload = {
                             event: "subscribe_student",
