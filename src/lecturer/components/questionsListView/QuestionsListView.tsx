@@ -81,7 +81,7 @@ export function QuestionsListView() {
         },
         searchInput: {
             position: "absolute",
-            top: "15px",
+            top: "42px",
             right: "25px",
         },
     })();
@@ -150,11 +150,10 @@ export function QuestionsListView() {
             <Card className={classes.cardWrapper}>
                 <CardHeader
                     title="Lista pytań"
-                    subheader={`${store.questions.length} pytań`}
+                    subheader={`${filterFn.fn(store.questions.map(addIndexes)).length} pytań`}
                 />
                 <TextField
                     className={classes.searchInput}
-                    label="Tytuł"
                     onChange={handleSearch}
                     InputProps={{
                         startAdornment: (

@@ -1,24 +1,28 @@
-import { useState, useRef, ChangeEvent, useContext, useEffect } from "react";
+import 'fontsource-roboto';
+
 import {
-    Grid,
-    Card,
-    List,
-    CardHeader,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    Checkbox,
     Button,
-    Divider,
-    TextField,
+    Card,
+    CardHeader,
+    Checkbox,
     CircularProgress,
-} from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
-import clsx from "clsx";
-import "fontsource-roboto";
-import { questionListMock } from "../../util/mockData";
-import { StoreContext } from "../../services/StoreService";
+    Divider,
+    Grid,
+    InputAdornment,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    TextField,
+} from '@material-ui/core';
+import { green } from '@material-ui/core/colors';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Search } from '@material-ui/icons';
+import clsx from 'clsx';
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+
+import { StoreContext } from '../../services/StoreService';
+import { questionListMock } from '../../util/mockData';
 
 
 //TODO move this functions to some kind of util file 
@@ -84,6 +88,13 @@ export function PickQuizView() {
             position: "absolute",
             top: "5px",
             right: "25px",
+            width: "180px"
+        },
+        searchInput: {
+            position: "absolute",
+            top: "21px",
+            right: "25px",
+            width: "180px"
         },
         button: {
             margin: theme.spacing(0.5, 0),
@@ -116,6 +127,8 @@ export function PickQuizView() {
     const [left, setLeft] = useState<number[]>(indexArray);
     const [right, setRight] = useState<number[]>([]);
     const [title, setTitle] = useState("");
+    const [filterFn, setFilterFn] = useState({ fn: (items: number[]) => { return Array.from(Array(items.length).keys()) } });
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
     };
@@ -180,6 +193,20 @@ export function PickQuizView() {
         setSuccess(false);
     };
 
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        let { value } = e.target;
+        setFilterFn({
+            fn: (items: number[]) => {
+                let result: number[] = [];
+                for(let i=0; i < items.length; i++){
+                    if(questions[items[i]].title.toLowerCase().includes(value))
+                        result.push(items[i]);
+                }
+                return result;
+            }
+        })
+    }
+
     //TODO move this to other file 
     const customList = (
         title: React.ReactNode,
@@ -216,7 +243,17 @@ export function PickQuizView() {
                     onChange={handleChange}
                 />
             ) : (
-                ""
+                <TextField
+                    className={classes.searchInput}
+                    onChange={handleSearch}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <Search />
+                            </InputAdornment>
+                        )
+                    }}
+                />
             )}
             <Divider />
             <List className={classes.list} dense component="div" role="list">
@@ -252,14 +289,14 @@ export function PickQuizView() {
     const timer = useRef<number>();
     const handleButtonClick = () => {
         if (!loading) {
-            var questions: Question[] = [];
+            let selectedQuestions: Question[] = [];
             right.forEach((i) => {
-                questions.push(questionListMock[i]);
+                selectedQuestions.push(questions[i]);
             });
             setSuccess(false);
             setLoading(true);
 
-            store.quizes = [...store.quizes, { title, questions }]
+            store.quizes = [...store.quizes, { title, questions: selectedQuestions }]
 
             timer.current = window.setTimeout(() => {
                 console.log(store.quizes);
@@ -281,7 +318,7 @@ export function PickQuizView() {
                 alignItems="center"
                 className={classes.gidcontent}
             >
-                <Grid item>{customList("Lista pytań", left, false)}</Grid>
+                <Grid item>{customList("Lista pytań", filterFn.fn(left), false)}</Grid>
                 <Grid item>
                     <Grid container direction="column" alignItems="center">
                         <Button
