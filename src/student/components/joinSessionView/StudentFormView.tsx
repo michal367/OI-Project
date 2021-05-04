@@ -1,5 +1,5 @@
 import { useContext, useState, ChangeEvent } from "react";
-import { TextField, Button, CircularProgress } from "@material-ui/core";
+import { TextField, Button, CircularProgress, Paper } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import { useRouteMatch } from "react-router";
@@ -9,7 +9,8 @@ import { useHistory } from "react-router-dom";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 
-export function ChooseNicknameView() {
+export function StudentFormView() {
+
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
     const { sendJsonMessage } = useBackEndSocket();
@@ -33,10 +34,12 @@ export function ChooseNicknameView() {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            width: "350px",
+            width: "100%",
+            maxWidth: "600px",
             "& > *": {
                 width: "100%",
-            }
+            },
+            padding: 20,
         },
         buttonSuccess: {
             backgroundColor: green[500],
@@ -102,35 +105,28 @@ export function ChooseNicknameView() {
 
         }
     };
-
-    return (
-        <div className={classes.root}>
-            <form className={classes.form} noValidate autoComplete="off">
-                <TextField
-                    id="outlined-secondary"
-                    label="Twój nick"
-                    variant="outlined"
-                    color="secondary"
-                    onChange={handleChange}
+    return (<><TextField
+            id="outlined-secondary"
+            label="Twój nick"
+            variant="outlined"
+            color="secondary"
+            onChange={handleChange}
+        />
+        <div className={classes.wrapper}>
+            <Button
+                variant="contained"
+                color="secondary"
+                className={buttonClassname}
+                disabled={loading}
+                onClick={handleButtonClick}
+            >
+                Dołącz do sesji
+            </Button>
+            {loading && (
+                <CircularProgress
+                    size={38}
+                    className={classes.fabProgress}
                 />
-                <div className={classes.wrapper}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        className={buttonClassname}
-                        disabled={loading}
-                        onClick={handleButtonClick}
-                    >
-                        Dołącz do sesji
-                    </Button>
-                    {loading && (
-                        <CircularProgress
-                            size={38}
-                            className={classes.fabProgress}
-                        />
-                    )}
-                </div>
-            </form>
-        </div>
-    );
-}
+            )}
+        </div></>);
+};
