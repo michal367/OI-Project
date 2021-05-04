@@ -2,40 +2,31 @@ import { useContext, useState, ChangeEvent } from "react";
 import { TextField, Button, CircularProgress, Paper } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
-import { useRouteMatch } from "react-router";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 
-export function StudentFormView() {
+interface StudentFormViewProps {
+    session?: string;
+}
 
+export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
     const { sendJsonMessage } = useBackEndSocket();
     const theme = useTheme();
     const history = useHistory();
-    const match = useRouteMatch<MatchParams>("/:session");
     const classes = makeStyles({
-        root: {
-            background: theme.palette.primary.light,
-            gap: "50px",
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-        },
         wrapper: {
             position: "relative",
         },
         form: {
             display: "flex",
             flexDirection: "column",
-            gap: "10px",
+            gap: "30px",
             width: "100%",
-            maxWidth: "600px",
             "& > *": {
                 width: "100%",
             },
@@ -68,65 +59,125 @@ export function StudentFormView() {
         [classes.buttonSuccess]: success,
     });
 
-    const [name, setName] = useState('');
-    const [session, ] = useState(match?.params.session);
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
+    const [session, setSession] = useState(props?.session ?? "");
+    const handleChangeSession = (event: ChangeEvent<HTMLInputElement>) => {
+        let sessionInvNumber = event.target.value.replace(/[^0-9]/gi, "");
+
+        if(sessionInvNumber.length <= 7)
+            setSession(sessionInvNumber);
     };
+    const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
+        let nameInput = "";
+        event.target.value.toLowerCase().replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚ ]/gi, "").split(" ").forEach(word => {
+            if(nameInput.length != 0)
+                nameInput += " ";
+            if(word.length > 0)
+                nameInput += word[0].toUpperCase() + word.substring(1);
+            else
+                nameInput += word;
+        });
+        setName(nameInput);
+    };
+    const handleChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
+        let surnameInput = "";
+        event.target.value.toLowerCase().replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚ ]/gi, "").split(" ").forEach(word => {
+            if(surnameInput.length != 0)
+                surnameInput += " ";
+            if(word.length > 0)
+                surnameInput += word[0].toUpperCase() + word.substring(1);
+            else
+                surnameInput += word;
+        });
+        setSurname(surnameInput);
+    };
+    const isFromCompleted = () => {
+        return (session.length < 7) || (name.length === 0) || (surname.length === 0)
+    }
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
 
-            let fakeStudent: Student = { id: "", nick: name, name: "name1", surname: "surname1" }
+            let fakeStudent: Student = {
+                id: "",
+                nick: name[0] + surname,
+                name: name,
+                surname: surname,
+            };
 
             if (session)
-                backEnd?.joinLecture(session, fakeStudent).then((response) => {
-                    console.log(response);
-                    store.studentNick = name;
-                    store.invitation = session;
-                    store.studentId = response.student_id;
+                backEnd
+                    ?.joinLecture(session, fakeStudent)
+                    .then((response) => {
+                        console.log(response);
+                        store.studentNick = fakeStudent.nick;
+                        store.invitation = session;
+                        store.studentId = "1";//response.student_id;
 
-                    let event: StudentSubPayload = {
-                        event: "subscribe_student",
-                        data: {
-                            student_id: response.student_id,
-                            lecture_link: session
-                        }
-                    }
-                    sendJsonMessage(event);
+                        let event: StudentSubPayload = {
+                            event: "subscribe_student",
+                            data: {
+                                student_id: response.student_id,
+                                lecture_link: session,
+                            },
+                        };
+                        sendJsonMessage(event);
 
-                    history.replace("/session");
-                }).catch((response) => {
-                    setLoading(false);
-                    console.error(response);
-                });
-
-
+                        history.replace("/session");
+                    })
+                    .catch((response) => {
+                        setLoading(false);
+                        console.error(response);
+                    });
         }
     };
-    return (<><TextField
-            id="outlined-secondary"
-            label="Twój nick"
-            variant="outlined"
-            color="secondary"
-            onChange={handleChange}
-        />
-        <div className={classes.wrapper}>
-            <Button
-                variant="contained"
-                color="secondary"
-                className={buttonClassname}
-                disabled={loading}
-                onClick={handleButtonClick}
-            >
-                Dołącz do sesji
-            </Button>
-            {loading && (
-                <CircularProgress
-                    size={38}
-                    className={classes.fabProgress}
+    return (
+        <form autoComplete="off" className={classes.form}>
+            {!props.session && (
+                <TextField
+                    id="outlined-secondary"
+                    label="Klucz zaproszenia do sesji"
+                    variant="outlined"
+                    value={session}
+                    color="secondary"
+                    onChange={handleChangeSession}
                 />
             )}
-        </div></>);
-};
+            <TextField
+                id="outlined-secondary"
+                label="Twoje imię"
+                variant="outlined"
+                value={name}
+                color="secondary"
+                onChange={handleChangeName}
+            />
+            <TextField
+                id="outlined-secondary"
+                label="Twoje nazwisko"
+                variant="outlined"
+                value={surname}
+                color="secondary"
+                onChange={handleChangeSurname}
+            />
+            <div className={classes.wrapper}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    className={buttonClassname}
+                    disabled={loading || isFromCompleted()}
+                    onClick={handleButtonClick}
+                >
+                    Dołącz do sesji
+                </Button>
+                {loading && (
+                    <CircularProgress
+                        size={38}
+                        className={classes.fabProgress}
+                    />
+                )}
+            </div>
+        </form>
+    );
+}

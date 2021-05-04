@@ -28,6 +28,7 @@ const loadKey = (key: StorageKey) => {
 }
 
 const saveKey = (key: StorageKey, value: any) => {
+    if(value === undefined) return;
     console.log("saveKey", value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
