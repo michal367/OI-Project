@@ -48,11 +48,8 @@ export const useBackEndSocket = () => {
         socketEmiter,
         ...useWebSocket(SOCKET_URL, {
             onMessage,
-            onOpen: () => console.log('onOpen'),
-            onClose: () => {
-                socketEmiter.emit('onClose');
-                console.log('onClose');
-            },
+            onOpen: () => socketEmiter.emit('onOpen'),
+            onClose: () => socketEmiter.emit('onClose'),
             share: true,
             shouldReconnect: (closeEvent) => {                
                 console.log("closeEvent");
