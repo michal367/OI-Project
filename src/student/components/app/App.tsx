@@ -1,6 +1,6 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { ChooseNicknameView } from "../chooseNicknameView/ChooseNicknameView";
+import { JoinSessionView } from "../joinSessionView/JoinSessionView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "fontsource-roboto";
@@ -66,7 +66,7 @@ function App() {
                             <SessionDashboardView />
                         </Route>
                         <Route path='/'>
-                            <ChooseNicknameView />
+                            <JoinSessionView />
                         </Route>
                     </Switch>
                 </ThemeProvider>

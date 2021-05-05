@@ -153,9 +153,6 @@ export function CopyLinkForm(props: CopyLinkFromProps) {
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps}>
                         <Paper className={classes.popperPaper}>
-                            {/* <Typography className={classes.popperTypo}>
-                                Skopiowano
-                            </Typography> */}
                             <FileCopyRoundedIcon style={{ fontSize: "28px" }} />
                         </Paper>
                     </Fade>
