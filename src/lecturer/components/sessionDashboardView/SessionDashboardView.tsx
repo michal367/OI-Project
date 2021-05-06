@@ -1,21 +1,34 @@
-import {
-    makeStyles,
-    useTheme,
-} from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
-import { StudentListView, StudentListRow } from "../studentListView/StudentListView";
-import { CopyLinkButton } from "../studentListView/CopyLinkButton";
+import { useHistory } from "react-router-dom";
+import {
+    StudentListView,
+    StudentListRow,
+} from "../studentListView/StudentListView";
+import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import { useLocation } from "react-router-dom";
+
 
 export function SessionDashboardView() {
-    const backEnd = useBackEnd();
+    const location = useLocation<{ isOpen: boolean }>();
+    let isOpen = false;
+    if(location.state != undefined)
+        isOpen = location.state.isOpen??false;
+    const history = useHistory();
     const store = useContext(StoreContext);
+    if (!store.sessionId || store.sessionId.length === 0) {
+        history.goBack();
+    }
+    const backEnd = useBackEnd();
     const { socketEmiter } = useBackEndSocket();
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
-    const [selectedStudents, setSelectedStudents] = useState<string[]>(store.sendQuiz.students);
+    const [selectedStudents, setSelectedStudents] = useState<string[]>(
+        store.sendQuiz.students
+    );
 
     const toggleAllSelectedStudents = (checked: boolean) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
@@ -28,15 +41,15 @@ export function SessionDashboardView() {
 
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
     const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        let selectedStudents = randomNumbers.map(i => studentList[i])
+        let selectedStudents = randomNumbers.map((i) => studentList[i]);
         let mapById = (student: Student) => student.id;
         tmpQuiz.students = [...selectedStudents.map(mapById)];
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
@@ -51,7 +64,7 @@ export function SessionDashboardView() {
         tmpQuiz.students = newSelected;
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
     const theme = useTheme();
 
     const classes = makeStyles({
@@ -75,13 +88,11 @@ export function SessionDashboardView() {
         main: {
             width: "100%",
             flexShrink: 2,
-            flexGrow: 1,
-            height: "100%",
+            flexGrow: 0,
             display: "flex",
             gap: 10,
-            minHeight: 100,
+            marginBottom: "auto",
             padding: "0 10px",
-            flexDirection: "column",
         },
         aside: {
             width: "100%",
@@ -91,12 +102,10 @@ export function SessionDashboardView() {
             minHeight: 100,
             padding: "10px 10px",
         },
-        overlay: {
-            minWidth: "80%",
-            minHeight: "90%",
-            width: 300,
-            height: 400,
-        }
+        button: {
+            marginLeft: "auto",
+            marginBottom: "auto",
+        },
     })();
 
     const refreshList = useCallback(() => {
@@ -124,15 +133,26 @@ export function SessionDashboardView() {
     }, [refreshList]);
 
     return (
-        <div className={classes.root}>
-            <div className={classes.main}>
-                <StudentListView studentList={studentList} students={[selectedStudents, toggleStudentSelection]} />
-                <CopyLinkButton />
+        <>
+            <div className={classes.root}>
+                <div className={classes.main}>
+                    <StudentListView
+                        studentList={studentList}
+                        students={[selectedStudents, toggleStudentSelection]}
+                    />
+                </div>
+                <div className={classes.aside}>
+                    <SendQuizView
+                        studentList={studentList}
+                        students={[
+                            selectedStudents,
+                            toggleAllSelectedStudents,
+                            toggleRandomSelectedStudents,
+                        ]}
+                    />
+                </div>
             </div>
-
-            <div className={classes.aside}>
-                <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents]} />
-            </div>
-        </div>
+            <ShareSessionView isOpen={isOpen} />
+        </>
     );
 }

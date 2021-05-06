@@ -82,7 +82,10 @@ export function CreateSessionView() {
                 backEnd.getLectureLink(lecture.id)
                     .then((link) => {
                         store.link = link;
-                        history.push("/session");
+                        history.push({
+                            pathname: "/session",
+                            state: { isOpen: true }
+                          });
                     })
 
                 sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
