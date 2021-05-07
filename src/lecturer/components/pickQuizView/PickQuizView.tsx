@@ -69,7 +69,7 @@ export function PickQuizView() {
         wrapper: {
             width: 1000,
             display: "flex",
-            justifyContent: "flexend",
+            justifyContent: "flex-end",
             position: "relative",
         },
         cardWrapper: {

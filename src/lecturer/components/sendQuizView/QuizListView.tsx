@@ -33,10 +33,8 @@ export function QuizListView(props: QuizListViewProps) {
             overflow: "auto",
         }
     })();
-    const deleteQuiz = (quizToBeDeleted: Quiz) => {
-        if(quizToBeDeleted != null) {
-            store.quizes = store.quizes.filter(storeQuiz => storeQuiz != quizToBeDeleted)
-        }
+    const deleteQuiz = (quizToBeDeleted: Quiz) => () => {
+        store.quizes = store.quizes.filter(storeQuiz => storeQuiz != quizToBeDeleted);
     }
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
@@ -48,7 +46,7 @@ export function QuizListView(props: QuizListViewProps) {
                         onClick={handleQuiz(value)}
                     >
                         <ListItemText primary={value.title} />
-                        <IconButton edge="end" aria-label="delete" onClick={() => deleteQuiz(value)}>
+                        <IconButton edge="end" aria-label="delete" onClick={deleteQuiz(value)}>
                             <DeleteIcon />
                         </IconButton>
                     </ListItem>
