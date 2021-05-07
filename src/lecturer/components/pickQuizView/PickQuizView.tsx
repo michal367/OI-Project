@@ -173,6 +173,7 @@ export function PickQuizView() {
         }
     };
     const [loading, setLoading] = useState(false);
+    const [questionFullFilled, setQuestionFullFilled] = useState(true);
     const [success, setSuccess] = useState(false);
     const buttonClassname = clsx({
         [classes.sessionBtn]: 1,
@@ -184,6 +185,7 @@ export function PickQuizView() {
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
         setSuccess(false);
+        setQuestionFullFilled(false);
     };
 
     const handleCheckedLeft = () => {
@@ -191,6 +193,9 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
+        if(right.length == 1){
+            setQuestionFullFilled(true);
+        }
     };
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -350,7 +355,7 @@ export function PickQuizView() {
                     variant="contained"
                     color="secondary"
                     className={buttonClassname}
-                    disabled={loading}
+                    disabled={loading || questionFullFilled || title.length === 0}
                     onClick={handleButtonClick}
                 >
                     {success ? `Zapisano Quiz` : `Zapisz Quiz`}
