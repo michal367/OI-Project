@@ -8,11 +8,11 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import QuizView from "../quizView/QuizView";
-import SessionChatView from "../sessionChatView/SessionChatView";
+import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
 import { ReactionName } from "../sessionReactionView/ReactionItem";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
-
+import FeedbackView from "../feedbackView/FeedbackView";
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -33,7 +33,7 @@ export function SessionDashboardView() {
             width: "100%",
             flexShrink: 4,
             flexGrow: 1,
-            height: "100%",
+            height: "150%",
             minHeight: 100,
             padding: "10px 10px",
         },
@@ -45,6 +45,14 @@ export function SessionDashboardView() {
             display: "flex",
             gap: 10,
             minHeight: 100,
+            padding: "0 10px",
+        },
+        questionBody:{
+            width: "100%",
+            flexShrink: 2,
+            flexGrow: 1,
+            display: "flex",
+            gap: 10,
             padding: "0 10px",
         },
         footer: {
@@ -83,7 +91,7 @@ export function SessionDashboardView() {
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
-                <SessionChatView />
+                <FeedbackView/>
                 <Button
                     variant="outlined"
                     color="primary"
@@ -91,6 +99,9 @@ export function SessionDashboardView() {
                 >
                     Solve quiz
                 </Button>
+            </div>
+            <div className={classes.questionBody}>
+                <SessionQuestionView/>
             </div>
             <div className={classes.footer}>
                 <SessionReactionView onReaction={handleReaction} />

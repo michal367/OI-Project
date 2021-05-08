@@ -9,7 +9,8 @@ export interface IStore {
     studentNick: string,
     studentId: string,
     quizes: Quiz[],
-    isLoading: boolean
+    isLoading: boolean,
+    studentQuestion: StudentQuestion,
 }
 
 type StorageKey =
@@ -40,6 +41,11 @@ const initialValue: IStore = {
     studentId: "",
     quizes: [],
     isLoading: true,
+    studentQuestion:{
+        studentNick: "",
+        time: new Date(),
+        text: ""
+    },
 }
 
 const loadFromStorage = () => {
@@ -61,7 +67,7 @@ const Store = (props: StoreProps) => {
     const [studentId, setStudentId] = useState(initialValue.studentId);
     const [quizes, setQuizes] = useState(initialValue.quizes);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
-
+    const [studentQuestion, setStudentQuestion] = useState<StudentQuestion>(initialValue.studentQuestion);
     useEffect(() => {
         let initial = loadFromStorage();
         setInvitation(initial.invitation);
@@ -108,6 +114,12 @@ const Store = (props: StoreProps) => {
         },
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
+        },
+        get studentQuestion(){
+            return studentQuestion
+        },
+        set studentQuestion(newQuestion: StudentQuestion){
+            setStudentQuestion(newQuestion);
         },
     };
 

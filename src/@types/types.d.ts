@@ -34,3 +34,9 @@ interface ScheduledQuiz {
     timeInMin?: number;
     canShowResults: boolean;
 }
+
+interface StudentQuestion{
+    studentNick: string,
+    time: Date,
+    text: string;
+}
