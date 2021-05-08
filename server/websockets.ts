@@ -1,6 +1,6 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import {linkLectureMap} from "./Lecture.ts";
+import { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
 import { CheckLinkPayload, StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload, LectureReconnectRequestPayload, StudentReconnectRequestPayload } from "./@types/payloads/types.d.ts";
 
@@ -32,7 +32,7 @@ const setupWebSocketServer = () => {
                     console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 
             }
-            if(success){
+            if (success) {
                 ws.removeListener("message", subMessageHandler);
             }
         };
@@ -47,9 +47,11 @@ function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocket
     if (linkLectureMap.has(parsed.data.lecture_link)) {
         const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lecture_link);
         const student: Student = new Student(parsed.data.nick, parsed.data.name, parsed.data.surname, selectedLecture);
-        if(!selectedLecture.studentList.includesStudent(student)){
+
+        if (!selectedLecture.studentList.includes(student)) {
             selectedLecture.studentList.addStudent(student);
             student.setWebSocketClient(ws);
+
             const payload: StudentCreateResponsePayload = {
                 event: "student_created",
                 data: {
@@ -57,27 +59,33 @@ function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocket
                 }
             };
             ws.send(JSON.stringify(payload));
+
             return true;
         }
     }
+
     const payload: Payload = {
         event: "student_not_created"
     };
     ws.send(JSON.stringify(payload));
-    return false;   
+
+    return false;
 }
 
 function handlerReconnectStudent(parsed: StudentReconnectRequestPayload, ws: WebSocketClient): boolean {
     if (linkLectureMap.has(parsed.data.lecture_link)) {
         const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lecture_link);
         const student: Student | undefined = selectedLecture.studentList.getStudent(parsed.data.student_id);
-        if(!student?.wsc){
-                student?.setWebSocketClient(ws);
-                const payload: Payload = {
-                    event: "student_reconnected"
-                };
-                ws.send(JSON.stringify(payload));
-                return true;
+
+        if (!student?.wsc) {
+            student?.setWebSocketClient(ws);
+
+            const payload: Payload = {
+                event: "student_reconnected"
+            };
+            ws.send(JSON.stringify(payload));
+
+            return true;
         }
     }
 
@@ -85,14 +93,16 @@ function handlerReconnectStudent(parsed: StudentReconnectRequestPayload, ws: Web
         event: "student_not_reconnected"
     };
     ws.send(JSON.stringify(payload));
+
     return false;
 }
 
 function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSocketClient): boolean {
-    const lecture: Lecture = new Lecture(parsed.data.lecturer);
+    const lecture: Lecture = new Lecture(parsed.data.tutor);
     lectures.set(lecture.id, lecture);
     if (lecture) {
         lecture.setWebSocketClient(ws);
+
         const payload: LectureCreateResponsePayload = {
             event: "lecture_created",
             data: {
@@ -101,6 +111,7 @@ function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSoc
             }
         };
         ws.send(JSON.stringify(payload));
+
         return true;
     }
 
@@ -108,6 +119,7 @@ function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSoc
         event: "lecture_not_created"
     };
     ws.send(JSON.stringify(payload));
+
     return false;
 }
 
@@ -115,10 +127,12 @@ function handlerReconnectLecture(parsed: LectureCreateRequestPayload, ws: WebSoc
     const lecture: Lecture | undefined = lectures.get(parsed.data.lecture_id);
     if (!lecture?.wsc) {
         lecture?.setWebSocketClient(ws);
+
         const payload: Payload = {
             event: "lecture_reconnected",
         };
         ws.send(JSON.stringify(payload));
+
         return true;
     }
 
@@ -126,16 +140,17 @@ function handlerReconnectLecture(parsed: LectureCreateRequestPayload, ws: WebSoc
         event: "lecture_not_reconnected"
     };
     ws.send(JSON.stringify(payload));
+
     return false;
 }
 
-function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient){
-    if(linkLectureMap.has(parsed.data.lecture_link)){
+function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient) {
+    if (linkLectureMap.has(parsed.data.lecture_link)) {
         const payload: Payload = {
             event: "valid_link",
         };
         ws.send(JSON.stringify(payload));
-    }else{
+    } else {
         const payload: Payload = {
             event: "invalid_link",
         };

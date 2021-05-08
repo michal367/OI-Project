@@ -22,7 +22,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "6790354",
+            "lecture_link": "5444494",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -64,8 +64,8 @@
     {
         "event": "reconnect_student",
         "data": {
-            "lecture_link": "8047751",
-            "student_id": "3069042f-5d2d-4679-946b-5e1f9f9bb46a"
+            "lecture_link": "3706325",
+            "student_id": "e74d511c-ed1a-42eb-9209-21759bf1e389"
         }
     }
     ```
@@ -99,7 +99,7 @@
 
     ```json
     {
-        "event": "kill_me"
+        "event": "delete_student"
     }
     ```
 
@@ -107,7 +107,7 @@
 
     ```json
     {
-        "event": "you_dead"
+        "event": "student_deleted"
     }
     ```
 

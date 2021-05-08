@@ -22,7 +22,7 @@
     {
         "event": "create_lecture",
         "data": {
-            "lecturer": "Apple I-Dzik"
+            "tutor": "Apple I-Dzik"
         }         
     }
     ```

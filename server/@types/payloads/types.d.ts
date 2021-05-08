@@ -5,7 +5,7 @@ declare module 'payloads' {
 
     interface LectureCreateRequestPayload extends Payload {
         data: {
-            lecturer: string
+            tutor: string
         }
     }
     interface LectureCreateResponsePayload extends Payload {
@@ -67,46 +67,46 @@ declare module 'payloads' {
         }
     }
 
-    interface ReactionRequestPayload extends Payload{
-        data:{
+    interface ReactionRequestPayload extends Payload {
+        data: {
             reaction: string
         }
     }
 
-    interface ReactionResponsePayload extends Payload{
+    interface ReactionResponsePayload extends Payload {
         data: {
             reaction: string,
             student_id: string
         }
     }
 
-    interface StudentReconnectRequestPayload extends Payload{
+    interface StudentReconnectRequestPayload extends Payload {
         data: {
             lecture_link: string,
             student_id: string
-        }        
+        }
     }
 
-    interface LectureReconnectRequestPayload extends Payload{
+    interface LectureReconnectRequestPayload extends Payload {
         data: {
             lecture_id: string,
-        }        
+        }
     }
 
-    interface CheckLinkPayload extends Payload{
-        data:{
+    interface CheckLinkPayload extends Payload {
+        data: {
             lecture_link: string
         }
     }
 
-    interface StudentDeletedPayload extends Payload{
-        data:{
+    interface StudentDeletedPayload extends Payload {
+        data: {
             student_id: string
         }
     }
 
-    interface StudentAddedPayload extends Payload{
-        data:{
+    interface StudentAddedPayload extends Payload {
+        data: {
             student_id: string,
             nick: string,
             name: string,
@@ -120,8 +120,8 @@ declare module 'payloads' {
         name: string,
         surname: string
     }
-    interface GetStudentListResponsePayload extends Payload{
-        data:{
+    interface GetStudentListResponsePayload extends Payload {
+        data: {
             student_list: StudentData[]
         }
     }

@@ -41,7 +41,7 @@ class StudentList extends EventEmitter {
         return (student1.name === student2.name && student1.surname === student2.surname && student1.nick === student2.nick)
     }
 
-    includesStudent(student: Student): boolean{
+    includes(student: Student): boolean {
         const present: Student | undefined = this.asArray().find((other: Student) => {
             return this.compareTwoStudents(student, other);
         });
@@ -49,4 +49,5 @@ class StudentList extends EventEmitter {
     }
 
 }
+
 export default StudentList;

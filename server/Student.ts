@@ -43,12 +43,11 @@ class Student extends EventEmitter {
                 case "send_reaction":
                     this.handlerSendReaction(parsed);
                     break;
-                case "kill_me":
-                    this.handleSuicide();
+                case "delete_student":
+                    this.handleDelete();
                     break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
-
             }
         });
 
@@ -63,6 +62,7 @@ class Student extends EventEmitter {
         const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quiz_id);
         if (quiz?.isActive()) {
             quiz.addStudentAnswers(this, parsed.data.answers);
+
             const response: Payload = {
                 event: "student_answers_added"
             }
@@ -76,16 +76,18 @@ class Student extends EventEmitter {
     }
 
     handlerSendReaction(parsed: ReactionRequestPayload) {
-        if(this.canSendReaction){
+        if (this.canSendReaction) {
             this.canSendReaction = false;
+
             this.reactions.set(new Date(), parsed.data.reaction);
-            this.emit("reaction_added", parsed.data.reaction); 
+            this.emit("reaction_added", parsed.data.reaction);
             const response: Payload = {
                 event: "student_reaction_sent"
             };
             this.wsc?.send(JSON.stringify(response));
+
             setTimeout(() => this.canSendReaction = true, this.REACTION_TIMEOUT);
-        }else{
+        } else {
             const response: Payload = {
                 event: "student_reaction_not_sent"
             };
@@ -93,19 +95,21 @@ class Student extends EventEmitter {
         }
     }
 
-    handleSuicide() {
+    handleDelete() {
         const response: Payload = {
-            event: "you_dead"
+            event: "student_deleted"
         };
         this.wsc?.send(JSON.stringify(response));
-        if(!this.wsc?.isClosed){
+
+        if (!this.wsc?.isClosed) {
             this.wsc?.close(1000, "Student requested shutdown");
         }
-        this.handleRodo();
+
+        this.handleGDPR();
         this.lecture.studentList.deleteStudent(this.id);
     }
 
-    handleRodo(){
+    handleGDPR() {
         this.name = "";
         this.surname = "";
         this.nick = "";

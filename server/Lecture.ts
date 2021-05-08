@@ -5,7 +5,7 @@ import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizRespon
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
-import {lectures} from "./websockets.ts";
+import { lectures } from "./websockets.ts";
 
 export const linkLectureMap = new Map();
 
@@ -35,7 +35,7 @@ class Lecture {
     setWebSocketClient(wsc: WebSocketClient): void {
         this.wsc = wsc;
         this.studentList.on("studentAdded", (student: Student) => {
-            const reactionHandler = (reaction: string) =>{
+            const reactionHandler = (reaction: string) => {
                 const payload: ReactionResponsePayload = {
                     event: "send_student_reaction",
                     data: {
@@ -48,7 +48,7 @@ class Lecture {
             student.on("reaction_added", reactionHandler);
             const payload: StudentAddedPayload = {
                 event: "student_added",
-                data:{
+                data: {
                     student_id: student.id,
                     nick: student.nick,
                     name: student.name,
@@ -60,7 +60,7 @@ class Lecture {
         this.studentList.on("studentDeleted", (student: Student) => {
             const payload: StudentDeletedPayload = {
                 event: "student_deleted",
-                data:{
+                data: {
                     student_id: student.id,
                 }
             };
@@ -152,36 +152,33 @@ class Lecture {
             event: "lecture_ended"
         };
         this.wsc?.send(JSON.stringify(payload));
-        if(!this.wsc?.isClosed){
+        if (!this.wsc?.isClosed) {
             this.wsc?.close(1000, "Lecturer requested shutdown");
         }
         this.studentList.asArray().forEach((student: Student) => {
-            student.handleRodo();
+            student.handleGDPR();
             student.wsc?.send(JSON.stringify(payload));
-            if(!student.wsc?.isClosed){
+            if (!student.wsc?.isClosed) {
                 student.wsc?.close(1000, "Lecturer requested shutdown");
             }
         });
-        // Rodo
         this.tutor = "";
         lectures.delete(this.id);
     }
 
     handlerGetStudentList() {
-        const studentDataList: StudentData[] = [];
-        this.studentList.asArray().forEach((s: Student) =>{
+        const studentDataList: StudentData[] = this.studentList.asArray().map((s: Student) => {
             const studentData: StudentData = {
                 student_id: s.id,
                 nick: s.nick,
                 name: s.name,
                 surname: s.surname
             };
-            studentDataList.push(studentData);
         });
 
         const payload: GetStudentListResponsePayload = {
             event: "student_list",
-            data:{
+            data: {
                 student_list: studentDataList
             }
         };
@@ -189,7 +186,5 @@ class Lecture {
     }
 
 }
-
-
 
 export default Lecture;
