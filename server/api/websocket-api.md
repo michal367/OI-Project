@@ -22,7 +22,7 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "4630f745-0a10-47ec-b1c8-cddb3fcf598b"
+            "lecture_id": "62211bd7-f646-424b-a70c-a52baa88f60d"
         }
     }
     ```
@@ -69,8 +69,8 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "4fef1e0f-e77f-4302-aab6-d0cc67811368",
-            "lecture_link": "8341568"
+            "student_id": "31dacb19-1669-405d-800a-963680c08899",
+            "lecture_link": "1311100"
         }
     }
     ```
@@ -108,7 +108,7 @@
         "data": {
             "quiz_id": "some identifiable string",
             "student_ids": [
-                "059bc853-0522-4c06-bc04-bff704fb34f5",
+                "31dacb19-1669-405d-800a-963680c08899",
                 "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
             "time_seconds": 90,
@@ -133,6 +133,7 @@
         "event": "send_quiz",
         "data": {
             "quiz_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "timeSeconds": 90,
             "questions": "literally any type"
         }
     }
