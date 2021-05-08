@@ -23,8 +23,9 @@ class StudentList extends EventEmitter {
     }
 
     deleteStudent(id: string): void {
+        const student = this.students.get(id)
         this.students.delete(id);
-        this.emit("studentDeleted");
+        this.emit("studentDeleted", student);
     }
 
     asArray() {

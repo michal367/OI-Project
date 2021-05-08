@@ -98,4 +98,19 @@ declare module 'payloads' {
             lecture_link: string
         }
     }
+
+    interface StudentDeletedPayload extends Payload{
+        data:{
+            student_id: string
+        }
+    }
+
+    interface StudentAddedPayload extends Payload{
+        data:{
+            student_id: string,
+            nick: string,
+            name: string,
+            surname: string
+        }
+    }
 }

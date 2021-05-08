@@ -51,13 +51,26 @@
 -   **Payload Content Emitted On Event:** `new student added`
 
     ```json
-        "studentAdded"
+    {
+        "event": "student_added",
+        "data": {
+            "student_id": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "nick": "nickowicz",
+            "name": "namowicz",
+            "surname": "surnamowicz"
+        }        
+    }
     ```
 
 -   **Payload Content Emitted On Event:** `student deleted`
 
     ```json
-        "studentDeleted"
+    {
+        "event": "student_deleted",
+        "data": {
+            "student_id": "7101b8b4-acd2-4838-9464-1da7aeff5335"
+        }        
+    }
     ```
 
 ## **reconnectLecture**
@@ -108,7 +121,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "8047751",
+            "lecture_link": "4902065",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -349,7 +362,7 @@
     {
         "event": "check_link",
         "data": {
-            "lecture_link": "8644704"
+            "lecture_link": "8076695"
         }
     }
     ```
@@ -370,5 +383,31 @@
     }
     ```
 
+-   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
+
+## **deleteStudent**
+
+    Usuwa obiekt studenta po stronie serwera i zrywa połączenie.
+
+-   **Requirements:** `None`
+-   **Event type:** `kill_me`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "kill_me"
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "you_dead"
+    }
+    ```
+
+-   **Error Response Payload:** `None`
 -   **Emitted Payload Content:** `None`
 -   **Payload Content Emitted On Event:** `None`

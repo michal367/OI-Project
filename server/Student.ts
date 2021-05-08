@@ -43,6 +43,9 @@ class Student extends EventEmitter {
                 case "send_reaction":
                     this.handlerSendReaction(parsed);
                     break;
+                case "kill_me":
+                    this.handleSuicide();
+                    break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
 
@@ -88,6 +91,21 @@ class Student extends EventEmitter {
             };
             this.wsc?.send(JSON.stringify(response));
         }
+    }
+
+    handleSuicide() {
+        const response: Payload = {
+            event: "you_dead"
+        };
+        this.wsc?.send(JSON.stringify(response));
+        // Rodo 
+        this.name = "";
+        this.surname = "";
+        this.nick = "";
+        
+        // setTimeout(() => this.wsc?.close(1000, "Student requested shutdown"), 1000) ;
+        this.wsc?.close(1000, "Student requested shutdown");
+        this.lecture.studentList.deleteStudent(this.id);
     }
 
 }
