@@ -33,8 +33,8 @@
     {
         "event": "lecture_created",
         "data": {
-            "lecture_id": "7101b8b4-acd2-4838-9464-1da7aeff5335",
-            "lecture_link": "1765661"
+            "lectureID": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "lectureLink": "1765661"
         }        
     }
     ```
@@ -54,7 +54,7 @@
     {
         "event": "student_added",
         "data": {
-            "student_id": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "studentID": "7101b8b4-acd2-4838-9464-1da7aeff5335",
             "nick": "nickowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -68,7 +68,7 @@
     {
         "event": "student_deleted",
         "data": {
-            "student_id": "7101b8b4-acd2-4838-9464-1da7aeff5335"
+            "studentID": "7101b8b4-acd2-4838-9464-1da7aeff5335"
         }        
     }
     ```
@@ -85,7 +85,7 @@
     {
         "event": "reconnect_lecture",
         "data": {
-            "lecture_id": "2b152644-b224-4b6e-a530-ffc54730b1a6"
+            "lectureID": "8ae1c319-b480-4e4c-a10a-8c5836cd8f3b"
         }         
     }
     ```
@@ -146,7 +146,7 @@
 
     Wysyła do wybranych studentów zadany quiz.
 
--   **Requirements:** `subsribeToLecture`
+-   **Requirements:** `createLecture`
 -   **Event type:** `send_quiz`
 -   **Payload Content:**
 
@@ -154,11 +154,12 @@
     {
         "event": "send_quiz",
         "data": {
-            "quiz_id": "some identifiable string",
-            "student_ids": [
-                "aee9f548-836a-49c2-bc30-c4e6be14e879"
+            "quizID": "some identifiable string",
+            "studentIDs": [
+                "6f545cd3-6586-4e0f-b7d4-847b024c09f9",
+                "a9e471b0-d188-485b-91b0-abba40a25de1"
             ],
-            "time_seconds": 60,
+            "timeSeconds": 60,
             "questions": "literally any type"
         }
     }
@@ -179,7 +180,7 @@
     {
         "event": "send_quiz",
         "data": {
-            "quiz_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "quizID": "185f192f-3c51-4855-a46e-868756d66c6c",
             "questions": "literally any type"
         }
     }
@@ -191,8 +192,8 @@
     {
         "event": "quiz_answers_added",
         "data": {
-            "quiz_id":  "some identifiable string",
-            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "quizID":  "some identifiable string",
+            "studentID": "185f192f-3c51-4855-a46e-868756d66c6c",
             "answers": "literally any type"
         }
     }
@@ -204,7 +205,7 @@
     {
         "event": "quiz_ended",
         "data": {
-            "quiz_id":  "some identifiable string",
+            "quizID":  "some identifiable string",
             "reason": "timeout"
         }
     }
@@ -216,7 +217,7 @@
     {
         "event": "quiz_ended",
         "data": {
-            "quiz_id":  "f19f15b7-be67-4591-ad2f-e098128c6c17",
+            "quizID":  "f19f15b7-be67-4591-ad2f-e098128c6c17",
             "reason": "timeout"
         }
     }
@@ -242,8 +243,8 @@
     {
         "event":"student_list",
         "data":{
-            "student_list":[
-                {"student_id":"20f52cf6-ddbb-4380-a046-5f528b76beca","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"},{"student_id":"80a93b73-d017-487f-aa2c-b14222d1e70a","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"}
+            "studentList":[
+                {"studentID":"20f52cf6-ddbb-4380-a046-5f528b76beca","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"},{"studentID":"80a93b73-d017-487f-aa2c-b14222d1e70a","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"}
             ]
         }
     }

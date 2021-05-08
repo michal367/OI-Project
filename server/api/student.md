@@ -22,9 +22,9 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "5444494",
+            "lectureLink": "2571327",
             "nick": "nickomowicz",
-            "name": "namowicz",
+            "name": "namowiczowin",
             "surname": "surnamowicz"
         }
     }
@@ -36,7 +36,7 @@
     {
         "event": "student_created",
         "data": {
-            "student_id": "059bc853-0522-4c06-bc04-bff704fb34f5"
+            "studentID": "059bc853-0522-4c06-bc04-bff704fb34f5"
         }
     }
     ```
@@ -64,8 +64,8 @@
     {
         "event": "reconnect_student",
         "data": {
-            "lecture_link": "3706325",
-            "student_id": "e74d511c-ed1a-42eb-9209-21759bf1e389"
+            "lectureLink": "2571327",
+            "studentID": "6f545cd3-6586-4e0f-b7d4-847b024c09f9"
         }
     }
     ```
@@ -94,7 +94,7 @@
     Usuwa obiekt studenta po stronie serwera i zrywa połączenie.
 
 -   **Requirements:** `None`
--   **Event type:** `kill_me`
+-   **Event type:** `delete_student`
 -   **Payload Content:**
 
     ```json
@@ -119,7 +119,7 @@
 
     Odsyła odpowiedzi na zadany quiz.
 
--   **Requirements:** `subsribeStudentToLecture`
+-   **Requirements:** `createStudent`
 -   **Event type:** `send_quiz_response`
 -   **Payload Content:**
 
@@ -127,7 +127,7 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "quiz_id": "6fda732a-281d-4e9e-989a-132bd74eea08",
+            "quizID": "3e8baec5-13b0-4d5a-90a6-d6ad72d10727",
             "answers": "literally any type"
         }
     }
@@ -154,7 +154,7 @@
 
 ## **sendReactionFromStudent**
 
-    Odsyła odpowiedzi na zadany quiz.
+    Wysyła reakcję studenta.
 
 -   **Requirements:** `subsribeStudentToLecture`
 -   **Event type:** `send_reaction`
@@ -192,7 +192,7 @@
         "event": "send_student_reaction",
         "data": {
             "reaction": "POG",
-            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c"
+            "studentID": "185f192f-3c51-4855-a46e-868756d66c6c"
         }
     }
     ```
@@ -209,7 +209,7 @@
     {
         "event": "check_link",
         "data": {
-            "lecture_link": "8076695"
+            "lectureLink": "2571327"
         }
     }
     ```

@@ -1,7 +1,6 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload, StudentDeletedPayload, StudentAddedPayload, StudentData, GetStudentListResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
@@ -40,7 +39,7 @@ class Lecture {
                     event: "send_student_reaction",
                     data: {
                         reaction: reaction,
-                        student_id: student.id
+                        studentID: student.id
                     }
                 };
                 this.wsc?.send(JSON.stringify(payload));
@@ -49,7 +48,7 @@ class Lecture {
             const payload: StudentAddedPayload = {
                 event: "student_added",
                 data: {
-                    student_id: student.id,
+                    studentID: student.id,
                     nick: student.nick,
                     name: student.name,
                     surname: student.surname
@@ -61,7 +60,7 @@ class Lecture {
             const payload: StudentDeletedPayload = {
                 event: "student_deleted",
                 data: {
-                    student_id: student.id,
+                    studentID: student.id,
                 }
             };
             this.wsc?.send(JSON.stringify(payload));
@@ -99,17 +98,17 @@ class Lecture {
         }
         this.wsc?.send(JSON.stringify(response));
 
-        const quiz: Quiz = new Quiz(parsed.data.quiz_id, parsed.data.time_seconds, parsed.data.questions, parsed.data.student_ids);
+        const quiz: Quiz = new Quiz(parsed.data.quizID, parsed.data.timeSeconds, parsed.data.questions, parsed.data.studentIDs);
         this.quizes.set(quiz.IDFromServer, quiz);
 
-        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
+        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.studentIDs.includes(student.id));
 
         const answersAddedHandler = (student: Student, answers: any) => {
             const serverResponse: ServerQuizResponsePayload = {
                 event: "quiz_answers_added",
                 data: {
-                    quiz_id: quiz.IDFromLecturer,
-                    student_id: student.id,
+                    quizID: quiz.IDFromLecturer,
+                    studentID: student.id,
                     answers: answers
                 }
             };
@@ -121,13 +120,13 @@ class Lecture {
             const serverResponse: QuizEndedPayload = {
                 event: "quiz_ended",
                 data: {
-                    quiz_id: quiz.IDFromLecturer,
+                    quizID: quiz.IDFromLecturer,
                     reason: reason
                 }
             };
             this.wsc?.send(JSON.stringify(serverResponse));
             if (reason === "quiz_timeout") {
-                serverResponse.data.quiz_id = quiz.IDFromServer;
+                serverResponse.data.quizID = quiz.IDFromServer;
                 const remainingStudents: Student[] = selectedStudents.filter((student: Student) => !quiz.answeredStudents().includes(student.id));
                 remainingStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverResponse)));
             }
@@ -139,7 +138,7 @@ class Lecture {
         const serverRequest: ServerQuizRequestPayload = {
             event: parsed.event,
             data: {
-                quiz_id: quiz.IDFromServer,
+                quizID: quiz.IDFromServer,
                 questions: parsed.data.questions
             }
         };
@@ -152,9 +151,11 @@ class Lecture {
             event: "lecture_ended"
         };
         this.wsc?.send(JSON.stringify(payload));
+
         if (!this.wsc?.isClosed) {
             this.wsc?.close(1000, "Lecturer requested shutdown");
         }
+
         this.studentList.asArray().forEach((student: Student) => {
             student.handleGDPR();
             student.wsc?.send(JSON.stringify(payload));
@@ -162,6 +163,7 @@ class Lecture {
                 student.wsc?.close(1000, "Lecturer requested shutdown");
             }
         });
+
         this.tutor = "";
         lectures.delete(this.id);
     }
@@ -169,17 +171,18 @@ class Lecture {
     handlerGetStudentList() {
         const studentDataList: StudentData[] = this.studentList.asArray().map((s: Student) => {
             const studentData: StudentData = {
-                student_id: s.id,
+                studentID: s.id,
                 nick: s.nick,
                 name: s.name,
                 surname: s.surname
             };
+            return studentData;
         });
 
         const payload: GetStudentListResponsePayload = {
             event: "student_list",
             data: {
-                student_list: studentDataList
+                studentList: studentDataList
             }
         };
         this.wsc?.send(JSON.stringify(payload));

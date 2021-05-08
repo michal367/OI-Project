@@ -2,7 +2,6 @@ import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@
 import Lecture from "./Lecture.ts";
 import { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
-import { CheckLinkPayload, StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload, LectureReconnectRequestPayload, StudentReconnectRequestPayload } from "./@types/payloads/types.d.ts";
 
 const lectures = new Map();
 
@@ -44,8 +43,8 @@ const setupWebSocketServer = () => {
 };
 
 function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocketClient): boolean {
-    if (linkLectureMap.has(parsed.data.lecture_link)) {
-        const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lecture_link);
+    if (linkLectureMap.has(parsed.data.lectureLink)) {
+        const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lectureLink);
         const student: Student = new Student(parsed.data.nick, parsed.data.name, parsed.data.surname, selectedLecture);
 
         if (!selectedLecture.studentList.includes(student)) {
@@ -55,7 +54,7 @@ function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocket
             const payload: StudentCreateResponsePayload = {
                 event: "student_created",
                 data: {
-                    student_id: student.id
+                    studentID: student.id
                 }
             };
             ws.send(JSON.stringify(payload));
@@ -73,9 +72,9 @@ function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocket
 }
 
 function handlerReconnectStudent(parsed: StudentReconnectRequestPayload, ws: WebSocketClient): boolean {
-    if (linkLectureMap.has(parsed.data.lecture_link)) {
-        const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lecture_link);
-        const student: Student | undefined = selectedLecture.studentList.getStudent(parsed.data.student_id);
+    if (linkLectureMap.has(parsed.data.lectureLink)) {
+        const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lectureLink);
+        const student: Student | undefined = selectedLecture.studentList.getStudent(parsed.data.studentID);
 
         if (!student?.wsc) {
             student?.setWebSocketClient(ws);
@@ -97,7 +96,7 @@ function handlerReconnectStudent(parsed: StudentReconnectRequestPayload, ws: Web
     return false;
 }
 
-function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSocketClient): boolean {
+function handlerCreateLecture(parsed: LectureCreateRequestPayload, ws: WebSocketClient): boolean {
     const lecture: Lecture = new Lecture(parsed.data.tutor);
     lectures.set(lecture.id, lecture);
     if (lecture) {
@@ -106,8 +105,8 @@ function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSoc
         const payload: LectureCreateResponsePayload = {
             event: "lecture_created",
             data: {
-                lecture_id: lecture.id,
-                lecture_link: lecture.link
+                lectureID: lecture.id,
+                lectureLink: lecture.link
             }
         };
         ws.send(JSON.stringify(payload));
@@ -123,8 +122,8 @@ function handlerCreateLecture(parsed: LectureReconnectRequestPayload, ws: WebSoc
     return false;
 }
 
-function handlerReconnectLecture(parsed: LectureCreateRequestPayload, ws: WebSocketClient): boolean {
-    const lecture: Lecture | undefined = lectures.get(parsed.data.lecture_id);
+function handlerReconnectLecture(parsed: LectureReconnectRequestPayload, ws: WebSocketClient): boolean {
+    const lecture: Lecture | undefined = lectures.get(parsed.data.lectureID);
     if (!lecture?.wsc) {
         lecture?.setWebSocketClient(ws);
 
@@ -145,7 +144,7 @@ function handlerReconnectLecture(parsed: LectureCreateRequestPayload, ws: WebSoc
 }
 
 function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient) {
-    if (linkLectureMap.has(parsed.data.lecture_link)) {
+    if (linkLectureMap.has(parsed.data.lectureLink)) {
         const payload: Payload = {
             event: "valid_link",
         };

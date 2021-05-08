@@ -1,7 +1,6 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { Payload, QuizResponsePayload, ReactionRequestPayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
 
@@ -14,7 +13,7 @@ class Student extends EventEmitter {
     wsc?: WebSocketClient;
     reactions: Map<Date, string>;
     canSendReaction: boolean;
-    REACTION_TIMEOUT: number = 1000;
+    REACTION_TIMEOUT = 1000;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -59,7 +58,7 @@ class Student extends EventEmitter {
     }
 
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
-        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quiz_id);
+        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quizID);
         if (quiz?.isActive()) {
             quiz.addStudentAnswers(this, parsed.data.answers);
 
