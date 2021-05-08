@@ -118,6 +118,7 @@ class Lecture {
             event: parsed.event,
             data: {
                 quiz_id: quiz.IDFromServer,
+                timeSeconds: parsed.data.time_seconds,
                 questions: parsed.data.questions
             }
         };

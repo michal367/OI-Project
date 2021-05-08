@@ -28,6 +28,7 @@ declare module 'payloads' {
     interface ServerQuizRequestPayload extends Payload {
         data: {
             quiz_id: string,
+            timeSeconds: number,
             questions: any
         }
     }
