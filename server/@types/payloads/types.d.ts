@@ -1,6 +1,13 @@
 declare module 'payloads' {
+
+    type createLectureEventTypes = "create_lecture" | "lecture_created" | "lecture_not_created";
+    type reconnectLectureEventTypes = "reconnect_lecture" | "lecture_reconnected" | "lecture_not_reconnected";
+    type deleteLectureEventTypes = "delete_lecture" | "lecture_ended";
+    type studentCreationEventTypes = "student_added" | "student_deleted";
+    type eventType = createLectureEventTypes | reconnectLectureEventTypes | deleteLectureEventTypes | studentCreationEventTypes;
+
     interface Payload {
-        event: string
+        event: eventType
     }
 
     interface LectureCreateRequestPayload extends Payload {

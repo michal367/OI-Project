@@ -11,7 +11,7 @@ const setupWebSocketServer = () => {
     wss.on("connection", function (ws: WebSocketClient) {
         const subMessageHandler = (message: string) => {
             const parsed = JSON.parse(message);
-            let success: boolean = false;
+            let success = false;
             switch (parsed.event) {
                 case "create_lecture":
                     success = handlerCreateLecture(parsed, ws);
