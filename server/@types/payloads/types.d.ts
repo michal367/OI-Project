@@ -92,4 +92,10 @@ declare module 'payloads' {
             lecture_id: string,
         }        
     }
+
+    interface CheckLinkPayload extends Payload{
+        data:{
+            lecture_link: string
+        }
+    }
 }

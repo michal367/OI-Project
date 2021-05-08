@@ -2,7 +2,7 @@ import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@
 import Lecture from "./Lecture.ts";
 import {linkLectureMap} from "./Lecture.ts";
 import Student from "./Student.ts";
-import { StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload, LectureReconnectRequestPayload, StudentReconnectRequestPayload } from "./@types/payloads/types.d.ts";
+import { CheckLinkPayload, StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload, LectureReconnectRequestPayload, StudentReconnectRequestPayload } from "./@types/payloads/types.d.ts";
 const lectures = new Map();
 
 const setupWebSocketServer = () => {
@@ -23,6 +23,9 @@ const setupWebSocketServer = () => {
                     break;
                 case "reconnect_student":
                     success = handlerReconnectStudent(parsed, ws);
+                    break;
+                case "check_link":
+                    handlerCheckLink(parsed, ws);
                     break;
                 default:
                     console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
@@ -122,6 +125,20 @@ function handlerReconnectLecture(parsed: LectureCreateRequestPayload, ws: WebSoc
     };
     ws.send(JSON.stringify(payload));
     return false;
+}
+
+function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient){
+    if(linkLectureMap.has(parsed.data.lecture_link)){
+        const payload: Payload = {
+            event: "valid_link",
+        };
+        ws.send(JSON.stringify(payload));
+    }else{
+        const payload: Payload = {
+            event: "invalid_link",
+        };
+        ws.send(JSON.stringify(payload));
+    }
 }
 
 export { setupWebSocketServer };

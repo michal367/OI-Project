@@ -64,7 +64,7 @@
 
     Przywraca połączenie z istniejącym po stronie serwera obiektem wykładu.
 
--   **Requirements:** `None`
+-   **Requirements:** `createLecture`
 -   **Event type:** `reconnect_lecture`
 -   **Payload Content:**
 
@@ -72,7 +72,7 @@
     {
         "event": "reconnect_lecture",
         "data": {
-            "lecture_id": "dfa286f6-cb9e-4d43-a145-f51fe5e6169d"
+            "lecture_id": "2b152644-b224-4b6e-a530-ffc54730b1a6"
         }         
     }
     ```
@@ -142,7 +142,7 @@
 
     Przywraca połączenie z istniejącym po stronie serwera obiektem studenta.
 
--   **Requirements:** `None`
+-   **Requirements:** `createStudent`
 -   **Event type:** `reconnect_student`
 -   **Payload Content:**
 
@@ -337,4 +337,38 @@
     }
     ```
 
-  
+## **checkLectureLink**
+
+    Pozwala na sprawdzenie czy przesłany link jest w użyciu.
+
+-   **Requirements:** `None`
+-   **Event type:** `check_link`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "check_link",
+        "data": {
+            "lecture_link": "8644704"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "valid_link"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "invalid_link"
+    }
+    ```
+
+-   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
