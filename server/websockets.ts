@@ -3,6 +3,7 @@ import Lecture from "./Lecture.ts";
 import {linkLectureMap} from "./Lecture.ts";
 import Student from "./Student.ts";
 import { CheckLinkPayload, StudentCreateRequestPayload, LectureCreateResponsePayload, Payload, LectureCreateRequestPayload, StudentCreateResponsePayload, LectureReconnectRequestPayload, StudentReconnectRequestPayload } from "./@types/payloads/types.d.ts";
+
 const lectures = new Map();
 
 const setupWebSocketServer = () => {
@@ -141,4 +142,4 @@ function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient){
     }
 }
 
-export { setupWebSocketServer };
+export { setupWebSocketServer, lectures };

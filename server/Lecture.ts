@@ -5,6 +5,7 @@ import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizRespon
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
+import {lectures} from "./websockets.ts";
 
 export const linkLectureMap = new Map();
 
@@ -73,14 +74,17 @@ class Lecture {
                 case "send_quiz":
                     this.handlerSendQuiz(parsed);
                     break;
+                case "delete_lecture":
+                    this.handlerDeleteLecture();
+                    break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 
             }
         });
 
-        this.wsc.on("close", () => {
-            console.log("Lecture Websockets closed");
+        this.wsc.on("close", (reason: string) => {
+            console.log(`Lecture Websockets closed \n\t reason: ${reason}`);
             this.wsc = undefined;
             //TODO: cleanup after closing websocket connection
         });
@@ -138,6 +142,26 @@ class Lecture {
         };
         selectedStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverRequest)));
         quiz.start();
+    }
+
+    handlerDeleteLecture() {
+        const payload: Payload = {
+            event: "lecture_ended"
+        };
+        this.wsc?.send(JSON.stringify(payload));
+        if(!this.wsc?.isClosed){
+            this.wsc?.close(1000, "Lecturer requested shutdown");
+        }
+        this.studentList.asArray().forEach((student: Student) => {
+            student.handleRodo();
+            student.wsc?.send(JSON.stringify(payload));
+            if(!student.wsc?.isClosed){
+                student.wsc?.close(1000, "Lecturer requested shutdown");
+            }
+        });
+        // Rodo
+        this.tutor = "";
+        lectures.delete(this.id);
     }
 
 }

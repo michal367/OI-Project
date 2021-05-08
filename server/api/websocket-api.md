@@ -109,6 +109,39 @@
 -   **Emitted Payload Content:** `None`
 -   **Payload Content Emitted On Event:** `None`
 
+## **deleteLecture**
+
+    Usuwa obiekt wykładu i przypisanych do niego studentów po stronie serwera i zrywa połączenia.
+
+-   **Requirements:** `None`
+-   **Event type:** `delete_lecture`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "delete_lecture"
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_ended"
+    }
+    ```
+
+-   **Error Response Payload:** `None`
+-   **Emitted Payload Content:** 
+
+    ```json
+    {
+        "event": "lecture_ended"
+    }
+    ```
+
+-   **Payload Content Emitted On Event:** `None`
+
 ## **createStudent**
 
     Tworzy obiekt studenta po stronie serwera i umieszcza go we właściwym wykładzie.
@@ -121,7 +154,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "4902065",
+            "lecture_link": "3176738",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -185,6 +218,32 @@
     }
     ```
 
+-   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
+
+## **deleteStudent**
+
+    Usuwa obiekt studenta po stronie serwera i zrywa połączenie.
+
+-   **Requirements:** `None`
+-   **Event type:** `kill_me`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "kill_me"
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "you_dead"
+    }
+    ```
+
+-   **Error Response Payload:** `None`
 -   **Emitted Payload Content:** `None`
 -   **Payload Content Emitted On Event:** `None`
 
@@ -383,31 +442,5 @@
     }
     ```
 
--   **Emitted Payload Content:** `None`
--   **Payload Content Emitted On Event:** `None`
-
-## **deleteStudent**
-
-    Usuwa obiekt studenta po stronie serwera i zrywa połączenie.
-
--   **Requirements:** `None`
--   **Event type:** `kill_me`
--   **Payload Content:**
-
-    ```json
-    {
-        "event": "kill_me"
-    }
-    ```
-
--   **Response Payload:**
-
-    ```json
-    {
-        "event": "you_dead"
-    }
-    ```
-
--   **Error Response Payload:** `None`
 -   **Emitted Payload Content:** `None`
 -   **Payload Content Emitted On Event:** `None`

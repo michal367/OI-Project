@@ -52,8 +52,8 @@ class Student extends EventEmitter {
             }
         });
 
-        this.wsc.on("close", () => {
-            console.log("Student Websockets closed");
+        this.wsc.on("close", (reason: string) => {
+            console.log(`Student Websockets closed \n\t reason: ${reason}`);
             this.wsc = undefined;
             //TODO: cleanup after closing websocket connection
         });
@@ -98,14 +98,17 @@ class Student extends EventEmitter {
             event: "you_dead"
         };
         this.wsc?.send(JSON.stringify(response));
-        // Rodo 
+        if(!this.wsc?.isClosed){
+            this.wsc?.close(1000, "Student requested shutdown");
+        }
+        this.handleRodo();
+        this.lecture.studentList.deleteStudent(this.id);
+    }
+
+    handleRodo(){
         this.name = "";
         this.surname = "";
         this.nick = "";
-        
-        // setTimeout(() => this.wsc?.close(1000, "Student requested shutdown"), 1000) ;
-        this.wsc?.close(1000, "Student requested shutdown");
-        this.lecture.studentList.deleteStudent(this.id);
     }
 
 }
