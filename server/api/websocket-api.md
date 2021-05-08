@@ -22,14 +22,8 @@
     {
         "event": "create_lecture",
         "data": {
-<<<<<<< HEAD
             "lecturer": "Apple I-Dzik"
         }         
-
-=======
-            "lecture_id": "4630f745-0a10-47ec-b1c8-cddb3fcf598b"
-        }
->>>>>>> develop
     }
     ```
 
@@ -66,6 +60,41 @@
         "studentDeleted"
     ```
 
+## **reconnectLecture**
+
+    Przywraca połączenie z istniejącym po stronie serwera obiektem wykładu.
+
+-   **Requirements:** `None`
+-   **Event type:** `reconnect_lecture`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "reconnect_lecture",
+        "data": {
+            "lecture_id": "dfa286f6-cb9e-4d43-a145-f51fe5e6169d"
+        }         
+    }
+    ```
+
+-   **Success Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_reconnected",      
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_not_reconnected"
+    }
+    ```
+
+-   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
 
 ## **createStudent**
 
@@ -79,7 +108,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "0258055",
+            "lecture_link": "8047751",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"
@@ -103,6 +132,43 @@
     ```json
     {
         "event": "student_not_created"
+    }
+    ```
+
+-   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
+
+## **reconnectStudent**
+
+    Przywraca połączenie z istniejącym po stronie serwera obiektem studenta.
+
+-   **Requirements:** `None`
+-   **Event type:** `reconnect_student`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "reconnect_student",
+        "data": {
+            "lecture_link": "8047751",
+            "student_id": "3069042f-5d2d-4679-946b-5e1f9f9bb46a"
+        }
+    }
+    ```
+
+-   **Success Response Payload:**
+
+    ```json
+    {
+        "event": "student_reconnected",
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_not_reconnected"
     }
     ```
 

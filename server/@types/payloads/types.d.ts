@@ -79,4 +79,17 @@ declare module 'payloads' {
             student_id: string
         }
     }
+
+    interface StudentReconnectRequestPayload extends Payload{
+        data: {
+            lecture_link: string,
+            student_id: string
+        }        
+    }
+
+    interface LectureReconnectRequestPayload extends Payload{
+        data: {
+            lecture_id: string,
+        }        
+    }
 }
