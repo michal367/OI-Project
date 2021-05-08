@@ -244,7 +244,18 @@
         "event":"student_list",
         "data":{
             "studentList":[
-                {"studentID":"20f52cf6-ddbb-4380-a046-5f528b76beca","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"},{"studentID":"80a93b73-d017-487f-aa2c-b14222d1e70a","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"}
+                {
+                    "studentID":"20f52cf6-ddbb-4380-a046-5f528b76beca",
+                    "nick":"nickomowicz",
+                    "name":"namowicz",
+                    "surname":"surnamowicz"
+                },
+                {
+                    "studentID":"80a93b73-d017-487f-aa2c-b14222d1e70a",
+                    "nick":"nickomowicz",
+                    "name":"namowicz",
+                    "surname":"surnamowicz"
+                }
             ]
         }
     }
