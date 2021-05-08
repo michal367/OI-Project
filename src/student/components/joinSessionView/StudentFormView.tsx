@@ -1,5 +1,5 @@
-import { useContext, useState, ChangeEvent } from "react";
-import { TextField, Button, CircularProgress, Paper } from "@material-ui/core";
+import React, { useContext, useState, ChangeEvent } from "react";
+import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import clsx from "clsx";
@@ -7,6 +7,10 @@ import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
+import IconButton from '@material-ui/core/IconButton';
+import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
+import QrReader from "react-qr-reader";
+
 
 interface StudentFormViewProps {
     session?: string;
@@ -55,6 +59,7 @@ export function StudentFormView(props: StudentFormViewProps) {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [openQr, setOpenQr] = useState(false);
 
     const buttonClassname = clsx({
         [classes.sessionBtn]: 1,
@@ -78,7 +83,7 @@ export function StudentFormView(props: StudentFormViewProps) {
             .replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
             .split(" ")
             .forEach((word) => {
-                if (input.length != 0) input += " ";
+                if (input.length !== 0) input += " ";
                 if (word.length > 0)
                     input += word[0].toUpperCase() + word.substring(1);
                 else input += word;
@@ -135,17 +140,53 @@ export function StudentFormView(props: StudentFormViewProps) {
                     });
         }
     };
+
+    const handleScan = (data: string | null) => {
+        if (!data) return;
+
+        try {
+            const url = new URL(data);
+            let pUrl = url.pathname.split("/");
+            if (pUrl.length < 2) return;
+
+            let code = pUrl[1];
+            if (code.length !== 7) return;
+
+            let codeNumber = parseInt(code);
+            if (isNaN(codeNumber)) return;
+
+            setSession(codeNumber + "");
+            setOpenQr(false);
+        } catch (e) {
+            console.log("Not a valid url");
+        }
+    }
+
     return (
         <form autoComplete="off" className={classes.form}>
+            <Backdrop open={openQr} onClick={() => { setOpenQr(false) }} style={{ zIndex: 10 }}>
+                {openQr && <QrReader
+                    delay={300}
+                    onError={(err) => { console.error(err) }}
+                    onScan={handleScan}
+                    style={{ width: '100%', maxWidth: "350px" }}
+                />}
+            </Backdrop>
             {!props.session && (
-                <TextField
-                    id="outlined-secondary"
-                    label="Klucz zaproszenia do sesji"
-                    variant="outlined"
-                    value={session}
-                    color="secondary"
-                    onChange={handleChangeSession}
-                />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <TextField
+                        id="outlined-secondary"
+                        label="Klucz zaproszenia do sesji"
+                        variant="outlined"
+                        value={session}
+                        color="secondary"
+                        onChange={handleChangeSession}
+                        style={{ flexGrow: 1 }}
+                    />
+                    <IconButton color="primary" aria-label="qr scan" component="span" style={{ fontSize: "2rem" }} onClick={() => setOpenQr(true)}>
+                        <CenterFocusWeakIcon fontSize="inherit" />
+                    </IconButton>
+                </div>
             )}
             <TextField
                 id="outlined-secondary"
