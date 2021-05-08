@@ -10,7 +10,8 @@ import {
     useContext,
 } from "react";
 import { StoreContext } from "../../services/StoreService";
-
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 interface QuizListViewProps {
     //TODO slit to 2 props 
     quiz?: [Quiz | undefined, any];
@@ -32,7 +33,9 @@ export function QuizListView(props: QuizListViewProps) {
             overflow: "auto",
         }
     })();
-
+    const deleteQuiz = (quizToBeDeleted: Quiz) => () => {
+        store.quizes = store.quizes.filter(storeQuiz => storeQuiz != quizToBeDeleted);
+    }
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
             {store.quizes.map((value: Quiz) => {
@@ -43,6 +46,9 @@ export function QuizListView(props: QuizListViewProps) {
                         onClick={handleQuiz(value)}
                     >
                         <ListItemText primary={value.title} />
+                        <IconButton edge="end" aria-label="delete" onClick={deleteQuiz(value)}>
+                            <DeleteIcon />
+                        </IconButton>
                     </ListItem>
                 );
             })}

@@ -47,7 +47,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
     const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 0);
-    const [quiz, setQuiz] = useState<Quiz | undefined>(store.sendQuiz.quiz);
+    const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(!(store.sendQuiz.timeInMin));
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
 
@@ -56,11 +56,18 @@ export function SendQuizView(props: SendQuizViewProps) {
         setStudents(selectedStudents);
     }, [props.students]);
 
+    useEffect(() => {
+        if(store.sendQuiz.quiz)
+            setQuiz(store.quizes.indexOf(store.sendQuiz.quiz) != -1)
+        else
+            setQuiz(false);
+    }, [store.quizes]);
+
     const theme = useTheme();
     const setSelectedQuiz = (quiz: Quiz | undefined) => {
         store.sendQuiz.quiz = quiz;
         store.sendQuiz = store.sendQuiz;
-        setQuiz(quiz);
+        setQuiz(quiz != undefined);
     }
     const setSelectedTime = (value: unknown) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
@@ -131,7 +138,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const getStepContent = (step: number) => {
         switch (step) {
             case 0:
-                return <QuizListView quiz={[quiz, setSelectedQuiz]} />;
+                return <QuizListView quiz={[store.sendQuiz.quiz, setSelectedQuiz]} />;
             case 1:
                 return (
                     <FormControl className={classes.container}>
@@ -205,7 +212,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                 <ListItemText
                                     primary="Nazwa przydzielonego quizu:"
                                     secondary={
-                                        (quiz ?? { title: "" }).title
+                                        (store.sendQuiz.quiz ?? { title: "" }).title
                                     }
                                 />
                             </ListItem>
@@ -265,7 +272,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 3:
                 return false;
             case 0:
-                return quiz === undefined
+                return !quiz
             case 1:
                 return !(time > 0 || checked)
             case 2:
