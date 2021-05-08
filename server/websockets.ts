@@ -17,7 +17,7 @@ const setupWebSocketServer = () => {
                     success = handlerCreateLecture(parsed, ws);
                     break;
                 case "create_student":
-                    success = handlerSubscribeStudent(parsed, ws);
+                    success = handlerCreateStudent(parsed, ws);
                     break;
                 case "reconnect_lecture":
                     success = handlerReconnectLecture(parsed, ws);
@@ -43,22 +43,23 @@ const setupWebSocketServer = () => {
     });
 };
 
-function handlerSubscribeStudent(parsed: StudentCreateRequestPayload, ws: WebSocketClient): boolean {
+function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocketClient): boolean {
     if (linkLectureMap.has(parsed.data.lecture_link)) {
         const selectedLecture: Lecture = linkLectureMap.get(parsed.data.lecture_link);
         const student: Student = new Student(parsed.data.nick, parsed.data.name, parsed.data.surname, selectedLecture);
-        selectedLecture.studentList.addStudent(student);
-        student.setWebSocketClient(ws);
-        const payload: StudentCreateResponsePayload = {
-            event: "student_created",
-            data: {
-                student_id: student.id
-            }
-        };
-        ws.send(JSON.stringify(payload));
-        return true;
+        if(!selectedLecture.studentList.includesStudent(student)){
+            selectedLecture.studentList.addStudent(student);
+            student.setWebSocketClient(ws);
+            const payload: StudentCreateResponsePayload = {
+                event: "student_created",
+                data: {
+                    student_id: student.id
+                }
+            };
+            ws.send(JSON.stringify(payload));
+            return true;
+        }
     }
-
     const payload: Payload = {
         event: "student_not_created"
     };
