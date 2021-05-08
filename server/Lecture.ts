@@ -1,7 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload, StudentDeletedPayload, StudentAddedPayload } from "./@types/payloads/types.d.ts";
+import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload, StudentDeletedPayload, StudentAddedPayload, StudentData, GetStudentListResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
@@ -76,6 +76,9 @@ class Lecture {
                     break;
                 case "delete_lecture":
                     this.handlerDeleteLecture();
+                    break;
+                case "get_student_list":
+                    this.handlerGetStudentList();
                     break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
@@ -164,6 +167,29 @@ class Lecture {
         lectures.delete(this.id);
     }
 
+    handlerGetStudentList() {
+        const studentDataList: StudentData[] = [];
+        this.studentList.asArray().forEach((s: Student) =>{
+            const studentData: StudentData = {
+                student_id: s.id,
+                nick: s.nick,
+                name: s.name,
+                surname: s.surname
+            };
+            studentDataList.push(studentData);
+        });
+
+        const payload: GetStudentListResponsePayload = {
+            event: "student_list",
+            data:{
+                student_list: studentDataList
+            }
+        };
+        this.wsc?.send(JSON.stringify(payload));
+    }
+
 }
+
+
 
 export default Lecture;

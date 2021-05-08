@@ -22,7 +22,7 @@
     {
         "event": "create_student",
         "data": {
-            "lecture_link": "3176738",
+            "lecture_link": "5307704",
             "nick": "nickomowicz",
             "name": "namowicz",
             "surname": "surnamowicz"

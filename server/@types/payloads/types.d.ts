@@ -113,4 +113,16 @@ declare module 'payloads' {
             surname: string
         }
     }
+
+    interface StudentData {
+        student_id: string,
+        nick: string,
+        name: string,
+        surname: string
+    }
+    interface GetStudentListResponsePayload extends Payload{
+        data:{
+            student_list: StudentData[]
+        }
+    }
 }

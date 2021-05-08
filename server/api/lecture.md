@@ -221,3 +221,34 @@
         }
     }
     ```
+
+## **getStudentList**
+
+    Odysła listę zapisanych do wykładu studentów.
+
+-   **Requirements:** `None`
+-   **Event type:** `get_student_list`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "get_student_list"
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event":"student_list",
+        "data":{
+            "student_list":[
+                {"student_id":"20f52cf6-ddbb-4380-a046-5f528b76beca","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"},{"student_id":"80a93b73-d017-487f-aa2c-b14222d1e70a","nick":"nickomowicz","name":"namowicz","surname":"surnamowicz"}
+            ]
+        }
+    }
+    ```
+
+-   **Error Response Payload:** `None`
+-   **Emitted Payload Content:**  `None`
+-   **Payload Content Emitted On Event:** `None`
