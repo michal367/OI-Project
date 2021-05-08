@@ -93,7 +93,7 @@
 
     Usuwa obiekt studenta po stronie serwera i zrywa połączenie.
 
--   **Requirements:** `None`
+-   **Requirements:** `createStudent`
 -   **Event type:** `delete_student`
 -   **Payload Content:**
 
@@ -156,7 +156,7 @@
 
     Wysyła reakcję studenta.
 
--   **Requirements:** `subsribeStudentToLecture`
+-   **Requirements:** `createStudent`
 -   **Event type:** `send_reaction`
 -   **Payload Content:**
 

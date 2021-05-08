@@ -113,7 +113,7 @@
 
     Usuwa obiekt wykładu i przypisanych do niego studentów po stronie serwera i zrywa połączenia.
 
--   **Requirements:** `None`
+-   **Requirements:** `createLecture`
 -   **Event type:** `delete_lecture`
 -   **Payload Content:**
 
@@ -227,7 +227,7 @@
 
     Odysła listę zapisanych do wykładu studentów.
 
--   **Requirements:** `None`
+-   **Requirements:** `createLecture`
 -   **Event type:** `get_student_list`
 -   **Payload Content:**
 
