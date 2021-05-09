@@ -76,10 +76,7 @@ class Lecture {
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
         const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz));
-        console.log(wholeQuiz.questions);
-        // correct naswers
         const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz)); 
-        // create questions
         const questionsWithoutAnswers: Question[] = quizWithoutAnswers.questions;
         questionsWithoutAnswers.forEach((q: Question) => {
             const answers: Answer[] | undefined = q.options;
@@ -89,10 +86,8 @@ class Lecture {
                 });
             }
         });
-        console.log(quizWithoutAnswers.questions);
         const quiz: Quiz = new Quiz(parsed.data.time_seconds, quizWithoutAnswers, wholeQuiz, parsed.data.student_ids);
         this.quizes.set(quiz.IDFromServer, quiz);
-        console.log(quiz);
         const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
 
         const response: ShowAnswersPayload = {
@@ -149,10 +144,7 @@ class Lecture {
 
     handlerShowAnswers(parsed: ShowAnswersPayload): void{
         const quizID: string = parsed.data.quizID;
-        console.log(parsed);
-        console.log(this,this.quizes);
         const quiz: Quiz | undefined = this.quizes.get(quizID);
-        console.log(quiz);
         if(quiz){
             quiz.answeredStudents().forEach((studentID: string) => {
                 const serverToStudent: ShowAnswersToStudentPayload = {
