@@ -67,4 +67,18 @@ declare module 'payloads' {
             student_id: string
         }
     }
+
+    interface ShowAnswersPayload extends Payload{
+        data:{
+            quizID: string
+        }
+    }
+
+    interface ShowAnswersToStudentPayload extends Payload{
+        data:{
+            quizID: string,
+            correctAnswers: any,
+            studentAnswers: any
+        }
+    }
 }
