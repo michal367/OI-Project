@@ -3,22 +3,22 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
     Fab,
     makeStyles,
-    useTheme,
 } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { CopyLinkForm } from "./CopyLinkForm";
 import ShareIcon from "@material-ui/icons/Share";
+import { StoreContext } from "../../services/StoreService";
+import QRCode from "qrcode.react";
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
 }
 
 export function ShareSessionView(props: ShareSessionViewProps) {
-    const theme = useTheme();
+    const store = useContext(StoreContext);
 
     const classes = makeStyles({
         shareIcon: {
@@ -77,10 +77,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                         <CopyLinkForm prefix={"localhost:3001/"} />
                         <CopyLinkForm />
                     </div>
-                    <img
-                        className={classes.qr}
-                        src="https://pl.qr-code-generator.com/wp-content/themes/qr/new_structure/markets/basic_market/generator/dist/generator/assets/images/websiteQRCode_noFrame.png"
-                    />
+
+                    <QRCode style={{ alignSelf: "center" }} size={256} value={`localhost:3001/${store.link}`} />
+
                 </DialogContent>
                 <DialogActions>
                     <Button

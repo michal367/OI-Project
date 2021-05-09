@@ -5,8 +5,7 @@ import {
     PopperPlacementType,
     Popper,
     Paper,
-    Typography,
-    useTheme,
+    useTheme
 } from "@material-ui/core";
 import copy from "copy-to-clipboard";
 import { StoreContext } from "../../services/StoreService";
@@ -134,7 +133,6 @@ export function CopyLinkForm(props: CopyLinkFromProps) {
     };
 
     const open = Boolean(anchorEl);
-    const id = open ? "spring-popper" : undefined;
     const handleFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         const { target } = event;

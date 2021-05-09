@@ -12,7 +12,6 @@ import {
     TableRow,
 } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
@@ -28,12 +27,12 @@ export interface StudentListRow extends Student {
 }
 
 export function StudentListView(props: StudentListViewProps) {
-    const backEnd = useBackEnd();
+
     const store = useContext(StoreContext);
     const studentList:StudentListRow[] = props.studentList ?? [];
     let [selectedStudents, toggleStudentSelection]:[string[], any] = props.students ?? [[], ()=>{}]
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const { socketEmiter } = useBackEndSocket();
+
 
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
