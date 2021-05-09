@@ -1,5 +1,5 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
@@ -10,13 +10,12 @@ import {
 } from "../studentListView/StudentListView";
 import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
-import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView"
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
-    if(location.state != undefined)
-        isOpen = location.state.isOpen??false;
+    if (location.state != undefined) isOpen = location.state.isOpen ?? false;
     const history = useHistory();
     const store = useContext(StoreContext);
     if (!store.sessionId || store.sessionId.length === 0) {
@@ -93,12 +92,14 @@ export function SessionDashboardView() {
             marginBottom: "auto",
             display: "flex",
             flexDirection: "column",
-            overflow: "auto",
         },
         columnWrapper: {
             flexGrow: 1,
+            overflow: "auto",
+            maxHeight: "calc(100% - 100px)",
         },
         columnFooter: {
+            maxHeight: "100px",
             flexShrink: 0,
         },
         button: {
@@ -142,8 +143,9 @@ export function SessionDashboardView() {
                 </div>
                 <div className={classes.column}>
                     <div className={classes.columnWrapper}>
-                        <StudentsQuestionListView/>
+                        <StudentsQuestionListView />
                     </div>
+                    <div className={classes.columnFooter}>{"reakcje"}</div>
                 </div>
                 <div className={classes.column}>
                     <SendQuizView
@@ -157,9 +159,6 @@ export function SessionDashboardView() {
                 </div>
             </div>
             <ShareSessionView isOpen={isOpen} />
-            <div className={classes.columnFooter}>
-                    {"reakcje"}
-            </div>
         </>
     );
 }

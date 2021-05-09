@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { StoreContext } from "../../services/StoreService";
-import { makeStyles, useTheme } from "@material-ui/core";
+import { Paper, makeStyles, useTheme } from "@material-ui/core";
 import { studentQusestionsMock } from "../../util/mockData";
 export function StudentsQuestionListView() {
     const theme = useTheme();
@@ -8,8 +8,7 @@ export function StudentsQuestionListView() {
     const classes = makeStyles({
         root: {
             width: "100%",
-            height: "100%",
-            background: theme.palette.secondary.light,
+            padding: 10,
             borderRadius: "0",
         },
         tmp: {
@@ -44,7 +43,7 @@ export function StudentsQuestionListView() {
 
 
     return (
-        <div className={classes.root}>
+        <Paper className={classes.root} variant="outlined" square>
             {studentQusestionsMock.map((studentQuestion, index) => {
                 return (
                     <div
@@ -64,7 +63,7 @@ export function StudentsQuestionListView() {
                     </div>
                 );
             })}
-        </div>
+        </Paper>
     );
 }
 
