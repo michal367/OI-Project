@@ -10,7 +10,7 @@ import {
 } from "../studentListView/StudentListView";
 import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
-
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView"
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
@@ -72,35 +72,34 @@ export function SessionDashboardView() {
             background: theme.palette.primary.light,
             maxHeight: "100vh",
             height: "100vh",
-            display: "flex",
-            flexDirection: "row",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
             position: "absolute",
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
-            paddingBottom: "10px",
+            padding: "0 10px",
+            paddingTop: 60,
+            paddingBottom: 100,
+            gap: 30,
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
             color: "#fff",
         },
-        main: {
-            width: "100%",
-            flexShrink: 2,
-            flexGrow: 0,
-            display: "flex",
-            gap: 10,
-            marginBottom: "auto",
-            padding: "0 10px",
-        },
-        aside: {
-            width: "100%",
-            flexShrink: 4,
-            flexGrow: 1,
+        column: {
             height: "100%",
-            minHeight: 100,
-            padding: "10px 10px",
+            width: "100%",
+            marginBottom: "auto",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "auto",
+        },
+        columnWrapper: {
+            flexGrow: 1,
+        },
+        columnFooter: {
+            flexShrink: 0,
         },
         button: {
             marginLeft: "auto",
@@ -135,13 +134,18 @@ export function SessionDashboardView() {
     return (
         <>
             <div className={classes.root}>
-                <div className={classes.main}>
+                <div className={classes.column}>
                     <StudentListView
                         studentList={studentList}
                         students={[selectedStudents, toggleStudentSelection]}
                     />
                 </div>
-                <div className={classes.aside}>
+                <div className={classes.column}>
+                    <div className={classes.columnWrapper}>
+                        <StudentsQuestionListView/>
+                    </div>
+                </div>
+                <div className={classes.column}>
                     <SendQuizView
                         studentList={studentList}
                         students={[
@@ -153,6 +157,9 @@ export function SessionDashboardView() {
                 </div>
             </div>
             <ShareSessionView isOpen={isOpen} />
+            <div className={classes.columnFooter}>
+                    {"reakcje"}
+            </div>
         </>
     );
 }
