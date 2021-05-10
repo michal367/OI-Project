@@ -51,7 +51,7 @@ class Lecture {
                     event: "send_student_question",
                     data: {
                         text: text,
-                        student_id: student.id
+                        studentID: student.id
                     }
                 };
                 this.wsc?.send(JSON.stringify(payload));
