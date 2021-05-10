@@ -1,4 +1,4 @@
-  
+
 import { useContext, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { Button, ButtonGroup, TextField, makeStyles } from "@material-ui/core";
@@ -28,13 +28,15 @@ export function SendQuestion() {
         },
     })();
 
-    const stopWaiting = async() =>{
+    const stopWaiting = async () => {
         setWaitingTime(false);
     }
 
     const sendQuestion = () => {
         store.studentQuestion.studentNick = store.studentNick;
-        store.studentQuestion.time = new Date()
+        let date = new Date();
+        store.studentQuestion.hours = String(date.getHours());
+        store.studentQuestion.minutes = String(date.getMinutes());
         store.studentQuestion.text = value
         setValue("");
 
@@ -52,10 +54,11 @@ export function SendQuestion() {
             >
                 <TextField
                     id="standard-multiline-flexible"
-                    label="Napisz coś"
+                    label={waitTime ? "Poczekaj przed kolejnym 5s" : "Zadaj anonimowe pytanie"}
                     variant="outlined"
                     className={classes.inputArea}
                     value={value}
+                    disabled={waitTime}
                     onChange={handleChange}
                 />
                 <Button

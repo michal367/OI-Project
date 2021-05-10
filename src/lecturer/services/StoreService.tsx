@@ -1,5 +1,4 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-
 export interface StoreProps {
     children: ReactNode
 }
@@ -49,7 +48,8 @@ export interface IStore {
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
     quizesInProgress: ScheduledQuiz[],
-    isLoading: boolean
+    isLoading: boolean,
+    studentQuestions: StudentQuestion[],
 }
 
 const Store = (props: StoreProps) => {
@@ -62,6 +62,7 @@ const Store = (props: StoreProps) => {
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
+    const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
 
     useEffect(() => {
         let initial = loadFromStorage();
@@ -142,6 +143,12 @@ const Store = (props: StoreProps) => {
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
         },
+        get studentQuestions(){
+            return studentQuestions;
+        },
+        set setStudentQuestions(newValue: StudentQuestion[]){
+            setStudentQuestions([...newValue]);
+        }
     };
 
     return (
@@ -162,7 +169,8 @@ const initialValue: IStore = {
         students: [],
         canShowResults: true,
     },
-    isLoading: true
+    isLoading: true,
+    studentQuestions: [],
 }
 
 export const StoreContext = createContext<IStore>(initialValue);

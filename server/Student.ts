@@ -1,7 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { Payload, QuizResponsePayload, ReactionRequestPayload } from "./@types/payloads/types.d.ts";
+import { SendQuestionRequestPayload, Payload, QuizResponsePayload, ReactionRequestPayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
 
@@ -13,8 +13,11 @@ class Student extends EventEmitter {
     lecture: Lecture;
     wsc?: WebSocketClient;
     reactions: Map<Date, string>;
+    questions: Map<Date, string>;
     canSendReaction: boolean;
-    REACTION_TIMEOUT: number = 1000;
+    REACTION_TIMEOUT = 1000;
+    canSendQuestion: boolean;
+    QUESTION_TIMEOUT = 5000;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -25,6 +28,9 @@ class Student extends EventEmitter {
         this.lecture = lecture;
         this.reactions = new Map();
         this.canSendReaction = true;
+        this.questions = new Map();
+        this.canSendQuestion = true;
+
     }
 
     idEquals(id: string): boolean {
@@ -42,6 +48,9 @@ class Student extends EventEmitter {
                     break;
                 case "send_reaction":
                     this.handlerSendReaction(parsed);
+                    break;
+                case "send_question":
+                    this.handlerSendQuestion(parsed);
                     break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
@@ -85,6 +94,24 @@ class Student extends EventEmitter {
         }else{
             const response: Payload = {
                 event: "student_reaction_not_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+        }
+    }
+
+    handlerSendQuestion(parsed: SendQuestionRequestPayload){
+        if(this.canSendQuestion){
+            this.canSendQuestion = false;
+            this.questions.set(new Date(), parsed.data.text);
+            this.emit("question_added", parsed.data.text); 
+            const response: Payload = {
+                event: "student_question_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+            setTimeout(() => this.canSendQuestion = true, this.QUESTION_TIMEOUT);
+        }else{
+            const response: Payload = {
+                event: "student_question_not_sent"
             };
             this.wsc?.send(JSON.stringify(response));
         }

@@ -12,15 +12,13 @@ import {
     TableRow,
 } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
-import copy from "copy-to-clipboard";
 
 interface StudentListViewProps {
     studentList?: StudentListRow[];
-    students?: [string[],any];
+    students?: [string[], any];
 }
 
 export interface StudentListRow extends Student {
@@ -28,29 +26,29 @@ export interface StudentListRow extends Student {
 }
 
 export function StudentListView(props: StudentListViewProps) {
-    const backEnd = useBackEnd();
+
     const store = useContext(StoreContext);
-    const studentList:StudentListRow[] = props.studentList ?? [];
-    let [selectedStudents, toggleStudentSelection]:[string[], any] = props.students ?? [[], ()=>{}]
+    const studentList: StudentListRow[] = props.studentList ?? [];
+    let [selectedStudents, toggleStudentSelection]: [string[], any] = props.students ?? [[], () => { }]
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const { socketEmiter } = useBackEndSocket();
+
 
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
-    const changeSelectedStudents = (index:string) => () =>{
+    const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
     }
 
     useEffect(() => {
-        [selectedStudents, toggleStudentSelection] = props.students ?? [[], ()=>{}];
+        if (props.students)
+            [selectedStudents, toggleStudentSelection] = props.students;
         setStudents(selectedStudents);
     }, [props.students]);
 
     const theme = useTheme();
     const classes = makeStyles({
         root: {
-            width: "500px",
-            margin: "15px auto",
+            width: "100%",
             background: theme.palette.secondary.light,
             borderRadius: "0",
         },
@@ -68,6 +66,9 @@ export function StudentListView(props: StudentListViewProps) {
             "&:nth-of-type(odd)": {
                 background: "#fedf9d;",
             },
+        },
+        table: {
+            maxHeight: "100%",
         },
     })();
 
@@ -89,7 +90,9 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <Table aria-label="tabela z listą studentów">
+            <Table stickyHeader aria-label="tabela z listą studentów" 
+                    className={classes.table}
+                    >
                 <StudentListHead
                     order={order}
                     orderBy={orderBy}

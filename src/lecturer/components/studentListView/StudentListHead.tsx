@@ -7,8 +7,6 @@ import { makeStyles, useTheme } from "@material-ui/core";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import { Order } from "../../util/comparators";
 import { StudentListRow } from "./StudentListView";
-import { StoreContext } from "../../services/StoreService";
-import { useContext } from "react";
 
 export interface HeadCell<T> {
     id: keyof T;
@@ -28,7 +26,6 @@ export interface StudentListHeadProps {
 
 export function StudentListHead(props: StudentListHeadProps) {
     const { order, orderBy, onRequestSort, cells } = props;
-    const store = useContext(StoreContext);
     const createSortHandler = (property: keyof StudentListRow) => (
         event: React.MouseEvent<unknown>
     ) => {
@@ -38,16 +35,11 @@ export function StudentListHead(props: StudentListHeadProps) {
     const theme = useTheme();
 
     const classes = makeStyles({
-        root: {
-            maxWidth: "600px",
-            margin: "15px auto",
-        },
         head: {
             padding: "20px 15px",
             textAlign: "left",
             fontWeight: 500,
             color: "#fff",
-
             backgroundColor: theme.palette.primary.main,
             "& span": {
                 fontSize: "16px",

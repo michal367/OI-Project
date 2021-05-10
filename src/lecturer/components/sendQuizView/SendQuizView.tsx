@@ -28,10 +28,9 @@ import { getRandomIndexes } from "../../util/random";
 
 interface SendQuizViewProps {
     studentList?: Student[];
-    students?: [string[], any, any];
-    time?: [number | undefined, any];
-    quiz?: [Quiz | undefined, any];
+    students?: [string[], (checked: boolean) => void, (randomNumbers: Array<number>) => void];
 }
+
 function getSteps() {
     return [
         "Wybierz quiz do przesłania",
@@ -52,22 +51,23 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
 
     useEffect(() => {
-        [selectedStudents, toggleAllSelectedStudents] = props.students ?? [[], () => { }];
+        if (props.students)
+            [selectedStudents, toggleAllSelectedStudents] = props.students;
         setStudents(selectedStudents);
     }, [props.students]);
 
     useEffect(() => {
-        if(store.sendQuiz.quiz)
-            setQuiz(store.quizes.indexOf(store.sendQuiz.quiz) != -1)
+        if (store.sendQuiz.quiz)
+            setQuiz(store.quizes.indexOf(store.sendQuiz.quiz) !== -1)
         else
             setQuiz(false);
-    }, [store.quizes]);
+    }, [store.quizes, store.sendQuiz.quiz]);
 
     const theme = useTheme();
     const setSelectedQuiz = (quiz: Quiz | undefined) => {
         store.sendQuiz.quiz = quiz;
         store.sendQuiz = store.sendQuiz;
-        setQuiz(quiz != undefined);
+        setQuiz(quiz !== undefined);
     }
     const setSelectedTime = (value: unknown) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
@@ -97,7 +97,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             else if (number >= studentCount) {
                 toggleAllSelectedStudents(false);
             }
-            else if (number == 0) {
+            else if (number === 0) {
                 toggleAllSelectedStudents(true);
             }
         }

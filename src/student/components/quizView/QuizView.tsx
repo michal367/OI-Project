@@ -7,9 +7,7 @@ export default function QuizView() {
     const classes = makeStyles({
         overlay : {
             maxWidth: '100%',
-            maxHeight: '100%',
-            width: 900,
-            height: 450,
+            maxHeight: '100%', 
             overflow: "auto",
         },
     })();

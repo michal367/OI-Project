@@ -3,22 +3,28 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
     Fab,
     makeStyles,
-    useTheme,
 } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { CopyLinkForm } from "./CopyLinkForm";
 import ShareIcon from "@material-ui/icons/Share";
+import { StoreContext } from "../../services/StoreService";
+import QRCode from "qrcode.react";
+import { red } from "@material-ui/core/colors";
+import StopIcon from '@material-ui/icons/Stop';
+import { useBackEndSocket } from "../../services/BackEndService";
+import { useHistory } from "react-router-dom";
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
 }
 
 export function ShareSessionView(props: ShareSessionViewProps) {
-    const theme = useTheme();
+    const store = useContext(StoreContext);
+    const history = useHistory();
+    const { sendJsonMessage } = useBackEndSocket();
 
     const classes = makeStyles({
         shareIcon: {
@@ -28,6 +34,10 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         shareButton: {
             fontSize: 16,
             height: 55,
+            marginRight: "20px"
+        },
+        endButton: {
+            background: red[500],
         },
         action: {
             position: "absolute",
@@ -52,11 +62,24 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     })();
     const [open, setOpen] = React.useState(props.isOpen ?? false);
 
-    const handleClickOpen = () => {
+    const handleClickShare = () => {
         setOpen(true);
     };
     const handleClickClose = () => {
         setOpen(false);
+    };
+
+    const handleClickEnd = () => {
+        store.link = "";
+        store.sessionId = "";
+
+        let event: Payload = {
+            event: "delete_lecture"
+        }
+        sendJsonMessage(event);
+        history.push({
+            pathname: "/"
+        });
     };
 
     return (
@@ -77,10 +100,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                         <CopyLinkForm prefix={"localhost:3001/"} />
                         <CopyLinkForm />
                     </div>
-                    <img
-                        className={classes.qr}
-                        src="https://pl.qr-code-generator.com/wp-content/themes/qr/new_structure/markets/basic_market/generator/dist/generator/assets/images/websiteQRCode_noFrame.png"
-                    />
+
+                    <QRCode style={{ alignSelf: "center" }} size={256} value={`localhost:3001/${store.link}`} />
+
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -88,19 +110,30 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                         color="primary"
                         autoFocus
                     >
-                        Zakończ
+                        Zamknij
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <div className={classes.action}>
                 <Fab
                     className={classes.shareButton}
                     variant="extended"
-                    onClick={handleClickOpen}
+                    onClick={handleClickShare}
                     color="secondary"
                 >
                     <ShareIcon fontSize="large" className={classes.shareIcon} />
                     Udostępnij
+                </Fab>
+
+                <Fab
+                    className={classes.shareButton + " " + classes.endButton}
+                    variant="extended"
+                    onClick={handleClickEnd}
+                    color="inherit"
+                >
+                    <StopIcon fontSize="large" className={classes.shareIcon} />
+                    Zakończ
                 </Fab>
             </div>
         </>
