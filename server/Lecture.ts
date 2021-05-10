@@ -1,7 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { SendQuestionResponsePayload, Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload } from "./@types/payloads/types.d.ts";
+import { ShowAnswersToStudentPayload, ShowAnswersPayload, SendQuestionResponsePayload, Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
@@ -71,6 +71,9 @@ class Lecture {
                 case "send_quiz":
                     this.handlerSendQuiz(parsed);
                     break;
+                case "show_answers":
+                    this.handlerShowAnswers(parsed);
+                    break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 
@@ -85,21 +88,34 @@ class Lecture {
     }
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
-        const response: Payload = {
-            event: "quiz_in_progress"
+        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz));
+        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz)); 
+        const questionsWithoutAnswers: Question[] = quizWithoutAnswers.questions;
+        questionsWithoutAnswers.forEach((q: Question) => {
+            const answers: Answer[] | undefined = q.options;
+            if(answers != undefined && answers.length > 0){
+                answers.forEach((a: Answer) => {
+                    a.isCorrect = false;
+                });
+            }
+        });
+        const quiz: Quiz = new Quiz(parsed.data.time_seconds, quizWithoutAnswers, wholeQuiz, parsed.data.student_ids);
+        this.quizes.set(quiz.IDFromServer, quiz);
+        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
+
+        const response: ShowAnswersPayload = {
+            event: "quiz_in_progress",
+            data:{
+                quizID: quiz.IDFromServer
+            }
         }
         this.wsc?.send(JSON.stringify(response));
-
-        const quiz: Quiz = new Quiz(parsed.data.quiz_id, parsed.data.time_seconds, parsed.data.questions, parsed.data.student_ids);
-        this.quizes.set(quiz.IDFromServer, quiz);
-
-        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
 
         const answersAddedHandler = (student: Student, answers: any) => {
             const serverResponse: ServerQuizResponsePayload = {
                 event: "quiz_answers_added",
                 data: {
-                    quiz_id: quiz.IDFromLecturer,
+                    quiz_id: quiz.IDFromServer,
                     student_id: student.id,
                     answers: answers
                 }
@@ -112,7 +128,7 @@ class Lecture {
             const serverResponse: QuizEndedPayload = {
                 event: "quiz_ended",
                 data: {
-                    quiz_id: quiz.IDFromLecturer,
+                    quiz_id: quiz.IDFromServer,
                     reason: reason
                 }
             };
@@ -131,12 +147,43 @@ class Lecture {
             event: parsed.event,
             data: {
                 quiz_id: quiz.IDFromServer,
-                timeSeconds: parsed.data.time_seconds,
-                questions: parsed.data.questions
+                timeSeconds: quiz.timeSeconds,
+                questions: quiz.questions
             }
         };
         selectedStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverRequest)));
         quiz.start();
+    }
+
+    handlerShowAnswers(parsed: ShowAnswersPayload): void{
+        const quizID: string = parsed.data.quizID;
+        const quiz: Quiz | undefined = this.quizes.get(quizID);
+        if(quiz){
+            quiz.answeredStudents().forEach((studentID: string) => {
+                const serverToStudent: ShowAnswersToStudentPayload = {
+                    event: "show_answers",
+                    data:{
+                        quizID: quiz.IDFromServer ,
+                        correctAnswers: quiz.answers,
+                        studentAnswers: quiz.studentAnswers.get(studentID)
+                    }
+                };
+                const student: Student | undefined= this.studentList.getStudent(studentID);
+                student?.wsc?.send(JSON.stringify(serverToStudent));
+            });
+
+            const serverResponse: Payload = {
+                event: "answers_showed"
+            };
+            this.wsc?.send(JSON.stringify(serverResponse));
+
+        }else{
+            const serverResponse: Payload = {
+                event: "answers_not_showed"
+            };
+            this.wsc?.send(JSON.stringify(serverResponse));
+        }
+
     }
 
 }
