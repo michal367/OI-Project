@@ -189,3 +189,6 @@ temp/
 
 # Deno settings
 server/.vscode/
+
+# keys
+*.pem
