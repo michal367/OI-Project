@@ -38,16 +38,11 @@ export function StudentListHead(props: StudentListHeadProps) {
     const theme = useTheme();
 
     const classes = makeStyles({
-        root: {
-            maxWidth: "600px",
-            margin: "15px auto",
-        },
         head: {
             padding: "20px 15px",
             textAlign: "left",
             fontWeight: 500,
             color: "#fff",
-
             backgroundColor: theme.palette.primary.main,
             "& span": {
                 fontSize: "16px",

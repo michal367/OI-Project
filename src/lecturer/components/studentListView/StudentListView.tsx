@@ -48,8 +48,7 @@ export function StudentListView(props: StudentListViewProps) {
     const theme = useTheme();
     const classes = makeStyles({
         root: {
-            width: "500px",
-            margin: "15px auto",
+            width: "100%",
             background: theme.palette.secondary.light,
             borderRadius: "0",
         },
@@ -67,6 +66,9 @@ export function StudentListView(props: StudentListViewProps) {
             "&:nth-of-type(odd)": {
                 background: "#fedf9d;",
             },
+        },
+        table: {
+            maxHeight: "100%",
         },
     })();
 
@@ -88,7 +90,9 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <Table aria-label="tabela z listą studentów">
+            <Table stickyHeader aria-label="tabela z listą studentów" 
+                    className={classes.table}
+                    >
                 <StudentListHead
                     order={order}
                     orderBy={orderBy}

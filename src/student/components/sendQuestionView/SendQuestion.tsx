@@ -34,7 +34,9 @@ export function SendQuestion() {
 
     const sendQuestion = () => {
         store.studentQuestion.studentNick = store.studentNick;
-        store.studentQuestion.time = new Date()
+        let date = new Date();
+        store.studentQuestion.hours = String(date.getHours());
+        store.studentQuestion.minutes = String(date.getMinutes());
         store.studentQuestion.text = value
         setValue("");
 
