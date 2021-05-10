@@ -15,11 +15,10 @@ import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
-import copy from "copy-to-clipboard";
 
 interface StudentListViewProps {
     studentList?: StudentListRow[];
-    students?: [string[],any];
+    students?: [string[], any];
 }
 
 export interface StudentListRow extends Student {
@@ -29,19 +28,20 @@ export interface StudentListRow extends Student {
 export function StudentListView(props: StudentListViewProps) {
 
     const store = useContext(StoreContext);
-    const studentList:StudentListRow[] = props.studentList ?? [];
-    let [selectedStudents, toggleStudentSelection]:[string[], any] = props.students ?? [[], ()=>{}]
+    const studentList: StudentListRow[] = props.studentList ?? [];
+    let [selectedStudents, toggleStudentSelection]: [string[], any] = props.students ?? [[], () => { }]
     const [students, setStudents] = useState<string[]>(selectedStudents);
 
 
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
-    const changeSelectedStudents = (index:string) => () =>{
+    const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
     }
 
     useEffect(() => {
-        [selectedStudents, toggleStudentSelection] = props.students ?? [[], ()=>{}];
+        if (props.students)
+            [selectedStudents, toggleStudentSelection] = props.students;
         setStudents(selectedStudents);
     }, [props.students]);
 
