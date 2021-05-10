@@ -23,5 +23,5 @@ app.use(async (ctx) => {
 
 setupWebSocketServer();
 
-console.log("server is runing on: http://localhost:8000");
+console.log("server is running on: https://localhost:8000");
 await app.listen({ port: PORT, secure: true, certFile: "server/cert.pem", keyFile: "server/private.pem"});
