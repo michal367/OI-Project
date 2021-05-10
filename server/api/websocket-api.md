@@ -22,7 +22,7 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "62211bd7-f646-424b-a70c-a52baa88f60d"
+            "lecture_id": "1ca67c0f-dd0a-4147-a18f-5975c9b5cab2"
         }
     }
     ```
@@ -69,8 +69,8 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "31dacb19-1669-405d-800a-963680c08899",
-            "lecture_link": "1311100"
+            "student_id": "ec3482d5-8325-4439-b0ab-e8f57ec0abf5",
+            "lecture_link": "3337499"
         }
     }
     ```
@@ -258,4 +258,48 @@
     }
     ```
 
+## **sendQuestionFromStudent**
+
+    Wysyła pytanie studenta TYLKO do wykładowcy.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `send_question`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "send_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_sent"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_not_sent"
+    }
+    ```
+
+-   **Payload Content Emitted On Event:** `student added question`
+
+    ```json
+    {
+        "event": "send_student_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?",
+            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+        }
+    }
+    ```
   

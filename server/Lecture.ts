@@ -1,7 +1,7 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { cryptoRandomString } from "https://deno.land/x/crypto_random_string@1.0.0/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload } from "./@types/payloads/types.d.ts";
+import { SendQuestionResponsePayload, Payload, QuizRequestPayload, ServerQuizRequestPayload, ServerQuizResponsePayload, QuizEndedPayload, ReactionResponsePayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
@@ -45,6 +45,19 @@ class Lecture {
                 this.wsc?.send(JSON.stringify(payload));
             };
             student.on("reaction_added", reactionHandler);
+
+            const questionHandler = (text: string) =>{
+                const payload: SendQuestionResponsePayload = {
+                    event: "send_student_question",
+                    data: {
+                        text: text,
+                        studentID: student.id
+                    }
+                };
+                this.wsc?.send(JSON.stringify(payload));
+            };
+            student.on("question_added", questionHandler);
+
             this.wsc?.send("studentAdded");
         });
         this.studentList.on("studentDeleted", () => {

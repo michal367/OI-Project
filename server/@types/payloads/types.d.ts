@@ -67,4 +67,17 @@ declare module 'payloads' {
             student_id: string
         }
     }
+
+    interface SendQuestionRequestPayload extends Payload{
+        data:{
+            text: string
+        }
+    }
+
+    interface SendQuestionResponsePayload extends Payload{
+        data:{
+            text: string,
+            studentID: string
+        }
+    }
 }
