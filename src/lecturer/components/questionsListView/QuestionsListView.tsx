@@ -94,7 +94,7 @@ export function QuestionsListView() {
     }
     const selectQuestion = (index: number) => {
         history.push({
-            pathname: "/question",
+            pathname: "/lecturer/question",
             state: { questionIndex: index }
         });
     }
@@ -193,7 +193,7 @@ export function QuestionsListView() {
                 <Fab
                     color="primary"
                     aria-label="add"
-                    onClick={() => { history.push("/question"); }}
+                    onClick={() => { history.push("/lecturer/question"); }}
                 >
                     <AddIcon />
                 </Fab>

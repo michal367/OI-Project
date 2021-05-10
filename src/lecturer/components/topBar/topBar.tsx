@@ -15,10 +15,10 @@ export default function TopBar() {
                 value={location.pathname}
                 centered
             >
-                <Tab label="Rozpocznij sesję" value="/" component={RouterLink} to="/" />
-                <Tab label="Uczestnicy" value="/session" component={RouterLink} to="/session" disabled={!store.sessionId || store.sessionId.length === 0}/>
-                <Tab label="Stwórz Quiz" value="/quiz" component={RouterLink} to="/quiz" />
-                <Tab label="Pytania" value="/questions" component={RouterLink} to="/questions"/>
+                <Tab label="Rozpocznij sesję" value="/lecturer" component={RouterLink} to="/lecturer" />
+                <Tab label="Uczestnicy" value="/lecturer/session" component={RouterLink} to="/lecturer/session" disabled={!store.sessionId || store.sessionId.length === 0}/>
+                <Tab label="Stwórz Quiz" value="/lecturer/quiz" component={RouterLink} to="/lecturer/quiz" />
+                <Tab label="Pytania" value="/lecturer/questions" component={RouterLink} to="/lecturer/questions"/>
             </Tabs>
         </AppBar>
     );
