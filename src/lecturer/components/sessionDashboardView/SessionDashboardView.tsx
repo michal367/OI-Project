@@ -15,7 +15,8 @@ import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionLi
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
-    if (location.state != undefined) isOpen = location.state.isOpen ?? false;
+    if (location.state !== undefined)
+        isOpen = location.state.isOpen ?? false;
     const history = useHistory();
     const store = useContext(StoreContext);
     if (!store.sessionId || store.sessionId.length === 0) {
@@ -41,6 +42,7 @@ export function SessionDashboardView() {
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
     };
+
     const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let selectedStudents = randomNumbers.map((i) => studentList[i]);
@@ -49,6 +51,7 @@ export function SessionDashboardView() {
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
     };
+    
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);

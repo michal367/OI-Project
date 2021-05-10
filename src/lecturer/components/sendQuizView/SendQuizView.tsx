@@ -67,7 +67,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const setSelectedQuiz = (quiz: Quiz | undefined) => {
         store.sendQuiz.quiz = quiz;
         store.sendQuiz = store.sendQuiz;
-        setQuiz(quiz != undefined);
+        setQuiz(quiz !== undefined);
     }
     const setSelectedTime = (value: unknown) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
