@@ -22,7 +22,7 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "c1a0ee5c-1998-46b2-8f7b-9cc02697b64a"
+            "lecture_id": "d92245aa-11ee-4895-8e62-79f4be38570a"
         }
     }
     ```
@@ -69,8 +69,8 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "47eecf6c-9547-4194-a6c3-1e7752bb0f80",
-            "lecture_link": "7442202"
+            "student_id": "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
+            "lecture_link": "4779336"
         }
     }
     ```
@@ -107,7 +107,7 @@
         "event": "send_quiz",
         "data": {
             "student_ids": [
-                "47eecf6c-9547-4194-a6c3-1e7752bb0f80",
+                "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
                 "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
             "time_seconds": 90,
@@ -213,7 +213,7 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "quiz_id": "63d09893-cf7d-466e-aadd-c96af0d39b59",
+            "quiz_id": "5c286036-a496-405a-9ca2-bb2ecb47e1a0",
             "answers": "literally any type"
         }
     }
@@ -295,7 +295,7 @@
     {
         "event": "show_answers",
         "data": {
-            "quizID": "63d09893-cf7d-466e-aadd-c96af0d39b59"
+            "quizID": "5c286036-a496-405a-9ca2-bb2ecb47e1a0"
         }
     }
     ```
