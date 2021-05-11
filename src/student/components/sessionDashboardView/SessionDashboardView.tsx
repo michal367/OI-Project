@@ -30,14 +30,21 @@ export function SessionDashboardView() {
         },
         header: {
             width: "100%",
-            padding: "10px 10px",
+            flexShrink: 4,
+            flexGrow: 1,
+            height: "150%",
+            minHeight: 100,
+            padding: "0px 10px",
         },
         body: {
             width: "100%",
+            flexShrink: 2,
+            flexGrow: 1,
+            height: "100%",
             display: "flex",
             gap: 10,
+            minHeight: 100,
             padding: "0 10px",
-            flexGrow: 1,
         },
         feedBackBody:{
             display: "flex",
@@ -46,14 +53,20 @@ export function SessionDashboardView() {
             overflowY: "auto",
             overflowX: "hidden",
         },
-        questionBody: {
+        questionBody:{
             width: "100%",
+            flexShrink: 2,
+            flexGrow: 1,
             display: "flex",
             gap: 10,
             padding: "0 10px",
         },
         footer: {
             width: "100%",
+            flexShrink: 4,
+            flexGrow: 1,
+            height: "100%",
+            minHeight: 100,
             padding: "10px 10px",
         },
         overlay: {
@@ -63,7 +76,7 @@ export function SessionDashboardView() {
             height: 400,
             padding: "5px 10px",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
         },
         okButton:{
             color:"white",
