@@ -51,7 +51,7 @@ export function SessionDashboardView() {
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
     };
-    
+
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
@@ -99,7 +99,7 @@ export function SessionDashboardView() {
         columnWrapper: {
             flexGrow: 1,
             overflow: "auto",
-            maxHeight: "calc(100% - 100px)",
+            maxHeight: "calc(80vh)",
         },
         columnFooter: {
             maxHeight: "100px",
@@ -108,7 +108,7 @@ export function SessionDashboardView() {
         button: {
             marginLeft: "auto",
             marginBottom: "auto",
-        },
+        }
     })();
 
     const refreshList = useCallback(() => {
@@ -156,7 +156,7 @@ export function SessionDashboardView() {
                         students={[
                             selectedStudents,
                             toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,                            
+                            toggleRandomSelectedStudents,
                         ]}
                     />
                 </div>

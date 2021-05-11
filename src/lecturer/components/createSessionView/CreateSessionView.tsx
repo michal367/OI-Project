@@ -79,6 +79,7 @@ export function CreateSessionView() {
 
                 store.sessionId = lecture.id;
                 store.sendQuizStep = 0;
+                store.timeToNextQuiz = 0;
                 backEnd.getLectureLink(lecture.id)
                     .then((link) => {
                         store.link = link;

@@ -25,6 +25,8 @@ import { useContext, useState, useEffect, ChangeEvent } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
 import { getRandomIndexes } from "../../util/random";
+import { useCallback } from "react";
+import { formatTime } from "../../util/time";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -39,16 +41,23 @@ function getSteps() {
         "Wyślij quiz",
     ];
 }
+
+
+
 export function SendQuizView(props: SendQuizViewProps) {
+    const theme = useTheme();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 10);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
-    const [checked, setChecked] = useState<boolean>(!(store.sendQuiz.timeInMin));
+    const [checked, setChecked] = useState<boolean>(time === 0);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
+    const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
+    const [clock, setClock] = useState(0);
+
 
     useEffect(() => {
         if (props.students)
@@ -63,7 +72,6 @@ export function SendQuizView(props: SendQuizViewProps) {
             setQuiz(false);
     }, [store.quizes, store.sendQuiz.quiz]);
 
-    const theme = useTheme();
     const setSelectedQuiz = (quiz: Quiz | undefined) => {
         store.sendQuiz.quiz = quiz;
         store.sendQuiz = store.sendQuiz;
@@ -119,6 +127,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             marginLeft: theme.spacing(1),
             marginRight: theme.spacing(1),
             width: 200,
+            "& div": {
+                paddingLeft: "10px"
+            }
         },
         button: {
             marginTop: theme.spacing(1),
@@ -138,7 +149,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const getStepContent = (step: number) => {
         switch (step) {
             case 0:
-                return <QuizListView quiz={[store.sendQuiz.quiz, setSelectedQuiz]} />;
+                return <QuizListView selected={store.sendQuiz.quiz} onChange={setSelectedQuiz} />;
             case 1:
                 return (
                     <FormControl className={classes.container}>
@@ -154,6 +165,11 @@ export function SendQuizView(props: SendQuizViewProps) {
                             disabled={checked}
                             autoFocus={!checked}
                         >
+                            <MenuItem value={0.5}>30 sek</MenuItem>
+                            <MenuItem value={1}>1 min</MenuItem>
+                            <MenuItem value={2}>2 min</MenuItem>
+                            <MenuItem value={3}>3 min</MenuItem>
+                            <MenuItem value={5}>5 min</MenuItem>
                             <MenuItem value={10}>10 min</MenuItem>
                             <MenuItem value={20}>20 min</MenuItem>
                             <MenuItem value={40}>40 min</MenuItem>
@@ -220,7 +236,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                 <ListItemText
                                     primary="Ilość przeznaczonego czasu:"
                                     secondary={
-                                        time > 0 ? time : "nieograniczone"
+                                        time > 0 ? formatTime(time * 60 * 1000) : "nieograniczone"
                                     }
                                 />
                             </ListItem>
@@ -248,13 +264,41 @@ export function SendQuizView(props: SendQuizViewProps) {
     const steps = getSteps();
 
 
+    const refreshClock = useCallback((timeToWait) => {
+        if (timeToWait - Date.now() < 0) {
+            if (timerWait)
+                clearTimeout(timerWait);
+            setClock(0);
+        } else
+            setClock(timeToWait - Date.now());
+    }, [timerWait])
 
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         if (store.sendQuizStep === steps.length - 1) {
             console.log("scheduled quiz", store.sendQuiz);
+            let timeToWait = Date.now() + 60000 * (time ?? 0);
+            store.timeToNextQuiz = timeToWait;
+            setClock(timeToWait - Date.now());
+            setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
         }
         store.sendQuizStep = store.sendQuizStep + 1;
-    };
+    }, [refreshClock, steps.length, store, time]);
+
+    useEffect(() => {
+        return () => {
+            if (timerWait)
+                clearTimeout(timerWait);
+        }
+    }, [timerWait])
+
+    useEffect(() => {
+        if (store.timeToNextQuiz - Date.now() > 0 && !timerWait) {
+            setClock(store.timeToNextQuiz - Date.now());
+            setTimerWait(setInterval(() => { refreshClock(store.timeToNextQuiz) }, 1000));
+            store.sendQuizStep = 4;
+        }
+    }, [store.timeToNextQuiz, refreshClock, timerWait, store])
+
 
     const handleBack = () => {
         store.sendQuizStep = store.sendQuizStep - 1;
@@ -325,8 +369,8 @@ export function SendQuizView(props: SendQuizViewProps) {
             {store.sendQuizStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
                     <Typography>Quiz został wysłany.</Typography>
-                    <Button onClick={handleReset} className={classes.button}>
-                        Wyślij nowy quiz.
+                    <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
+                        {clock > 0 ? "Do konca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
                     </Button>
                 </Paper>
             )}
