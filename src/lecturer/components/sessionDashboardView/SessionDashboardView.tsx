@@ -156,7 +156,7 @@ export function SessionDashboardView() {
                         students={[
                             selectedStudents,
                             toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,
+                            toggleRandomSelectedStudents,                            
                         ]}
                     />
                 </div>

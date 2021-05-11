@@ -94,7 +94,7 @@ export function QuestionsListView() {
     }
     const selectQuestion = (index: number) => {
         history.push({
-            pathname: "/question",
+            pathname: "/lecturer/question",
             state: { questionIndex: index }
         });
     }
@@ -103,7 +103,7 @@ export function QuestionsListView() {
         let { value } = e.target;
         setFilterFn({
             fn: (items: IndexedQuestion[]) => {
-                if (value == "")
+                if (value === "")
                     return items
                 else
                     return items.filter(x => x.question.title.toLowerCase().includes(value));
@@ -193,7 +193,7 @@ export function QuestionsListView() {
                 <Fab
                     color="primary"
                     aria-label="add"
-                    onClick={() => { history.push("/question"); }}
+                    onClick={() => { history.push("/lecturer/question"); }}
                 >
                     <AddIcon />
                 </Fab>

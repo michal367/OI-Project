@@ -7,7 +7,6 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Search } from "@material-ui/icons";
 import clsx from "clsx";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { not, union, intersection } from "../../util/boolAlgebra";
@@ -146,7 +145,7 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
-        if(right.length == 1){
+        if(right.length === 1){
             setQuestionFullFilled(true);
         }
     };

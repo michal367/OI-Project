@@ -34,13 +34,14 @@ export function QuizListView(props: QuizListViewProps) {
         }
     })();
     const deleteQuiz = (quizToBeDeleted: Quiz) => () => {
-        store.quizes = store.quizes.filter(storeQuiz => storeQuiz != quizToBeDeleted);
+        store.quizes = store.quizes.filter(storeQuiz => storeQuiz !== quizToBeDeleted);
     }
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
             {store.quizes.map((value: Quiz) => {
                 return (
                     <ListItem
+                        key={value.title}
                         button
                         selected={props.quiz && props.quiz[0] === value}
                         onClick={handleQuiz(value)}
