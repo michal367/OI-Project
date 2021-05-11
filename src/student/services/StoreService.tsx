@@ -43,11 +43,11 @@ const initialValue: IStore = {
     isLoading: true,
     studentQuestion:{
         studentNick: "",
-        time: new Date(),
+        hours: "",
+        minutes: "",
         text: ""
     },
 }
-
 const loadFromStorage = () => {
     let obj: IStore = {
         ...initialValue,

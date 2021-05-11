@@ -8,10 +8,15 @@ import {
     makeStyles,
 } from "@material-ui/core";
 import React, { useContext } from "react";
-import { CopyLinkForm } from "./CopyLinkForm";
-import ShareIcon from "@material-ui/icons/Share";
-import { StoreContext } from "../../services/StoreService";
+import { useHistory } from "react-router-dom";
 import QRCode from "qrcode.react";
+import ShareIcon from "@material-ui/icons/Share";
+import { red } from "@material-ui/core/colors";
+import StopIcon from '@material-ui/icons/Stop';
+import { CopyLinkForm } from "./CopyLinkForm";
+import { StoreContext } from "../../services/StoreService";
+import { useBackEndSocket } from "../../services/BackEndService";
+
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
@@ -19,6 +24,8 @@ interface ShareSessionViewProps {
 
 export function ShareSessionView(props: ShareSessionViewProps) {
     const store = useContext(StoreContext);
+    const history = useHistory();
+    const { sendJsonMessage } = useBackEndSocket();
     const location = window.location;
 
     let port: string = location.port;
@@ -34,6 +41,13 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         shareButton: {
             fontSize: 16,
             height: 55,
+            marginRight: "20px"
+        },
+        endButton: {
+            background: red[500],
+            "&:hover": {
+                background: red[700],
+            }
         },
         action: {
             position: "absolute",
@@ -58,11 +72,26 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     })();
     const [open, setOpen] = React.useState(props.isOpen ?? false);
 
-    const handleClickOpen = () => {
+    const handleClickShare = () => {
         setOpen(true);
     };
     const handleClickClose = () => {
         setOpen(false);
+    };
+
+    const handleClickEnd = () => {
+        store.link = "";
+        store.sessionId = "";
+        store.timeToNextQuiz = 0;
+        store.sendQuizStep = 0;
+
+        let event: Payload = {
+            event: "delete_lecture"
+        }
+        sendJsonMessage(event);
+        history.push({
+            pathname: "/"
+        });
     };
 
     return (
@@ -93,19 +122,30 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                         color="primary"
                         autoFocus
                     >
-                        Zakończ
+                        Zamknij
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <div className={classes.action}>
                 <Fab
                     className={classes.shareButton}
                     variant="extended"
-                    onClick={handleClickOpen}
+                    onClick={handleClickShare}
                     color="secondary"
                 >
                     <ShareIcon fontSize="large" className={classes.shareIcon} />
                     Udostępnij
+                </Fab>
+
+                <Fab
+                    className={classes.shareButton + " " + classes.endButton}
+                    variant="extended"
+                    onClick={handleClickEnd}
+                    color="inherit"
+                >
+                    <StopIcon fontSize="large" className={classes.shareIcon} />
+                    Zakończ
                 </Fab>
             </div>
         </>

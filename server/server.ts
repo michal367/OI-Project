@@ -1,9 +1,10 @@
+// @deno-types="./@types/frontTypes.d.ts"
 import { parse } from 'https://deno.land/std/flags/mod.ts';
 import * as path from 'https://deno.land/std/path/mod.ts';
 import { oakCors } from 'https://deno.land/x/cors/mod.ts';
 import { Application, HttpError, send } from 'https://deno.land/x/oak/mod.ts';
+import router from "./routes.ts";
 
-import router from './routes.ts';
 
 const DEFAULT_PORT = 8000;
 const argPort = parse(Deno.args).port;

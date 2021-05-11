@@ -1,19 +1,24 @@
 import { CssBaseline } from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+} from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useBackEndSocket } from "../../services/BackEndService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
-import Backdrop from '@material-ui/core/Backdrop';
+import Backdrop from "@material-ui/core/Backdrop";
 import GridLoader from "react-spinners/GridLoader";
 import { useContext, useEffect } from "react";
-
+import { QuizStatsView } from "../quizStatsView/QuizStatsView";
 
 const theme = createMuiTheme({
     palette: {
@@ -54,18 +59,24 @@ function App() {
         return () => {
             socketEmiter.off("onClose", onClose);
             socketEmiter.off("onOpen", onOpen);
-        }
+        };
     }, [socketEmiter, store]);
-
-
 
     return (
         <Store>
             <Router>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
-                        <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
+                    <Backdrop
+                        style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }}
+                        open={store.isLoading}
+                    >
+                        <GridLoader
+                            color={theme.palette.primary.main}
+                            loading={true}
+                            margin={10}
+                            size={50}
+                        />
                     </Backdrop>
 
                     <TopBar />
@@ -91,9 +102,16 @@ function App() {
                             <QuestionsListView />
                         </Route>
 
+                        <Route path="/stats">
+                            <QuizStatsView />
+                        </Route>
+
                         <Route path="/">
-                            <CreateSessionView />
-                            <Redirect to="/lecturer" />
+                            {(store.sessionId === "") ?
+                                <Redirect to="/lecturer" />
+                                :
+                                <Redirect to="/lecturer/session" />
+                            }
                         </Route>
                     </Switch>
                 </ThemeProvider>

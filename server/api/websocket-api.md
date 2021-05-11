@@ -22,7 +22,7 @@
     {
         "event": "subscribe_lecture",
         "data": {
-            "lecture_id": "62211bd7-f646-424b-a70c-a52baa88f60d"
+            "lecture_id": "d92245aa-11ee-4895-8e62-79f4be38570a"
         }
     }
     ```
@@ -69,8 +69,8 @@
     {
         "event": "subscribe_student",
         "data": {
-            "student_id": "31dacb19-1669-405d-800a-963680c08899",
-            "lecture_link": "1311100"
+            "student_id": "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
+            "lecture_link": "4779336"
         }
     }
     ```
@@ -106,13 +106,35 @@
     {
         "event": "send_quiz",
         "data": {
-            "quiz_id": "some identifiable string",
             "student_ids": [
-                "31dacb19-1669-405d-800a-963680c08899",
+                "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
                 "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
             "time_seconds": 90,
-            "questions": "literally any type"
+            "quiz": {
+                "title":"Zwierze",
+                "questions":
+                [
+                    {
+                        "title":"Jeż",
+                        "text":"Dokąd nocą tupta",
+                        "options":
+                        [
+                            {"index":1,"text":"nocna wyczieka","isCorrect":false},
+                            {"index":2,"text":"pracia","isCorrect":true}
+                        ]
+                    },
+                    {
+                        "title":"Koń",
+                        "text":"Czy koń liczy kroki?",
+                        "options":
+                        [
+                            {"index":1,"text":"tak","isCorrect":true},
+                            {"index":2,"text":"nie","isCorrect":false}
+                        ]
+                    }
+                ]
+            }
         }
     }
     ```
@@ -121,7 +143,10 @@
 
     ```json
     {
-        "event": "quiz_in_progress"
+        "event": "quiz_in_progress",
+        "data": {
+            "quizID": "a3d577db-9b81-4d03-9cbc-6ecaa3fcf381"
+        }
     }
     ```
 
@@ -188,7 +213,7 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "quiz_id": "2e847f59-aa76-4621-a853-b0af852998e3",
+            "quiz_id": "5c286036-a496-405a-9ca2-bb2ecb47e1a0",
             "answers": "literally any type"
         }
     }
@@ -258,4 +283,93 @@
     }
     ```
 
-  
+## **showAnswersToStudent**
+
+    Pokazuje odpowiedzi na dany quiz.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `show_answers`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "show_answers",
+        "data": {
+            "quizID": "5c286036-a496-405a-9ca2-bb2ecb47e1a0"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "answers_showed"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "answers_not_showed"
+    }
+    ```
+
+-   **Emitted Payload Content:**
+
+    ```json
+    {
+        "event": "show_answers",
+        "data": {
+            "quizID": "2e847f59-aa76-4621-a853-b0af852998e3",
+            "correctAnswers": "answers",
+            "studentAnswers": "student answers"
+        }
+    }
+    ```
+
+## **sendQuestionFromStudent**
+
+    Wysyła pytanie studenta TYLKO do wykładowcy.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `send_question`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "send_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_sent"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_not_sent"
+    }
+    ```
+
+-   **Payload Content Emitted On Event:** `student added question`
+
+    ```json
+    {
+        "event": "send_student_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?",
+            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+        }
+    }
+    ```
