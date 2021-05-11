@@ -12,8 +12,6 @@ import { CopyLinkForm } from "./CopyLinkForm";
 import ShareIcon from "@material-ui/icons/Share";
 import { StoreContext } from "../../services/StoreService";
 import QRCode from "qrcode.react";
-import { Location } from 'history';
-import { useLocation } from 'react-router-dom';
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
@@ -24,9 +22,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const location = window.location;
 
     let port: string = location.port;
-    if(location.port === "3000")
+    if (port === "3000")
         port = "3001";
-    const link = location.protocol + '//' + location.hostname + (port ? ':'+port: '');
+    const link = location.protocol + '//' + location.hostname + (port ? ':' + port : '');
 
     const classes = makeStyles({
         shareIcon: {
