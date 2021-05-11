@@ -99,7 +99,7 @@ export function SessionDashboardView() {
         columnWrapper: {
             flexGrow: 1,
             overflow: "auto",
-            maxHeight: "calc(100% - 100px)",
+            maxHeight: "calc(80vh)",
         },
         columnFooter: {
             maxHeight: "100px",
@@ -108,7 +108,7 @@ export function SessionDashboardView() {
         button: {
             marginLeft: "auto",
             marginBottom: "auto",
-        },
+        }
     })();
 
     const refreshList = useCallback(() => {

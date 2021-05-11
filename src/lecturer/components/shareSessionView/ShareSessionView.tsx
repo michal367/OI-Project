@@ -46,6 +46,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         },
         endButton: {
             background: red[500],
+            "&:hover": {
+                background: red[700],
+            }
         },
         action: {
             position: "absolute",
@@ -80,6 +83,8 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const handleClickEnd = () => {
         store.link = "";
         store.sessionId = "";
+        store.timeToNextQuiz = 0;
+        store.sendQuizStep = 0;
 
         let event: Payload = {
             event: "delete_lecture"

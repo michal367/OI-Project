@@ -9,7 +9,8 @@ type StorageKey =
     "questions" |
     "quizes" |
     "sendQuizStep" |
-    "selectedQuiz";
+    "selectedQuiz" |
+    "timeToNextQuiz";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.lecturer." + key;
@@ -17,13 +18,13 @@ const stringKey = (key: StorageKey) => {
 
 const loadKey = (key: StorageKey) => {
     let obj = JSON.parse(localStorage.getItem(stringKey(key)) ?? "null");
-    console.log("loadKey", obj);
+    console.log("loadKey", key, obj);
     return obj;
 }
 
 const saveKey = (key: StorageKey, value: any) => {
-    if(value === undefined) return;
-    console.log("saveKey", value);
+    if (value === undefined) return;
+    console.log("saveKey", key, value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
 
@@ -35,6 +36,7 @@ const loadFromStorage = () => {
         questions: loadKey("questions") ?? initialValue.questions,
         quizes: loadKey("quizes") ?? initialValue.quizes,
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
+        timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
     }
 
     return obj;
@@ -50,9 +52,11 @@ export interface IStore {
     quizesInProgress: ScheduledQuiz[],
     isLoading: boolean,
     studentQuestions: StudentQuestion[],
+    timeToNextQuiz: number
     reactionValues: number[],
     lastReactionTime: number,
 }
+
 
 const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
@@ -65,6 +69,7 @@ const Store = (props: StoreProps) => {
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
+    const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
 
@@ -74,7 +79,9 @@ const Store = (props: StoreProps) => {
         setSessionId(initial.sessionId);
         setQuestions(initial.questions);
         setQuizes(initial.quizes);
-    }, [])
+        setTimeToNextQuiz(initial.timeToNextQuiz);
+    }, []);
+    
 
     const value = {
         get link() {
@@ -147,11 +154,20 @@ const Store = (props: StoreProps) => {
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
         },
-        get studentQuestions(){
+
+        get studentQuestions() {
             return studentQuestions;
         },
-        set setStudentQuestions(newValue: StudentQuestion[]){
+        set setStudentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
+        },
+
+        get timeToNextQuiz() {
+            return timeToNextQuiz;
+        },
+        set timeToNextQuiz(newValue: number) {
+            setTimeToNextQuiz(newValue);
+            saveKey("timeToNextQuiz", newValue);
         },
         get reactionValues(){
             return reactionValues;
@@ -187,9 +203,11 @@ const initialValue: IStore = {
     },
     isLoading: true,
     studentQuestions: [],
+    timeToNextQuiz: 0,
     reactionValues: [0,0,0,0,0],
     lastReactionTime: 30,
 }
+
 
 export const StoreContext = createContext<IStore>(initialValue);
 
