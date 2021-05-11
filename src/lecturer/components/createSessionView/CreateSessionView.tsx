@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext,  useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -86,7 +86,7 @@ export function CreateSessionView() {
                         history.push({
                             pathname: "lecturer/session",
                             state: { isOpen: true }
-                          });
+                        });
                     })
 
                 sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
