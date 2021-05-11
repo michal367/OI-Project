@@ -14,10 +14,10 @@ export default function TopBar() {
     const [selectedTab, setSelectedTab] = useState(location.pathname);
 
     const routes = {
-        index: "/",
-        session: "/session",
-        quiz: "/quiz",
-        questions: "/questions",
+        index: "/lecturer",
+        session: "/lecturer/session",
+        quiz: "/lecturer/quiz",
+        questions: "/lecturer/questions",
     }
     const possibleRoutes = Object.values(routes);
 

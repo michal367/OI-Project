@@ -64,7 +64,6 @@ export function QuestionsList() {
                                         color="primary"
                                         onChange={(e) => handleCheckboxChange(e, i, j)}
                                     />
-
                                     <TextField id="outlined-basic" variant="outlined" defaultValue={option.text} InputProps={{
                                         readOnly: true,
                                     }} />
@@ -81,6 +80,7 @@ export function QuestionsList() {
                                 />
                             )}
                         </Grid>
+        
                     </div>
                 </Paper>
             ))}

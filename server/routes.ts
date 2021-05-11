@@ -4,6 +4,20 @@ import * as Lectures from "./controllers/lectures.ts";
 const router = new Router();
 
 router
+    .get("/", async (ctx) => {
+        ctx.response.redirect("/lecturer/index.html");
+    })
+    .get("/lecturer", async (ctx) => {
+        ctx.response.redirect("/lecturer/index.html");
+    })
+    .get("/student", async (ctx) => {
+        ctx.response.redirect("/student/index.html");
+    })
+    .get("/student/code/:id", async (ctx) => {
+        const code = ctx.params.id;
+        ctx.response.redirect("/student/index.html?" + code);
+    })
+    
     .post("/api/lectures", Lectures.create)
     .get("/api/lectures", Lectures.list)
     .get("/api/lectures/:id", Lectures.get)

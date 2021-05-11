@@ -23,6 +23,47 @@ export function testData() {
                 ],
             },
             {
+                title: "drugie pytanie",
+                text: 'Who is CEO of Tesla?',
+                options: [
+                    { index: 0, text: 'Jeff Bezos', isCorrect: false },
+                    { index: 0, text: 'Elon Musk', isCorrect: true },
+                    { index: 0,  text: 'Bill Gates', isCorrect: false },
+                    { index: 0, text: 'Tony Stark', isCorrect: false },
+                ],
+            },
+            {
+                title: "drugie pytanie",
+                text: 'Who is CEO of Tesla?',
+                options: [
+                    { index: 0, text: 'Jeff Bezos', isCorrect: false },
+                    { index: 0, text: 'Elon Musk', isCorrect: true },
+                    { index: 0,  text: 'Bill Gates', isCorrect: false },
+                    { index: 0, text: 'Tony Stark', isCorrect: false },
+                ],
+            },
+            {
+                title: "drugie pytanie",
+                text: 'Who is CEO of Tesla?',
+                options: [
+                    { index: 0, text: 'Jeff Bezos', isCorrect: false },
+                    { index: 0, text: 'Elon Musk', isCorrect: true },
+                    { index: 0,  text: 'Bill Gates', isCorrect: false },
+                    { index: 0, text: 'Tony Stark', isCorrect: false },
+                ],
+            },
+
+            {
+                title: "drugie pytanie",
+                text: 'Who is CEO of Tesla?',
+                options: [
+                    { index: 0, text: 'Jeff Bezos', isCorrect: false },
+                    { index: 0, text: 'Elon Musk', isCorrect: true },
+                    { index: 0,  text: 'Bill Gates', isCorrect: false },
+                    { index: 0, text: 'Tony Stark', isCorrect: false },
+                ],
+            },
+            {
                 title: "trzecie pytanie",
                 text: 'The iPhone was created by which company?',
             },

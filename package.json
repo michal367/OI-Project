@@ -43,6 +43,8 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
+    "start": "npm run deno",
+    "build": "npm run build-all",
     "eject": "react-scripts eject",
     "start-lecturer": "set PORT=3000 && react-app-rewired start src/lecturer",
     "build-lecturer": "react-app-rewired build src/lecturer build/lecturer",
@@ -81,5 +83,6 @@
     "@types/node": "^12.20.7",
     "@types/react-router-dom": "^5.1.7",
     "react-app-rewired": "^2.1.8"
-  }
+  },
+  "homepage": "."
 }

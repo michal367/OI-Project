@@ -83,7 +83,7 @@ export function CreateSessionView() {
                     .then((link) => {
                         store.link = link;
                         history.push({
-                            pathname: "/session",
+                            pathname: "lecturer/session",
                             state: { isOpen: true }
                           });
                     })
