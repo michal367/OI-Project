@@ -132,7 +132,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                         };
                         sendJsonMessage(event);
 
-                        history.replace("/session");
+                        history.replace("/student/session");
                     })
                     .catch((response) => {
                         setLoading(false);
@@ -172,7 +172,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                     style={{ width: '100%', maxWidth: "350px" }}
                 />}
             </Backdrop>
-            {!props.session && (
+            {!session && (
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <TextField
                         id="outlined-secondary"

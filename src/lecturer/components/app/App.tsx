@@ -71,29 +71,29 @@ function App() {
                     <TopBar />
 
                     <Switch>
-                        <Route exact path="/">
+                        <Route exact path="/lecturer">
                             <CreateSessionView />
                         </Route>
 
-                        <Route path="/session">
+                        <Route path="/lecturer/session">
                             <SessionDashboardView />
                         </Route>
 
-                        <Route path="/quiz">
+                        <Route path="/lecturer/quiz">
                             <PickQuizView />
                         </Route>
 
-                        <Route path="/question">
+                        <Route path="/lecturer/question">
                             <CreateQuestionView />
                         </Route>
 
-                        <Route path="/questions">
+                        <Route path="/lecturer/questions">
                             <QuestionsListView />
                         </Route>
 
                         <Route path="/">
                             <CreateSessionView />
-                            <Redirect to="/" />
+                            <Redirect to="/lecturer" />
                         </Route>
                     </Switch>
                 </ThemeProvider>

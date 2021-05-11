@@ -12,6 +12,8 @@ import { CopyLinkForm } from "./CopyLinkForm";
 import ShareIcon from "@material-ui/icons/Share";
 import { StoreContext } from "../../services/StoreService";
 import QRCode from "qrcode.react";
+import { Location } from 'history';
+import { useLocation } from 'react-router-dom';
 import { red } from "@material-ui/core/colors";
 import StopIcon from '@material-ui/icons/Stop';
 import { useBackEndSocket } from "../../services/BackEndService";
@@ -25,6 +27,12 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const store = useContext(StoreContext);
     const history = useHistory();
     const { sendJsonMessage } = useBackEndSocket();
+    const location = window.location;
+
+    let port: string = location.port;
+    if(location.port === "3000")
+        port = "3001";
+    const link = location.protocol + '//' + location.hostname + (port ? ':'+port: '');
 
     const classes = makeStyles({
         shareIcon: {
@@ -97,11 +105,11 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                 </DialogTitle>
                 <DialogContent className={classes.content}>
                     <div>
-                        <CopyLinkForm prefix={"localhost:3001/"} />
+                        <CopyLinkForm prefix={`${link}/student/code/`} />
                         <CopyLinkForm />
                     </div>
 
-                    <QRCode style={{ alignSelf: "center" }} size={256} value={`localhost:3001/${store.link}`} />
+                    <QRCode style={{ alignSelf: "center" }} size={256} value={`${link}/student/code/${store.link}`} />
 
                 </DialogContent>
                 <DialogActions>
