@@ -1,5 +1,6 @@
 import { makeStyles, Paper } from '@material-ui/core';
-import ReactionItem, { ReactionName } from './ReactionItem';
+import { ReactionName } from '../../util/reactionsEnum';
+import { ReactionItem } from './ReactionItem';
 interface SessionReactionViewProps {
     onReaction?: (reaction: ReactionName) => void
 }
