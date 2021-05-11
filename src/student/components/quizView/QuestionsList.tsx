@@ -92,7 +92,7 @@ export function QuestionsList() {
                 </div>
             </Paper>
             ))}  
-            <Button fullWidth={true} variant="contained" color="primary" onClick={submit}> Submit </Button>
+            <Button fullWidth={true} variant="contained" color="primary" onClick={submit}> Wyślij </Button>
         </>
     );
 }

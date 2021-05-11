@@ -47,6 +47,13 @@ export function SessionDashboardView() {
             minHeight: 100,
             padding: "0 10px",
         },
+        feedBackBody:{
+            display: "flex",
+            flexDirection:"column",
+            flexGrow: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+        },
         questionBody:{
             width: "100%",
             flexShrink: 2,
@@ -68,7 +75,16 @@ export function SessionDashboardView() {
             minHeight: "90%",
             width: 300,
             height: 400,
-        }
+        },
+        okButton:{
+            color:"white",
+            backgroundColor:"green",
+        },
+        wrapper:{
+            display: "flex",
+            flexDirection:"column",
+            flexGrow: 1,
+        },
     })();
 
     const [open, setOpen] = useState(false);
@@ -88,16 +104,22 @@ export function SessionDashboardView() {
     return (
         <div className={classes.root}>
             <div className={classes.header}>
+                
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
-                <FeedbackView/>
+                <div className={classes.wrapper}>
+                    <div className={classes.feedBackBody}>
+                        <FeedbackView/>
+                    </div>
+                    <Button className={classes.okButton}>Ok</Button>
+                </div>
                 <Button
                     variant="outlined"
                     color="primary"
                     onClick={handleToggle}
                 >
-                    Solve quiz
+                    Rozwiąż Quiz
                 </Button>
             </div>
             <div className={classes.questionBody}>
@@ -114,7 +136,7 @@ export function SessionDashboardView() {
                 <Card className={classes.overlay}>
                     <CardContent>
                         <QuizView />
-                        <Button onClick={handleClose}>close</Button>
+                        <Button onClick={handleClose}>Zamknij</Button>
                     </CardContent>
                 </Card>
             </Backdrop>
