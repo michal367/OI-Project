@@ -166,6 +166,7 @@ export function CopyLinkForm(props: CopyLinkFromProps) {
                     className={classes.input}
                     value={prefix + store.link}
                     onFocus={handleFocus}
+                    onChange={() => { }}
                 />
                 <Button
                     variant="contained"

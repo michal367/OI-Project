@@ -3,7 +3,6 @@ import {
     useTheme,
     Button,
     Backdrop,
-    CardContent,
     Card,
 } from "@material-ui/core";
 import { useState } from "react";
@@ -31,21 +30,14 @@ export function SessionDashboardView() {
         },
         header: {
             width: "100%",
-            flexShrink: 4,
-            flexGrow: 1,
-            height: "150%",
-            minHeight: 100,
             padding: "10px 10px",
         },
         body: {
             width: "100%",
-            flexShrink: 2,
-            flexGrow: 1,
-            height: "100%",
             display: "flex",
             gap: 10,
-            minHeight: 100,
             padding: "0 10px",
+            flexGrow: 1,
         },
         feedBackBody:{
             display: "flex",
@@ -54,27 +46,24 @@ export function SessionDashboardView() {
             overflowY: "auto",
             overflowX: "hidden",
         },
-        questionBody:{
+        questionBody: {
             width: "100%",
-            flexShrink: 2,
-            flexGrow: 1,
             display: "flex",
             gap: 10,
             padding: "0 10px",
         },
         footer: {
             width: "100%",
-            flexShrink: 4,
-            flexGrow: 1,
-            height: "100%",
-            minHeight: 100,
             padding: "10px 10px",
         },
         overlay: {
-            minWidth: "80%",
-            minHeight: "90%",
+            minWidth: "95%",
+            minHeight: "95%",
             width: 300,
             height: 400,
+            padding: "5px 10px",
+            display: "flex",
+            flexDirection: "column"
         },
         okButton:{
             color:"white",
@@ -119,11 +108,11 @@ export function SessionDashboardView() {
                     color="primary"
                     onClick={handleToggle}
                 >
-                    Rozwiąż Quiz
+                Rozwiąż quiz
                 </Button>
             </div>
             <div className={classes.questionBody}>
-                <SessionQuestionView/>
+                <SessionQuestionView />
             </div>
             <div className={classes.footer}>
                 <SessionReactionView onReaction={handleReaction} />
@@ -132,12 +121,12 @@ export function SessionDashboardView() {
                 className={classes.backdrop}
                 open={open}
             >
-
                 <Card className={classes.overlay}>
-                    <CardContent>
-                        <QuizView />
-                        <Button onClick={handleClose}>Zamknij</Button>
-                    </CardContent>
+                    <div style={{ display: "flex" }}>
+                        <p>00:00</p>
+                        <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
+                    </div>
+                    <QuizView />
                 </Card>
             </Backdrop>
         </div>
