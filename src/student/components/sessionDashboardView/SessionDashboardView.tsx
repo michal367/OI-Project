@@ -9,9 +9,9 @@ import { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
-import { ReactionName } from "../sessionReactionView/ReactionItem";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
+import { ReactionName } from "../../util/reactionsEnum";
 export function SessionDashboardView() {
     const theme = useTheme();
 

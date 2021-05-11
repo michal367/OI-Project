@@ -53,6 +53,8 @@ export interface IStore {
     isLoading: boolean,
     studentQuestions: StudentQuestion[],
     timeToNextQuiz: number
+    reactionValues: number[],
+    lastReactionTime: number,
 }
 
 
@@ -68,6 +70,8 @@ const Store = (props: StoreProps) => {
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
+    const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
+    const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
 
     useEffect(() => {
         let initial = loadFromStorage();
@@ -165,6 +169,18 @@ const Store = (props: StoreProps) => {
             setTimeToNextQuiz(newValue);
             saveKey("timeToNextQuiz", newValue);
         },
+        get reactionValues(){
+            return reactionValues;
+        },
+        set reactionValues(newValue: number[]){
+            setReactionValues([...newValue]);
+        },
+        get lastReactionTime(){
+            return lastReactionTime;
+        },
+        set lastReactionTime(newValue: number){
+            setLastReactionTime(newValue);
+        }
     };
 
     return (
@@ -188,6 +204,8 @@ const initialValue: IStore = {
     isLoading: true,
     studentQuestions: [],
     timeToNextQuiz: 0,
+    reactionValues: [0,0,0,0,0],
+    lastReactionTime: 30,
 }
 
 

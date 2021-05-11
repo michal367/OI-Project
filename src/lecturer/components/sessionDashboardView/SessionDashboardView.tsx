@@ -11,12 +11,12 @@ import {
 import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
+import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
-    if (location.state !== undefined)
-        isOpen = location.state.isOpen ?? false;
+    if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
     const history = useHistory();
     const store = useContext(StoreContext);
     if (!store.sessionId || store.sessionId.length === 0) {
@@ -148,7 +148,9 @@ export function SessionDashboardView() {
                     <div className={classes.columnWrapper}>
                         <StudentsQuestionListView />
                     </div>
-                    <div className={classes.columnFooter}>{"reakcje"}</div>
+                    <div className={classes.columnFooter}>
+                        <ReactionReceiveView />
+                    </div>
                 </div>
                 <div className={classes.column}>
                     <SendQuizView
