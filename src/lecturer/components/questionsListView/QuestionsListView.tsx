@@ -103,7 +103,7 @@ export function QuestionsListView() {
         let { value } = e.target;
         setFilterFn({
             fn: (items: IndexedQuestion[]) => {
-                if (value == "")
+                if (value === "")
                     return items
                 else
                     return items.filter(x => x.question.title.toLowerCase().includes(value));

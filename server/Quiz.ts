@@ -3,20 +3,20 @@ import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import Student from "./Student.ts";
 
 class Quiz extends EventEmitter {
-    IDFromLecturer: string;
     IDFromServer: string;
     timeSeconds: number;
-    questions: any;
+    questions: FrontQuiz;
+    answers: FrontQuiz;
     studentIDs: string[];
     studentAnswers: Map<string, any>;
     active: boolean;
 
-    constructor(IDFromLecturer: string, timeSeconds: number, questions: any, studentIDs: string[]) {
+    constructor(timeSeconds: number, questions: FrontQuiz, answers: FrontQuiz, studentIDs: string[]) {
         super();
-        this.IDFromLecturer = IDFromLecturer;
         this.timeSeconds = timeSeconds;
         this.IDFromServer = v4.generate();
         this.questions = questions;
+        this.answers = answers;
         this.studentIDs = studentIDs;
         this.studentAnswers = new Map();
         this.active = false;

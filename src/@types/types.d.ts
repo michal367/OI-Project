@@ -37,6 +37,7 @@ interface ScheduledQuiz {
 
 interface StudentQuestion{
     studentNick: string,
-    time: Date,
+    hours: string,
+    minutes: string,
     text: string;
 }

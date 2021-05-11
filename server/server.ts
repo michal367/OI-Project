@@ -1,3 +1,5 @@
+// @deno-types="./@types/frontTypes.d.ts"
+
 import * as path from "https://deno.land/std/path/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { Application, send, HttpError } from "https://deno.land/x/oak/mod.ts";

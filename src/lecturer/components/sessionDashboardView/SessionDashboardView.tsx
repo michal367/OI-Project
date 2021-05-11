@@ -1,5 +1,5 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
@@ -10,14 +10,13 @@ import {
 } from "../studentListView/StudentListView";
 import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
-
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
     if (location.state !== undefined)
         isOpen = location.state.isOpen ?? false;
-
     const history = useHistory();
     const store = useContext(StoreContext);
     if (!store.sessionId || store.sessionId.length === 0) {
@@ -75,35 +74,36 @@ export function SessionDashboardView() {
             background: theme.palette.primary.light,
             maxHeight: "100vh",
             height: "100vh",
-            display: "flex",
-            flexDirection: "row",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
             position: "absolute",
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
-            paddingBottom: "10px",
+            padding: "0 10px",
+            paddingTop: 60,
+            paddingBottom: 100,
+            gap: 30,
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
             color: "#fff",
         },
-        main: {
-            width: "100%",
-            flexShrink: 2,
-            flexGrow: 0,
-            display: "flex",
-            gap: 10,
-            marginBottom: "auto",
-            padding: "0 10px",
-        },
-        aside: {
-            width: "100%",
-            flexShrink: 4,
-            flexGrow: 1,
+        column: {
             height: "100%",
-            minHeight: 100,
-            padding: "10px 10px",
+            width: "100%",
+            marginBottom: "auto",
+            display: "flex",
+            flexDirection: "column",
+        },
+        columnWrapper: {
+            flexGrow: 1,
+            overflow: "auto",
+            maxHeight: "calc(100% - 100px)",
+        },
+        columnFooter: {
+            maxHeight: "100px",
+            flexShrink: 0,
         },
         button: {
             marginLeft: "auto",
@@ -138,19 +138,25 @@ export function SessionDashboardView() {
     return (
         <>
             <div className={classes.root}>
-                <div className={classes.main}>
+                <div className={classes.column}>
                     <StudentListView
                         studentList={studentList}
                         students={[selectedStudents, toggleStudentSelection]}
                     />
                 </div>
-                <div className={classes.aside}>
+                <div className={classes.column}>
+                    <div className={classes.columnWrapper}>
+                        <StudentsQuestionListView />
+                    </div>
+                    <div className={classes.columnFooter}>{"reakcje"}</div>
+                </div>
+                <div className={classes.column}>
                     <SendQuizView
                         studentList={studentList}
                         students={[
                             selectedStudents,
                             toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,
+                            toggleRandomSelectedStudents,                            
                         ]}
                     />
                 </div>
