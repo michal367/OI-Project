@@ -51,7 +51,7 @@ export function SessionDashboardView() {
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
     };
-    
+
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
@@ -156,7 +156,7 @@ export function SessionDashboardView() {
                         students={[
                             selectedStudents,
                             toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,                            
+                            toggleRandomSelectedStudents,
                         ]}
                     />
                 </div>

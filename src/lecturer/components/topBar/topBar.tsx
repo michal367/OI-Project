@@ -33,8 +33,11 @@ export default function TopBar() {
                 value={selectedTab}
                 centered
             >
-                <Tab label="Rozpocznij sesję" value={routes.index} component={RouterLink} to={routes.index} />
-                <Tab label="Uczestnicy" value={routes.session} component={RouterLink} to={routes.session} disabled={!store.sessionId || store.sessionId.length === 0} />
+                {(store.sessionId === "") ?
+                    <Tab label="Rozpocznij sesję" value={routes.index} component={RouterLink} to={routes.index} />
+                    :
+                    <Tab label="Uczestnicy" value={routes.session} component={RouterLink} to={routes.session} />
+                }
                 <Tab label="Stwórz Quiz" value={routes.quiz} component={RouterLink} to={routes.quiz} />
                 <Tab label="Pytania" value={routes.questions} component={RouterLink} to={routes.questions} />
             </Tabs>

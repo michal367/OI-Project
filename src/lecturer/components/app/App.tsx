@@ -1,5 +1,5 @@
 import { CssBaseline } from "@material-ui/core";
-import { unstable_createMuiStrictModeTheme as createMuiTheme , ThemeProvider } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
@@ -92,8 +92,11 @@ function App() {
                         </Route>
 
                         <Route path="/">
-                            <CreateSessionView />
-                            <Redirect to="/lecturer" />
+                            {(store.sessionId === "") ?
+                                <Redirect to="/lecturer" />
+                                :
+                                <Redirect to="/lecturer/session" />
+                            }
                         </Route>
                     </Switch>
                 </ThemeProvider>
