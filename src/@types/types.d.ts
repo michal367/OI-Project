@@ -41,3 +41,25 @@ interface StudentQuestion{
     minutes: string,
     text: string;
 }
+
+interface AnswerStat{
+    index: number;
+    text: string;
+    isCorrect: boolean;
+    selected: number;
+}
+
+interface QuestionStat{
+    title: string;
+    text: string;
+    options: AnswerStat[];
+}
+
+interface QuizStat{
+    title : string;
+    questions: QuestionStat[];
+}
+
+interface Statistic{
+    quizes: QuizStat[];
+}
