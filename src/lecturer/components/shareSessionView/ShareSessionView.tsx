@@ -8,16 +8,15 @@ import {
     makeStyles,
 } from "@material-ui/core";
 import React, { useContext } from "react";
-import { CopyLinkForm } from "./CopyLinkForm";
-import ShareIcon from "@material-ui/icons/Share";
-import { StoreContext } from "../../services/StoreService";
+import { useHistory } from "react-router-dom";
 import QRCode from "qrcode.react";
-import { Location } from 'history';
-import { useLocation } from 'react-router-dom';
+import ShareIcon from "@material-ui/icons/Share";
 import { red } from "@material-ui/core/colors";
 import StopIcon from '@material-ui/icons/Stop';
+import { CopyLinkForm } from "./CopyLinkForm";
+import { StoreContext } from "../../services/StoreService";
 import { useBackEndSocket } from "../../services/BackEndService";
-import { useHistory } from "react-router-dom";
+
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
@@ -30,9 +29,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const location = window.location;
 
     let port: string = location.port;
-    if(location.port === "3000")
+    if (port === "3000")
         port = "3001";
-    const link = location.protocol + '//' + location.hostname + (port ? ':'+port: '');
+    const link = location.protocol + '//' + location.hostname + (port ? ':' + port : '');
 
     const classes = makeStyles({
         shareIcon: {
