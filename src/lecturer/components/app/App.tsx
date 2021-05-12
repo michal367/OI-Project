@@ -1,15 +1,24 @@
 import { CssBaseline } from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
-import { StudentListView } from "../studentListView/StudentListView";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+} from "react-router-dom";
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { useBackEndSocket } from "../../services/BackEndService";
-import Store from "../../services/store/StoreService";
+import Store, { StoreContext } from "../../services/StoreService";
+import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import Backdrop from "@material-ui/core/Backdrop";
+import GridLoader from "react-spinners/GridLoader";
+import { useContext, useEffect } from "react";
+import { QuizStatsView } from "../quizStatsView/QuizStatsView";
 
 const theme = createMuiTheme({
     palette: {
@@ -35,37 +44,74 @@ const theme = createMuiTheme({
 });
 
 function App() {
-    useBackEndSocket(); //for keeping socket open
+    const store = useContext(StoreContext);
+    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+
+    useEffect(() => {
+        const onClose = () => {
+            store.isLoading = true;
+        };
+        const onOpen = () => {
+            store.isLoading = false;
+        };
+        socketEmiter.on("onClose", onClose);
+        socketEmiter.on("onOpen", onOpen);
+        return () => {
+            socketEmiter.off("onClose", onClose);
+            socketEmiter.off("onOpen", onOpen);
+        };
+    }, [socketEmiter, store]);
+
     return (
         <Store>
             <Router>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
+                    <Backdrop
+                        style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }}
+                        open={store.isLoading}
+                    >
+                        <GridLoader
+                            color={theme.palette.primary.main}
+                            loading={true}
+                            margin={10}
+                            size={50}
+                        />
+                    </Backdrop>
 
                     <TopBar />
 
                     <Switch>
-                        <Route exact path="/">
+                        <Route exact path="/lecturer">
                             <CreateSessionView />
                         </Route>
 
-                        <Route path="/session">
-                            <StudentListView />
+                        <Route path="/lecturer/session">
+                            <SessionDashboardView />
                         </Route>
 
-                        <Route path="/quiz">
+                        <Route path="/lecturer/quiz">
                             <PickQuizView />
                         </Route>
 
-                        <Route path="/question">
+                        <Route path="/lecturer/question">
                             <CreateQuestionView />
                         </Route>
-                      <Route path="/import-export">
-                          <QuestionsListView/>
-                      </Route>
+
+                        <Route path="/lecturer/questions">
+                            <QuestionsListView />
+                        </Route>
+
+                        <Route path="/stats">
+                            <QuizStatsView />
+                        </Route>
+
                         <Route path="/">
-                            <CreateSessionView />
-                            <Redirect to="/" />
+                            {(store.sessionId === "") ?
+                                <Redirect to="/lecturer" />
+                                :
+                                <Redirect to="/lecturer/session" />
+                            }
                         </Route>
                     </Switch>
                 </ThemeProvider>

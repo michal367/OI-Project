@@ -1,8 +1,14 @@
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { ChooseNicknameView } from "../chooseNicknameView/ChooseNicknameView";
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { JoinSessionView } from "../joinSessionView/JoinSessionView";
+import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import { Route, BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import "fontsource-roboto";
+import Store, { StoreContext } from "../../services/StoreService";
+import { useBackEndSocket } from "../../services/BackEndService";
+import Backdrop from '@material-ui/core/Backdrop';
+import GridLoader from "react-spinners/GridLoader";
+import { useContext, useEffect } from "react";
 
 const theme = createMuiTheme({
     palette: {
@@ -28,16 +34,48 @@ const theme = createMuiTheme({
 });
 
 function App() {
+    const store = useContext(StoreContext);
+    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+
+    useEffect(() => {
+        const onClose = () => {
+            store.isLoading = true;
+        };
+        const onOpen = () => {
+            store.isLoading = false;
+        };
+        socketEmiter.on("onClose", onClose);
+        socketEmiter.on("onOpen", onOpen);
+        return () => {
+            socketEmiter.off("onClose", onClose);
+            socketEmiter.off("onOpen", onOpen);
+        }
+    }, [socketEmiter, store]);
+    
     return (
-        <Router>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Route path='/'>
-                <ChooseNicknameView />
-            </Route>
-        </ThemeProvider>
-        </Router>
+        <Store>
+            <Router>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
+                        <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
+                    </Backdrop>
+
+                    <Switch>
+                        <Route path="/student/session">
+                            <SessionDashboardView />
+                        </Route>
+                        <Route path='/student/code/:session'>
+                            <JoinSessionView />
+                        </Route>
+                        <Route path='/'>
+                            <JoinSessionView />
+                            <Redirect to="/student" />
+                        </Route>
+                    </Switch>
+                </ThemeProvider>
+            </Router>
+        </Store>
     );
 }
-
 export default App;

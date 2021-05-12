@@ -1,40 +1,38 @@
-import { Application, send } from "https://deno.land/x/oak/mod.ts";
-import * as path from "https://deno.land/std/path/mod.ts";
-import { oakCors } from "https://deno.land/x/cors/mod.ts";
+// @deno-types="./@types/frontTypes.d.ts"
+import { parse } from 'https://deno.land/std/flags/mod.ts';
+import * as path from 'https://deno.land/std/path/mod.ts';
+import { oakCors } from 'https://deno.land/x/cors/mod.ts';
+import { Application, HttpError, send } from 'https://deno.land/x/oak/mod.ts';
 import router from "./routes.ts";
-import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import Lecture from "./Lecture.ts";
-import {lectures} from "./controllers/lectures.ts";
 
-const PORT = 8000;
+
+const DEFAULT_PORT = 8000;
+const argPort = parse(Deno.args).port;
+const port = argPort ? Number(argPort) : DEFAULT_PORT;
+
 const app = new Application();
-
-app.use(
-    oakCors()
-);
+app.use(oakCors());
 app.use(router.routes());
 app.use(router.allowedMethods());
-
 app.use(async (ctx) => {
-    const filePath = path.join(Deno.cwd(), "build/lecturer");
-    await send(ctx, ctx.request.url.pathname, {
-        root: filePath,
-        index: "index.html",
-    });
-});
-
-const wss = new WebSocketServer(8080);
-wss.on("connection", function (ws: WebSocketClient) {
-  ws.on("message", function (message: string) {
-    console.log(message);
-    const parsed = JSON.parse(message); // {event: TYPE, data: {jason dane}}
-    console.log(parsed);
-    if(parsed.event === "subscribe"){
-        const selectedLecture: Lecture | undefined = lectures.get(parsed.data.l_id);
-        selectedLecture?.setWebSocketClient(ws);
+    // console.log(ctx.request.url.pathname);
+    const filePath = path.join(Deno.cwd(), "build");
+    try{
+        await send(ctx, ctx.request.url.pathname, {
+            root: filePath
+        });
     }
-  });
+    catch(error){
+        if(error instanceof HttpError){
+            // console.log(ctx.request.url.pathname + " - " + error.message);
+            if(ctx.request.url.pathname.startsWith("/student/"))
+                ctx.response.redirect("/student");
+            else
+                ctx.response.redirect("/lecturer");
+        }
+    }
 });
 
-console.log("server is runing on: http://localhost:8000");
-await app.listen({ port: PORT });
+console.log("server is running on: http://localhost:" + port);
+await app.listen({ port: port });
+

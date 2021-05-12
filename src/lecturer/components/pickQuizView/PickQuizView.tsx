@@ -1,37 +1,19 @@
-import { useState, useRef, ChangeEvent } from "react";
-import {
-    Grid,
-    Card,
-    List,
-    CardHeader,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    Checkbox,
-    Button,
-    Divider,
-    TextField,
-    CircularProgress,
-} from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
-import clsx from "clsx";
 import "fontsource-roboto";
-import { questionListMock } from "../../util/mockData";
 
-function not(a: number[], b: number[]) {
-    return a.filter((value) => b.indexOf(value) === -1);
-}
+import {
+    Button,
+    CircularProgress,
+    Grid,
+} from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import clsx from "clsx";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
+import { not, union, intersection } from "../../util/boolAlgebra";
+import { StoreContext } from "../../services/StoreService";
+import { PickQuizList } from "./PickQuizList";
 
-function intersection(a: number[], b: number[]) {
-    return a.filter((value) => b.indexOf(value) !== -1);
-}
-
-function union(a: number[], b: number[]) {
-    return [...a, ...not(b, a)];
-}
-
-function setArray(s: number) {
+function createIndexArray(s: number) {
     let array = [];
     for (let i = 0; i < s; i++) {
         array.push(i);
@@ -41,6 +23,7 @@ function setArray(s: number) {
 
 export function PickQuizView() {
     const theme = useTheme();
+    const store = useContext(StoreContext);
 
     const classes = makeStyles({
         root: {
@@ -61,25 +44,8 @@ export function PickQuizView() {
         wrapper: {
             width: 1000,
             display: "flex",
-            justifyContent: "flexend",
+            justifyContent: "flex-end",
             position: "relative",
-        },
-        cardWrapper: {
-            position: "relative",
-        },
-        cardHeader: {
-            padding: theme.spacing(1, 2),
-        },
-        list: {
-            width: 450,
-            height: 580,
-            backgroundColor: theme.palette.background.paper,
-            overflow: "auto",
-        },
-        quizInput: {
-            position: "absolute",
-            top: "5px",
-            right: "25px",
         },
         button: {
             margin: theme.spacing(0.5, 0),
@@ -103,20 +69,34 @@ export function PickQuizView() {
             padding: "15px",
             color: theme.palette.grey[50],
         },
-        gidcontent: {
+        gridContent: {
             maxWidth: "100%",
         },
     })();
-    const array = setArray(questionListMock.length);
+    const [indexArray, setIndexArray] = useState<number[]>([]);
     const [checked, setChecked] = useState<number[]>([]);
-    const [left, setLeft] = useState<number[]>(array);
+    const [left, setLeft] = useState<number[]>(indexArray);
     const [right, setRight] = useState<number[]>([]);
-    const [quizes, setQuizes] = useState<Quiz[]>([]);
-    const [name, setName] = useState("");
+    const [title, setTitle] = useState("");
+    const [filterFn, setFilterFn] = useState({
+        fn: (items: number[]) => {
+            return Array.from(Array(items.length).keys());
+        },
+    });
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+        setTitle(event.target.value);
     };
-    const [question, setQuestion] = useState<Question[]>(questionListMock);
+    const [questions, setQuestions] = useState<Question[]>([]);
+
+    useEffect(() => {
+        setLeft(indexArray);
+    }, [indexArray]);
+
+    useEffect(() => {
+        setQuestions(store.questions);
+        setIndexArray(createIndexArray(store.questions.length));
+    }, [store.questions]);
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -145,8 +125,9 @@ export function PickQuizView() {
         }
     };
     const [loading, setLoading] = useState(false);
+    const [questionFullFilled, setQuestionFullFilled] = useState(true);
     const [success, setSuccess] = useState(false);
-    const buttonClassname = clsx({
+    const buttonClassName = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
@@ -156,6 +137,7 @@ export function PickQuizView() {
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
         setSuccess(false);
+        setQuestionFullFilled(false);
     };
 
     const handleCheckedLeft = () => {
@@ -163,96 +145,45 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
+        if(right.length === 1){
+            setQuestionFullFilled(true);
+        }
     };
 
-    const customList = (
-        title: React.ReactNode,
-        items: number[],
-        isQuiz: boolean
-    ) => (
-        <Card className={classes.cardWrapper}>
-            <CardHeader
-                className={classes.cardHeader}
-                avatar={
-                    <Checkbox
-                        onClick={handleToggleAll(items)}
-                        checked={
-                            numberOfChecked(items) === items.length &&
-                            items.length !== 0
-                        }
-                        indeterminate={
-                            numberOfChecked(items) !== items.length &&
-                            numberOfChecked(items) !== 0
-                        }
-                        disabled={items.length === 0}
-                        inputProps={{ "aria-label": "all items selected" }}
-                    />
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        let { value } = e.target;
+        setFilterFn({
+            fn: (items: number[]) => {
+                let result: number[] = [];
+                for (let i = 0; i < items.length; i++) {
+                    if (questions[items[i]].title.toLowerCase().includes(value))
+                        result.push(items[i]);
                 }
-                title={title}
-                subheader={`${numberOfChecked(items)}/${
-                    items.length
-                } zaznaczonych`}
-            />
-            {isQuiz ? (
-                <TextField
-                    id="standard-basic"
-                    className={classes.quizInput}
-                    label="Nazwa Quizu"
-                    onChange={handleChange}
-                />
-            ) : (
-                ""
-            )}
-            <Divider />
-            <List className={classes.list} dense component="div" role="list">
-                {items.map((value: number) => {
-                    const labelId = `transfer-list-all-item-${value}-label`;
-
-                    return (
-                        <ListItem
-                            key={value}
-                            role="listitem"
-                            button
-                            onClick={handleToggle(value)}
-                        >
-                            <ListItemIcon>
-                                <Checkbox
-                                    checked={checked.indexOf(value) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ "aria-labelledby": labelId }}
-                                />
-                            </ListItemIcon>
-                            <ListItemText
-                                id={labelId}
-                                primary={question[value].title}
-                            />
-                        </ListItem>
-                    );
-                })}
-                <ListItem />
-            </List>
-        </Card>
-    );
+                return result;
+            },
+        });
+    };
+    
     const timer = useRef<number>();
     const handleButtonClick = () => {
         if (!loading) {
-            var questions: Question[] = [];
+            let selectedQuestions: Question[] = [];
             right.forEach((i) => {
-                questions.push(questionListMock[i]);
+                selectedQuestions.push(questions[i]);
             });
             setSuccess(false);
             setLoading(true);
-            var newQuizes:Quiz[] = quizes.concat({
-                title: name,
-                questions: questions,
-            });
+
+            store.quizes = [
+                ...store.quizes,
+                { title, questions: selectedQuestions },
+            ];
+
             timer.current = window.setTimeout(() => {
-                console.log(newQuizes);
-                setLeft(array);
+                console.log(store.quizes);
+                setLeft(indexArray);
                 setRight([]);
                 setChecked(not(checked, rightChecked));
-                setQuizes(newQuizes);
                 setSuccess(true);
                 setLoading(false);
             }, 500);
@@ -266,9 +197,24 @@ export function PickQuizView() {
                 spacing={2}
                 justify="center"
                 alignItems="center"
-                className={classes.gidcontent}
+                className={classes.gridContent}
             >
-                <Grid item>{customList("Lista pytań", left, false)}</Grid>
+                <Grid item>
+                    <PickQuizList
+                        title="Lista pytań"
+                        data={{
+                            items: filterFn.fn(left),
+                            checked: checked,
+                            questions: questions
+                        }}
+                        isQuiz={() => false}
+                        numberOfChecked={numberOfChecked}
+                        handleToggleAll={handleToggleAll}
+                        handleChange={handleChange}
+                        handleToggle={handleToggle}
+                        handleSearch={handleSearch}
+                    />
+                </Grid>
                 <Grid item>
                     <Grid container direction="column" alignItems="center">
                         <Button
@@ -293,14 +239,29 @@ export function PickQuizView() {
                         </Button>
                     </Grid>
                 </Grid>
-                <Grid item>{customList("Quiz", right, true)}</Grid>
+                <Grid item>
+                    <PickQuizList
+                        title="Quiz"
+                        data={{
+                            items: right,
+                            checked: checked,
+                            questions: questions
+                        }}
+                        isQuiz={() => true}
+                        numberOfChecked={numberOfChecked}
+                        handleToggleAll={handleToggleAll}
+                        handleChange={handleChange}
+                        handleToggle={handleToggle}
+                        handleSearch={handleSearch}
+                    />
+                </Grid>
             </Grid>
             <div className={classes.wrapper}>
                 <Button
                     variant="contained"
                     color="secondary"
-                    className={buttonClassname}
-                    disabled={loading}
+                    className={buttonClassName}
+                    disabled={loading || questionFullFilled || title.length === 0}
                     onClick={handleButtonClick}
                 >
                     {success ? `Zapisano Quiz` : `Zapisz Quiz`}

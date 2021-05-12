@@ -1,7 +1,7 @@
 import Student from "./Student.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
 
-class StudentList extends EventEmitter{
+class StudentList extends EventEmitter {
     private students: Map<string, Student>;
 
     constructor() {
@@ -15,7 +15,7 @@ class StudentList extends EventEmitter{
 
     addStudent(student: Student): void {
         this.students.set(student.id, student);
-        this.emit("studentAdded"); 
+        this.emit("studentAdded", student);
     }
 
     getStudent(index: string): Student | undefined {
@@ -24,8 +24,7 @@ class StudentList extends EventEmitter{
 
     deleteStudent(id: string): void {
         this.students.delete(id);
-        this.emit("studentDeleted"); // it is possible to send whole student via socket
-        // this.emit("studentDeleted", deletedStudent); // like this
+        this.emit("studentDeleted");
     }
 
     asArray() {
@@ -35,6 +34,10 @@ class StudentList extends EventEmitter{
     // needed?
     clearArray(): StudentList {
         return new StudentList();
+    }
+
+    compareTwoStudents(student1: Student, student2: Student): boolean {
+        return (student1.name === student2.name && student1.surname === student2.surname && student1.nick === student2.nick)
     }
 
 }

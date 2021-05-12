@@ -1,14 +1,24 @@
 /* Code adopted from: https://material-ui.com/components/tables/ */
 
-import { makeStyles, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
-import { Context } from "../../services/store/StoreService";
+import {
+    makeStyles,
+    useTheme,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    Checkbox,
+    TableRow,
+} from "@material-ui/core";
+import { useContext, useEffect, useState } from "react";
+import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
 interface StudentListViewProps {
-    lecture?: Lecture
+    studentList?: StudentListRow[];
+    students?: [string[], any];
 }
 
 export interface StudentListRow extends Student {
@@ -16,78 +26,73 @@ export interface StudentListRow extends Student {
 }
 
 export function StudentListView(props: StudentListViewProps) {
-    const backEnd = useBackEnd();
-    const [state,] = useContext(Context);
-    const { socketEmiter } = useBackEndSocket();
-    const [studentList, setStudentList] = useState<StudentListRow[]>([]);
-    const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof StudentListRow>('orderIndex');
+
+    const store = useContext(StoreContext);
+    const studentList: StudentListRow[] = props.studentList ?? [];
+    let [selectedStudents, toggleStudentSelection]: [string[], any] = props.students ?? [[], () => { }]
+    const [students, setStudents] = useState<string[]>(selectedStudents);
+
+
+    const [order, setOrder] = useState<Order>("asc");
+    const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
+    const changeSelectedStudents = (index: string) => () => {
+        toggleStudentSelection(index);
+    }
+
+    useEffect(() => {
+        if (props.students)
+            [selectedStudents, toggleStudentSelection] = props.students;
+        setStudents(selectedStudents);
+    }, [props.students]);
 
     const theme = useTheme();
-
     const classes = makeStyles({
         root: {
-            maxWidth: "500px",
-            margin: "15px auto",
+            width: "100%",
             background: theme.palette.secondary.light,
-            borderRadius: "0"
+            borderRadius: "0",
         },
         row: {
             "& td": {
-                padding: "15px",
+                padding: "0 0 0 16px",
+                height: "46px",
                 textAlign: "left",
                 verticalAlign: "middle",
                 fontWeight: 300,
                 fontSize: "14px",
                 color: "#000",
-                borderBottom: "solid 1px rgba(255,255,255,0.1)"
+                borderBottom: "solid 1px rgba(255,255,255,0.1)",
             },
             "&:nth-of-type(odd)": {
-                background: "#fedf9d;"
-            }
-        }
+                background: "#fedf9d;",
+            },
+        },
+        table: {
+            maxHeight: "100%",
+        },
     })();
 
-    const refreshList = useCallback(() => {
-        console.log("refreshList");
-        backEnd.getStudentsForLecture(props.lecture?.id ?? state.sessionId)
-            .then((list) => list.map((item, index) => {
-                return { orderIndex: index + 1, ...item }
-            }))
-            .then(setStudentList)
-            .catch((error) => console.log)
-    },
-        [backEnd, props.lecture?.id, state.sessionId],
-    );
-
-    useEffect(() => {
-        socketEmiter.addListener("studentAdded", refreshList);
-        return () => {
-            socketEmiter.removeListener("studentAdded", refreshList);
-        }
-    }, [refreshList, socketEmiter])
-
-    useEffect(() => {
-        refreshList()
-    }, [refreshList])
-
     const headCells: HeadCell<StudentListRow>[] = [
-        { id: 'orderIndex', numeric: false, label: 'Nr' },
-        { id: 'nick', numeric: false, label: 'Nick' },
-        { id: 'name', numeric: false, label: 'Imię' },
-        { id: 'surname', numeric: false, label: 'Nazwisko' },
+        { id: "orderIndex", numeric: false, label: "Nr" },
+        { id: "nick", numeric: false, label: "Nick" },
+        { id: "name", numeric: false, label: "Imię" },
+        { id: "surname", numeric: false, label: "Nazwisko" },
     ];
 
-    const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof StudentListRow) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
+    const handleRequestSort = (
+        event: React.MouseEvent<unknown>,
+        property: keyof StudentListRow
+    ) => {
+        const isAsc = orderBy === property && order === "asc";
+        setOrder(isAsc ? "desc" : "asc");
         setOrderBy(property);
     };
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <div><a target="_blank" rel="noreferrer" href={"http://localhost:3001/" + state.link}>LectureLink: http://localhost:3001/{state.link}</a></div>
-            <Table aria-label="tabela z listą studentów">
+            <Table stickyHeader aria-label="tabela z listą studentów" 
+                    className={classes.table}
+                    >
                 <StudentListHead
                     order={order}
                     orderBy={orderBy}
@@ -95,18 +100,38 @@ export function StudentListView(props: StudentListViewProps) {
                     cells={headCells}
                 />
                 <TableBody>
-                    {stableSort(studentList, getComparator(order, orderBy))
-                        .map((row, index) => {
+                    {stableSort(studentList, getComparator(order, orderBy)).map(
+                        (row, index) => {
                             return (
                                 <TableRow key={row.id} className={classes.row}>
-                                    <TableCell>{row.orderIndex}</TableCell>
+                                    <TableCell>
+                                        {row.orderIndex}
+                                        {store.sendQuizStep >= 2 && (
+                                            <Checkbox
+                                                disabled={
+                                                    store.sendQuizStep >= 3
+                                                }
+                                                color="primary"
+                                                onChange={changeSelectedStudents(row.id)}
+                                                checked={
+                                                    students.indexOf(
+                                                        row.id
+                                                    ) !== -1
+                                                }
+                                                inputProps={{
+                                                    "aria-label":
+                                                        "secondary checkbox",
+                                                }}
+                                            />
+                                        )}
+                                    </TableCell>
                                     <TableCell>{row.nick}</TableCell>
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>
                             );
-                        })}
-
+                        }
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>
