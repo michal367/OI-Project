@@ -43,6 +43,8 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
+    "start": "deno run --allow-read --allow-net=:${PORT} server/server.ts --port=${PORT}",
+    "build": "npm run build-all",
     "eject": "react-scripts eject",
     "start-lecturer": "set PORT=3000 && react-app-rewired start src/lecturer",
     "build-lecturer": "react-app-rewired build src/lecturer build/lecturer",
@@ -53,7 +55,7 @@
     "start-all": "start npm run start-lecturer & start npm run start-student",
     "build-all": "npm run build-lecturer & npm run build-student",
     "server": "npm run open-browser & npm run deno",
-    "deno": "deno run --allow-read --allow-net server/server.ts",
+    "deno": "deno run --allow-read --allow-net=:8000 server/server.ts",
     "launch": "npm run start-all & start npm run deno",
     "launch-full": "npm install && (npm run start-all & (npm run build-all && start npm run deno))",
     "open-browser": "deno run --allow-run scripts/open-browser.ts"
@@ -81,5 +83,6 @@
     "@types/node": "^12.20.7",
     "@types/react-router-dom": "^5.1.7",
     "react-app-rewired": "^2.1.8"
-  }
+  },
+  "homepage": "."
 }

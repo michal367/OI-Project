@@ -2,7 +2,7 @@ import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { JoinSessionView } from "../joinSessionView/JoinSessionView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import "fontsource-roboto";
 import Store, { StoreContext } from "../../services/StoreService";
 import { useBackEndSocket } from "../../services/BackEndService";
@@ -62,11 +62,15 @@ function App() {
                     </Backdrop>
 
                     <Switch>
-                        <Route path="/session">
+                        <Route path="/student/session">
                             <SessionDashboardView />
+                        </Route>
+                        <Route path='/student/code/:session'>
+                            <JoinSessionView />
                         </Route>
                         <Route path='/'>
                             <JoinSessionView />
+                            <Redirect to="/student" />
                         </Route>
                     </Switch>
                 </ThemeProvider>

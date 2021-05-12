@@ -1,32 +1,30 @@
-import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import Lecture, { linkLectureMap } from "./Lecture.ts";
+import { WebSocket } from "https://deno.land/std/ws/mod.ts";
+import { WebSocketAcceptedClient, WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
+import { LectureSubPayload, Payload, StudentSubPayload } from "./@types/payloads/types.d.ts";
 import { lectures } from "./controllers/lectures.ts";
+import Lecture, { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
-import { StudentSubPayload, LectureSubPayload, Payload } from "./@types/payloads/types.d.ts";
 
-const setupWebSocketServer = () => {
-    const wss = new WebSocketServer(8080);
-    wss.on("connection", function (ws: WebSocketClient) {
-        const subMessageHandler = (message: string) => {
-            const parsed = JSON.parse(message);
-            switch (parsed.event) {
-                case "subscribe_lecture":
-                    handlerSubscribeLecture(parsed, ws);
-                    break;
-                case "subscribe_student":
-                    handlerSubscribeStudent(parsed, ws);
-                    break;
-                default:
-                    console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
+const setupWebSocket = async (ws: WebSocket) => {
+    const wsc: WebSocketAcceptedClient = new WebSocketAcceptedClient(ws);
 
-            }
-            ws.removeListener("message", subMessageHandler);
-        };
-        ws.on("message", subMessageHandler);
-    });
-    wss.on("error", function (error: Error) {
-        console.log(error.message);
-    });
+    const subMessageHandler = (message: string) => {
+        const parsed = JSON.parse(message);
+        console.log(parsed);
+        
+        switch (parsed.event) {
+            case "subscribe_lecture":
+                handlerSubscribeLecture(parsed, wsc);
+                break;
+            case "subscribe_student":
+                handlerSubscribeStudent(parsed, wsc);
+                break;
+            default:
+                console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
+        }
+        wsc.removeListener("message", subMessageHandler);
+    };
+    wsc.on("message", subMessageHandler);
 };
 
 function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {
@@ -63,4 +61,5 @@ function handlerSubscribeLecture(parsed: LectureSubPayload, ws: WebSocketClient)
     }
 }
 
-export { setupWebSocketServer };
+export { setupWebSocket };
+

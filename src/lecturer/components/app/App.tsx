@@ -1,5 +1,5 @@
 import { CssBaseline } from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import "fontsource-roboto";
@@ -82,33 +82,36 @@ function App() {
                     <TopBar />
 
                     <Switch>
-                        <Route exact path="/">
+                        <Route exact path="/lecturer">
                             <CreateSessionView />
                         </Route>
 
-                        <Route path="/session">
+                        <Route path="/lecturer/session">
                             <SessionDashboardView />
                         </Route>
 
-                        <Route path="/quiz">
+                        <Route path="/lecturer/quiz">
                             <PickQuizView />
                         </Route>
 
-                        <Route path="/question">
+                        <Route path="/lecturer/question">
                             <CreateQuestionView />
                         </Route>
 
-                        <Route path="/questions">
+                        <Route path="/lecturer/questions">
                             <QuestionsListView />
                         </Route>
 
-                        <Route path="/stats">
+                        <Route path="/lecturer/stats">
                             <QuizStatsView />
                         </Route>
 
                         <Route path="/">
-                            <CreateSessionView />
-                            <Redirect to="/" />
+                            {(store.sessionId === "") ?
+                                <Redirect to="/lecturer" />
+                                :
+                                <Redirect to="/lecturer/session" />
+                            }
                         </Route>
                     </Switch>
                 </ThemeProvider>

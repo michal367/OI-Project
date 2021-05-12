@@ -1,4 +1,4 @@
-  
+
 import { useContext, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { Button, ButtonGroup, TextField, makeStyles } from "@material-ui/core";
@@ -28,7 +28,7 @@ export function SendQuestion() {
         },
     })();
 
-    const stopWaiting = async() =>{
+    const stopWaiting = async () => {
         setWaitingTime(false);
     }
 
@@ -54,10 +54,11 @@ export function SendQuestion() {
             >
                 <TextField
                     id="standard-multiline-flexible"
-                    label="Napisz coś"
+                    label={waitTime ? "Poczekaj przed kolejnym 5s" : "Zadaj anonimowe pytanie"}
                     variant="outlined"
                     className={classes.inputArea}
                     value={value}
+                    disabled={waitTime}
                     onChange={handleChange}
                 />
                 <Button
