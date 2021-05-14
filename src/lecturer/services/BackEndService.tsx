@@ -75,7 +75,7 @@ export const useBackEndSocket = () => {
             },
             share: true,
             shouldReconnect: (closeEvent) => {                
-                console.log("closeEvent");
+                console.log("closeEvent", closeEvent);
                 return true;
             },
             reconnectAttempts: Number.POSITIVE_INFINITY,

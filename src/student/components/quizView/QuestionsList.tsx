@@ -1,11 +1,16 @@
 import { makeStyles, Paper, Button, Grid, Checkbox, TextField } from '@material-ui/core';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { testData } from './testData';
+import Store, { StoreContext } from "../../services/StoreService";
+import { useContext, useEffect } from "react";
+import { useBackEndSocket } from "../../services/BackEndService";
 
 export function QuestionsList() {
     let answers = new Map();
-    let quiz = testData();
-
+    const [quiz, setQuiz] = useState(testData());
+    const [quizID, setQuizID] = useState("");
+    const store = useContext(StoreContext);
+    const { socketEmiter, sendJsonMessage } = useBackEndSocket();
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
@@ -13,6 +18,21 @@ export function QuestionsList() {
             overflow: 'auto',
         },
     })();
+    // 
+    const refreshQuiz = useCallback((payload: ServerQuizRequestPayload) => {
+        console.log("refreshQuiz");
+        setQuiz(payload.data.questions);
+        setQuizID(payload.data.quiz_id);
+    }, []);
+
+    useEffect(() => {
+        socketEmiter.addListener("send_quiz", refreshQuiz);
+        return () => {
+            socketEmiter.removeListener("send_quiz", refreshQuiz);
+        };
+    }, [refreshQuiz, socketEmiter]);
+
+        // 
 
     const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
 
@@ -49,6 +69,15 @@ export function QuestionsList() {
             console.log("answer for question: ", i, "is:", answer);
         }
         console.log(result);
+        let payload: QuizResponsePayload = {
+            event: "send_quiz_response",
+            data: {
+                quiz_id: quizID,
+                answers: result
+            }
+        };
+        console.log(payload);
+        sendJsonMessage(payload);
     }
 
     return (

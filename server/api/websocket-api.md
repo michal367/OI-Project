@@ -111,7 +111,7 @@
                 "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
             "time_seconds": 90,
-            "quiz": {
+            "questions": {
                 "title":"Zwierze",
                 "questions":
                 [

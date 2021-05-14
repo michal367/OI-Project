@@ -8,6 +8,7 @@ const setupWebSocketServer = () => {
     const wss = new WebSocketServer(8080);
     wss.on("connection", function (ws: WebSocketClient) {
         const subMessageHandler = (message: string) => {
+            console.log(message);
             const parsed = JSON.parse(message);
             switch (parsed.event) {
                 case "subscribe_lecture":

@@ -66,6 +66,7 @@ class Lecture {
 
 
         this.wsc.on("message", (message: string) => {
+            console.log(message);
             const parsed = JSON.parse(message);
             switch (parsed.event) {
                 case "send_quiz":
@@ -88,8 +89,8 @@ class Lecture {
     }
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
-        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz));
-        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.quiz)); 
+        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions));
+        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions)); 
         const questionsWithoutAnswers: Question[] = quizWithoutAnswers.questions;
         questionsWithoutAnswers.forEach((q: Question) => {
             const answers: Answer[] | undefined = q.options;

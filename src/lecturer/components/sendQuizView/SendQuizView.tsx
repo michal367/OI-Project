@@ -25,6 +25,8 @@ import { useContext, useState, useEffect, ChangeEvent } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
 import { getRandomIndexes } from "../../util/random";
+import { useBackEndSocket } from "../../services/BackEndService";
+
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -40,6 +42,7 @@ function getSteps() {
     ];
 }
 export function SendQuizView(props: SendQuizViewProps) {
+    const { socketEmiter, sendJsonMessage, sendMessage } = useBackEndSocket();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
@@ -49,6 +52,8 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(!(store.sendQuiz.timeInMin));
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
+
+
 
     useEffect(() => {
         if (props.students)
@@ -247,11 +252,22 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
     const steps = getSteps();
 
-
-
+    
     const handleNext = () => {
         if (store.sendQuizStep === steps.length - 1) {
             console.log("scheduled quiz", store.sendQuiz);
+            let payload: QuizRequestPayload = {
+                event: "send_quiz",
+                data:{
+                    student_ids: store.sendQuiz.students,
+                    time_seconds: (store.sendQuiz.timeInMin??0)*60,
+                    questions: store.sendQuiz.quiz
+                }
+            };
+            sendMessage(JSON.stringify(payload));
+            console.log(payload);
+            sendJsonMessage("omaewa mou shiindeiru");
+            console.log("omaewa mou shiindeiru");
         }
         store.sendQuizStep = store.sendQuizStep + 1;
     };

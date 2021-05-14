@@ -41,6 +41,7 @@ class Student extends EventEmitter {
         this.wsc = wsc;
 
         this.wsc.on("message", (message: string) => {
+            console.log(message);
             const parsed = JSON.parse(message);
             switch (parsed.event) {
                 case "send_quiz_response":
