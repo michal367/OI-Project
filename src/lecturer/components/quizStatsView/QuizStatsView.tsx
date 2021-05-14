@@ -1,140 +1,177 @@
 import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  InputBase,
+    Box,
+    Paper,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Typography,
+    LinearProgress,
+    TextField,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    InputBase,
 } from "@material-ui/core";
 import CircularProgress, {
-  CircularProgressProps,
+    CircularProgressProps,
 } from "@material-ui/core/CircularProgress";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { makeStyles, useTheme } from "@material-ui/core";
 import React, { useCallback } from "react";
 import { testData } from "./testData";
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Typography variant="caption" component="div" color="textSecondary">
-          {`${
-            Math.round(
-              props.value,
-            )
-          }%`}
-        </Typography>
-      </Box>
-    </Box>
-  );
-}
+import { AnswerBar } from "./AnswerBar";
 
 export function QuizStatsView() {
+    const [quizes, setQuizes] = React.useState<Statistic>(testData());
+    const [currentQuiz, setCurrentQuiz] = React.useState<QuizStat>(
+        quizes.quizes[0]
+    );
 
-  const [quizes, setQuizes] = React.useState<Statistic>(testData());
-  const [progress, setProgress] = React.useState<number[]>([50, 70]);
-  const [currentQuiz, setCurrentQuiz] = React.useState<QuizStat>(
-    quizes.quizes[0],
-  );
-  const [currentQuestion, setCurrentQuestion] = React.useState<QuestionStat>(
-    quizes.quizes[0].questions[0],
-  );
+    const theme = useTheme();
 
-  const theme = useTheme();
+    const classes = makeStyles({
+        root: {
+            background: theme.palette.primary.light,
+            maxHeight: "100vh",
+            height: "100vh",
+            display: "grid",
+            gridTemplateColumns: "400px 1fr",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            padding: "0 10px",
+            paddingTop: 60,
+            paddingBottom: 100,
+            gap: 30,
+        },
+        quizColumn: {
+            height: "85vh",
+            overflow: "auto",
+            width: "100%",
+            marginBottom: "auto",
+            display: "flex",
+            flexDirection: "column",
+        },
+        statsColumn: {
+            height: "85vh",
+            overflow: "auto",
+            width: "100%",
+            marginBottom: "auto",
+            display: "grid",
+            gap: 20,
+            padding: 20,
+            gridTemplateColumns: "1fr 1fr",
+            gridAutoRows: "calc(50% - 10px)",
+            "&:after": {
+                gridColumn: "span 2",
+                height: "10px",
+                marginTop: "-10px",
+                content: '""',
+            },
+        },
+        question: {
+            height: "100%",
+            width: "100%",
+            overflowY: "auto",
+            overflowX: "hidden",
+            display: "flex",
+            flexDirection: "column",
+        },
+        answersGrid: {
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
+            padding: 10,
+            gap: 10,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridAutoRows: "calc((100% - 20px) / 3)",
+            "&:after": {
+                gridColumn: "span 2",
+                height: "10px",
+                marginTop: "-10px",
+                content: '""',
+            },
+        },
+        answer: {
+            width: "100%",
+            height: "100%",
+            position: "relative",
+        },
+        answerChild: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "100%",
+            justifyContent: "center",
+            display: "flex",
+            alignItems: "center",
+        },
+    })();
 
-  const classes = makeStyles({
-    root: {
-      background: theme.palette.primary.light,
-      maxHeight: "100vh",
-      height: "100vh",
-      display: "grid",
-      gridTemplateColumns: "1fr 2fr",
-      position: "absolute",
-      width: "100%",
-      top: 0,
-      zIndex: -1,
-      padding: "0 10px",
-      paddingTop: 60,
-      paddingBottom: 100,
-      gap: 30,
-    },
-    bar: {
-      borderRadius: 5,
-      backgroundColor: "#1a90ff",
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: "#fff",
-    },
-    column: {
-      height: "100%",
-      width: "100%",
-      marginBottom: "auto",
-      display: "flex",
-      flexDirection: "column",
-    },
-    columnWrapper: {
-      flexGrow: 1,
-      overflow: "auto",
-      maxHeight: "calc(100% - 100px)",
-    },
-    columnFooter: {
-      maxHeight: "100px",
-      flexShrink: 0,
-    },
-    button: {
-      marginLeft: "auto",
-      marginBottom: "auto",
-    },
-    margin: {
-      margin: theme.spacing(1),
-    },
-  })();
+    const handleQuiz = (quizNumber: number) => {
+        console.log(quizNumber);
+        console.log(quizes);
+        setCurrentQuiz(quizes.quizes[quizNumber]);
+    };
 
-  const updateProgress = (quizNumber: number) => {
-    let tmp = progress;
-    tmp[quizNumber]++;
-    setProgress(tmp);
-  };
-
-  const addQuiz = (newQuiz: QuizStat) => {
-      let tmp = quizes;
-      tmp.quizes = [...quizes.quizes,  newQuiz];
-      setQuizes(tmp);
-  };
-
-  const handleQuiz = (quizNumber: number) => {
-    console.log(quizNumber);
-    console.log(quizes);
-    setCurrentQuiz(quizes.quizes[quizNumber]);
-    setCurrentQuestion(currentQuiz.questions[0]);
-  };
-
-  const handleQuestion = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (typeof (event.target.value) == "number") {
-      setCurrentQuestion(currentQuiz.questions[event.target.value]);
-    }
-  };
-
-  return (
-    <div className={classes.root}>
-      <div className={classes.column}>
+    return (
+        <div className={classes.root}>
+            <Paper variant="outlined" square className={classes.quizColumn}>
+                <List component="nav">
+                    {quizes.quizes.map((quiz, i) => (
+                        <ListItem
+                            button
+                            selected={quiz === currentQuiz}
+                            onClick={(event) => handleQuiz(i)}
+                        >
+                            <ListItemText primary={quiz.title} />
+                            {quiz === currentQuiz && (
+                                <ListItemIcon>
+                                    <AssignmentIcon />
+                                </ListItemIcon>
+                            )}
+                        </ListItem>
+                    ))}
+                </List>
+            </Paper>
+            <Paper variant="outlined" square className={classes.statsColumn}>
+                {currentQuiz.questions.map((question, i) => (
+                    <Paper
+                        variant="outlined"
+                        square
+                        className={classes.question}
+                    >
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography variant="h5" component="h1">
+                                    {question.title}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>{question.text}</Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                        <div className={classes.answersGrid}>
+                            {(question.options ?? []).map((answer, i) => (
+                                <AnswerBar
+                                    answer={answer}
+                                    totalSelected={100}
+                                />
+                            ))}
+                        </div>
+                    </Paper>
+                ))}
+            </Paper>
+            {/* <div className={classes.column}>
         <Grid container spacing={1}>
           {quizes.quizes.map((quiz, i) => (
             <>
@@ -192,7 +229,7 @@ export function QuizStatsView() {
             </>
           ))}
         </Grid>
-      </div>
-    </div>
-  );
+      </div> */}
+        </div>
+    );
 }
