@@ -1,7 +1,6 @@
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
-import { SendQuestionRequestPayload, Payload, QuizResponsePayload, ReactionRequestPayload } from "./@types/payloads/types.d.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
 

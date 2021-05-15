@@ -1,4 +1,8 @@
-// @deno-types="./@types/frontTypes.d.ts"
+// @deno-types="../src/@types/types.d.ts"
+import './@types/types.ts';
+// @deno-types="../src/@types/serverTypes.d.ts"
+import './@types/serverTypes.ts';
+
 import { parse } from 'https://deno.land/std/flags/mod.ts';
 import * as path from 'https://deno.land/std/path/mod.ts';
 import { oakCors } from 'https://deno.land/x/cors/mod.ts';
@@ -17,15 +21,15 @@ app.use(router.allowedMethods());
 app.use(async (ctx) => {
     // console.log(ctx.request.url.pathname);
     const filePath = path.join(Deno.cwd(), "build");
-    try{
+    try {
         await send(ctx, ctx.request.url.pathname, {
             root: filePath
         });
     }
-    catch(error){
-        if(error instanceof HttpError){
+    catch (error) {
+        if (error instanceof HttpError) {
             // console.log(ctx.request.url.pathname + " - " + error.message);
-            if(ctx.request.url.pathname.startsWith("/student/"))
+            if (ctx.request.url.pathname.startsWith("/student/"))
                 ctx.response.redirect("/student");
             else
                 ctx.response.redirect("/lecturer");

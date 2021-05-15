@@ -15,8 +15,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useEffect } from "react";
 import { useState } from "react";
 interface QuizListViewProps {
-    selected?: Quiz,
-    onChange?: (quiz: Quiz) => void,
+    selected?: FrontQuiz,
+    onChange?: (quiz: FrontQuiz) => void,
 }
 
 export function QuizListView(props: QuizListViewProps) {
@@ -24,7 +24,7 @@ export function QuizListView(props: QuizListViewProps) {
     const theme = useTheme();
     const [selected, setSelected] = useState(props.selected);
 
-    const handleQuiz = (value: Quiz) => () => {
+    const handleQuiz = (value: FrontQuiz) => () => {
         if (props.onChange)
             props.onChange(value);
         setSelected(value);
@@ -39,7 +39,7 @@ export function QuizListView(props: QuizListViewProps) {
         }
     })();
 
-    const deleteQuiz = (quizToBeDeleted: Quiz) => () => {
+    const deleteQuiz = (quizToBeDeleted: FrontQuiz) => () => {
         store.quizes = store.quizes.filter(storeQuiz => storeQuiz !== quizToBeDeleted);
     }
 
@@ -49,7 +49,7 @@ export function QuizListView(props: QuizListViewProps) {
 
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
-            {store.quizes.map((value: Quiz) => {
+            {store.quizes.map((value: FrontQuiz) => {
                 return (
                     <ListItem
                         key={value.title}

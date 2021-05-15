@@ -72,15 +72,16 @@ export function SendQuizView(props: SendQuizViewProps) {
             setQuiz(false);
     }, [store.quizes, store.sendQuiz.quiz]);
 
-    const setSelectedQuiz = (quiz: Quiz | undefined) => {
-        store.sendQuiz.quiz = quiz;
-        store.sendQuiz = store.sendQuiz;
+    const setSelectedQuiz = (quiz: FrontQuiz | undefined) => {
+        let sendQuiz = store.sendQuiz;
+        sendQuiz.quiz = quiz;
+        store.sendQuiz = sendQuiz;
         setQuiz(quiz !== undefined);
     }
     const setSelectedTime = (value: unknown) => {
-        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        tmpQuiz.timeInMin = value as number;
-        store.sendQuiz = tmpQuiz;
+        let sendQuiz = store.sendQuiz;
+        sendQuiz.timeInMin = value as number;
+        store.sendQuiz = sendQuiz;
         setTime(store.sendQuiz.timeInMin ?? 0);
     }
     const handlePicker = (event: ChangeEvent<{ value: unknown }>) => {

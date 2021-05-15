@@ -1,11 +1,10 @@
 import { WebSocket } from "https://deno.land/std/ws/mod.ts";
 import { WebSocketAcceptedClient, WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { LectureSubPayload, Payload, StudentSubPayload } from "./@types/payloads/types.d.ts";
 import { lectures } from "./controllers/lectures.ts";
 import Lecture, { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
 
-const setupWebSocket = async (ws: WebSocket) => {
+const setupWebSocket = (ws: WebSocket) => {
     const wsc: WebSocketAcceptedClient = new WebSocketAcceptedClient(ws);
 
     const subMessageHandler = (message: string) => {

@@ -1,5 +1,5 @@
-import { makeStyles, Paper, useTheme } from "@material-ui/core";
-import { useContext, useEffect, useState } from "react";
+import { makeStyles, Paper } from "@material-ui/core";
+import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
@@ -13,7 +13,6 @@ export function ReactionReceiveView() {
         ReactionName.UP,
         ReactionName.DOWN,
     ];
-    const theme = useTheme();
     const store = useContext(StoreContext);
     const handleClick = () => {
         let index = Math.floor(Math.random()* 5);
@@ -24,14 +23,14 @@ export function ReactionReceiveView() {
     };    
     useEffect(() => {
         const interval = setInterval(() => {
-            if(store.lastReactionTime != 0 && Date.now() - store.lastReactionTime >= 0){
+            if(store.lastReactionTime !== 0 && Date.now() - store.lastReactionTime >= 0){
                 store.reactionValues = [0,0,0,0,0];
                 store.lastReactionTime = 0;
                 console.log(store.lastReactionTime - store.lastReactionTime)
             }
         }, 1000);
         return () => clearInterval(interval);
-    }, [store.lastReactionTime]);
+    }, [store, store.lastReactionTime]);
 
 
     const classes = makeStyles({
@@ -43,6 +42,7 @@ export function ReactionReceiveView() {
             overflow: "hidden",
         },
     })();
+
     return (
         <Paper className={classes.root} variant="outlined" square>
             {reactions.map((reaction, i) => {
@@ -51,7 +51,7 @@ export function ReactionReceiveView() {
                     index={i}
                 />);
             })}
-            <button onClick={handleClick}>reakcja</button>{/*  TMP */}
+            <button onClick={handleClick}>reakcja</button>
         </Paper>
     );
 }

@@ -14,7 +14,7 @@ import CircularProgress, {
   CircularProgressProps,
 } from "@material-ui/core/CircularProgress";
 import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useCallback } from "react";
+import { useState } from "react";
 import { testData } from "./testData";
 
 function CircularProgressWithLabel(
@@ -47,12 +47,12 @@ function CircularProgressWithLabel(
 
 export function QuizStatsView() {
 
-  const [quizes, setQuizes] = React.useState<Statistic>(testData());
-  const [progress, setProgress] = React.useState<number[]>([50, 70]);
-  const [currentQuiz, setCurrentQuiz] = React.useState<QuizStat>(
+  const [quizes, ] = useState<Statistic>(testData());
+  const [progress, ] = useState<number[]>([50, 70]);
+  const [currentQuiz, setCurrentQuiz] = useState<QuizStat>(
     quizes.quizes[0],
   );
-  const [currentQuestion, setCurrentQuestion] = React.useState<QuestionStat>(
+  const [currentQuestion, setCurrentQuestion] = useState<QuestionStat>(
     quizes.quizes[0].questions[0],
   );
 
@@ -106,18 +106,6 @@ export function QuizStatsView() {
       margin: theme.spacing(1),
     },
   })();
-
-  const updateProgress = (quizNumber: number) => {
-    let tmp = progress;
-    tmp[quizNumber]++;
-    setProgress(tmp);
-  };
-
-  const addQuiz = (newQuiz: QuizStat) => {
-      let tmp = quizes;
-      tmp.quizes = [...quizes.quizes,  newQuiz];
-      setQuizes(tmp);
-  };
 
   const handleQuiz = (quizNumber: number) => {
     console.log(quizNumber);

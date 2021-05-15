@@ -46,7 +46,7 @@ export interface IStore {
     link: string,
     sessionId: string,
     questions: Question[],
-    quizes: Quiz[],
+    quizes: FrontQuiz[],
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
     quizesInProgress: ScheduledQuiz[],
@@ -64,7 +64,7 @@ const Store = (props: StoreProps) => {
     const [link, setLink] = useState(initialValue.link);
     const [sessionId, setSessionId] = useState(initialValue.sessionId);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
+    const [quizes, setQuizes] = useState<FrontQuiz[]>(initialValue.quizes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
@@ -112,7 +112,7 @@ const Store = (props: StoreProps) => {
         get quizes() {
             return quizes;
         },
-        set quizes(newValue: Quiz[]) {
+        set quizes(newValue: FrontQuiz[]) {
             let array = [...newValue];
             setQuizes(array);
             saveKey("quizes", array);

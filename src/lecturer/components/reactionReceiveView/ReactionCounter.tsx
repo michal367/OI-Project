@@ -1,4 +1,4 @@
-import { Chip, Grow, makeStyles, Slide, SvgIconTypeMap } from "@material-ui/core";
+import { Chip,  makeStyles, Slide } from "@material-ui/core";
 import React, {
     JSXElementConstructor,
     ReactElement,
@@ -31,6 +31,7 @@ export function ReactionCounter(props: ReactionCounterProps) {
             setChanged(true);
         },150)
     }, [store.reactionValues[props.index]]);
+    
     return (
         <Slide direction="up" in={changed} mountOnEnter timeout={{ appear: 200, enter: 200, exit: 400 }}>
             <Chip
