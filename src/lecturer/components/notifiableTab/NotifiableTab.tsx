@@ -2,7 +2,7 @@ import Tab from '@material-ui/core/Tab';
 import { Link as RouterLink } from 'react-router-dom';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import {  Badge } from "@material-ui/core";
+import {  Badge, makeStyles } from "@material-ui/core";
 
 interface NotifiableTabProps{
     observableList?: any[];
@@ -22,7 +22,11 @@ export default function NotifiableTab(props: NotifiableTabProps) {
                setNotifiableNumber(notifiableNumber + 1);
         }}
     }, [props.observableList]);
-
+    const classes = makeStyles({
+        badge: {
+            height:"70px",
+        },
+    })();
 
     const resetNewQuestionsValue = () =>{
         setNotifiableNumber(0);
@@ -30,7 +34,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
 
     return (
         <div>
-        <Badge badgeContent={notifiableNumber} overlap="circle" color="error">
+        <Badge className={classes.badge} badgeContent={notifiableNumber} overlap="circle" color="error">
             <Tab onClick={resetNewQuestionsValue}  label={label} value={routes} component={RouterLink} to={routes}/>
         </Badge>
         </div>
