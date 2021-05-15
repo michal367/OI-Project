@@ -99,8 +99,10 @@ export function StudentFormView(props: StudentFormViewProps) {
         setSurname(changeToCapitalCase(event.target.value));
     };
 
-    const isFromCompleted = () => {
-        return session.length < 7 || name.length === 0 || surname.length === 0;
+    const isFormCompleted = () => {
+        return session.length === 7 &&
+            name.length > 0 && name.length <= 30 &&
+            surname.length > 0 && surname.length <= 30;
     };
 
     const handleButtonClick = () => {
@@ -172,7 +174,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                     style={{ width: '100%', maxWidth: "350px" }}
                 />}
             </Backdrop>
-            {!session && (
+            {(!session || session.length !== 7) && (
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <TextField
                         id="outlined-secondary"
@@ -190,26 +192,28 @@ export function StudentFormView(props: StudentFormViewProps) {
             )}
             <TextField
                 id="outlined-secondary"
-                label="Twoje imię"
+                label="Imię"
                 variant="outlined"
                 value={name}
                 color="secondary"
                 onChange={handleChangeName}
+                inputProps={{ maxLength: 30 }}
             />
             <TextField
                 id="outlined-secondary"
-                label="Twoje nazwisko"
+                label="Nazwisko"
                 variant="outlined"
                 value={surname}
                 color="secondary"
                 onChange={handleChangeSurname}
+                inputProps={{ maxLength: 30 }}
             />
             <div className={classes.wrapper}>
                 <Button
                     variant="contained"
                     color="secondary"
                     className={buttonClassname}
-                    disabled={loading || isFromCompleted()}
+                    disabled={loading || !isFormCompleted()}
                     onClick={handleButtonClick}
                 >
                     Dołącz do sesji

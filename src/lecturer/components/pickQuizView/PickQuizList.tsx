@@ -1,3 +1,4 @@
+
 import React, { ChangeEvent } from "react";
 import {
     Card,
@@ -104,6 +105,7 @@ export function PickQuizList(props: QuizListViewProps) {
                     className={classes.quizInput}
                     label="Nazwa Quizu"
                     onChange={handleChange}
+                    inputProps={{ maxLength: 40 }}
                 />
             ) : (
                 <TextField

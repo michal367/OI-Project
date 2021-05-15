@@ -165,7 +165,7 @@ export function PickQuizView() {
     };
     
     const timer = useRef<number>();
-    const handleButtonClick = () => {
+    const handleSaveQuiz = () => {
         if (!loading) {
             let selectedQuestions: Question[] = [];
             right.forEach((i) => {
@@ -261,8 +261,8 @@ export function PickQuizView() {
                     variant="contained"
                     color="secondary"
                     className={buttonClassName}
-                    disabled={loading || questionFullFilled || title.length === 0}
-                    onClick={handleButtonClick}
+                    disabled={loading || questionFullFilled || title.length === 0 || title.length > 40}
+                    onClick={handleSaveQuiz}
                 >
                     {success ? `Zapisano Quiz` : `Zapisz Quiz`}
                 </Button>

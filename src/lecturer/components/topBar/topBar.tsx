@@ -34,11 +34,11 @@ export default function TopBar() {
                 centered
             >
                 {(store.sessionId === "") ?
-                    <Tab label="Rozpocznij sesję" value={routes.index} component={RouterLink} to={routes.index} />
+                    <Tab label="Sesja" value={routes.index} component={RouterLink} to={routes.index} />
                     :
-                    <Tab label="Uczestnicy" value={routes.session} component={RouterLink} to={routes.session} />
+                    <Tab label="Sesja" value={routes.session} component={RouterLink} to={routes.session} />
                 }
-                <Tab label="Stwórz Quiz" value={routes.quiz} component={RouterLink} to={routes.quiz} />
+                <Tab label="Quizy" value={routes.quiz} component={RouterLink} to={routes.quiz} />
                 <Tab label="Pytania" value={routes.questions} component={RouterLink} to={routes.questions} />
             </Tabs>
         </AppBar>
