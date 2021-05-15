@@ -8,38 +8,38 @@ interface AnswerBarProps{
     answer: {
         text: string,
         isCorrect: boolean,
-        selected: number,
-    },
+    },    
+    selected: number,
     totalSelected: number,
 }
 
 export function AnswerBar(props: AnswerBarProps) {
-    const theme = useTheme();
+    const percent = props.selected * 100 / ((props.totalSelected > 0) ? props.totalSelected : 300);
     const AnswerProgress = withStyles(() => createStyles({
         root: {
           height: "100%",
         },
         colorPrimary: {
-          backgroundColor: "#fff",
+          backgroundColor: props.answer.isCorrect ? green[200] : red[200],
         },
         bar: {
-          backgroundColor: props.answer.isCorrect ? green[200] : red[200],
+          backgroundColor: props.answer.isCorrect ? green[500] : red[500],
         },
       }),
     )(LinearProgress);
     const classes = makeStyles({
 		answer:{
 			width: "100%",
-			height: "100%",
+			height: "max(100% , fit-content)",
             position: "relative",
             "&:hover :nth-child(2)":{
-                display: "none",
+                opacity: 0,
             },
             "& :nth-child(3)":{
-                display: "none",
+                opacity: 0,
             },
             "&:hover :nth-child(3)":{
-                display: "flex",
+                opacity: 1,
             },
 		},
         answerChild:{
@@ -48,18 +48,28 @@ export function AnswerBar(props: AnswerBarProps) {
             left: 0,
             height: "100%",
             width: "100%",
-            justifyContent: "center",
             display: "flex",
+            justifyContent: "center",
+            color: "#fff",
+            alignItems: "center",
+        },
+        answerText:{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            padding: 10,
+            color: "#fff",
             alignItems: "center",
         },
     })();
     return (<Paper className={classes.answer}>
-        <AnswerProgress className={classes.answerChild} variant="determinate" value={props.answer.selected * 100 / props.totalSelected} />
-        <Typography className={classes.answerChild}>
+        <AnswerProgress className={classes.answerChild} variant="determinate" value={percent} />
+        <Typography className={classes.answerText}>
             {props.answer.text}
         </Typography>
-        <Typography className={classes.answerChild}>
-            {(props.answer.selected * 100 / props.totalSelected) + "%"}
+        <Typography className={classes.answerChild} style={{fontSize: 26}}>
+            {(Math.round(percent*10)/10) + "%"}
         </Typography>
     </Paper>)
 }

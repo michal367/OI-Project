@@ -40,7 +40,7 @@ export function QuizListView(props: QuizListViewProps) {
     })();
 
     const deleteQuiz = (quizToBeDeleted: Quiz) => () => {
-        store.quizes = store.quizes.filter(storeQuiz => storeQuiz !== quizToBeDeleted);
+        store.quizzes = store.quizzes.filter(storeQuiz => storeQuiz !== quizToBeDeleted);
     }
 
     useEffect(() => {
@@ -49,7 +49,7 @@ export function QuizListView(props: QuizListViewProps) {
 
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
-            {store.quizes.map((value: Quiz) => {
+            {store.quizzes.map((value: Quiz) => {
                 return (
                     <ListItem
                         key={value.title}
@@ -64,7 +64,7 @@ export function QuizListView(props: QuizListViewProps) {
                     </ListItem>
                 );
             })}
-            {store.quizes.length === 0 && (<Typography style={{ paddingLeft: "10px" }}>Nie ma żadnego Quizu</Typography>)}
+            {store.quizzes.length === 0 && (<Typography style={{ paddingLeft: "10px" }}>Nie ma żadnego Quizu</Typography>)}
         </List>
     );
 }

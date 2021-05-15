@@ -174,13 +174,13 @@ export function PickQuizView() {
             setSuccess(false);
             setLoading(true);
 
-            store.quizes = [
-                ...store.quizes,
+            store.quizzes = [
+                ...store.quizzes,
                 { title, questions: selectedQuestions },
             ];
 
             timer.current = window.setTimeout(() => {
-                console.log(store.quizes);
+                console.log(store.quizzes);
                 setLeft(indexArray);
                 setRight([]);
                 setChecked(not(checked, rightChecked));
