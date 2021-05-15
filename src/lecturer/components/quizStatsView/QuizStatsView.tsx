@@ -1,35 +1,44 @@
 import {
-    Box,
     Paper,
     Accordion,
     AccordionSummary,
     AccordionDetails,
     Typography,
-    LinearProgress,
-    TextField,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
-    InputBase,
+    ListItemSecondaryAction,
+    IconButton,
+    Fab,
+    ButtonGroup,
+    Button,
 } from "@material-ui/core";
-import CircularProgress, {
-    CircularProgressProps,
-} from "@material-ui/core/CircularProgress";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import BackspaceIcon from '@material-ui/icons/Backspace';
+import PublishIcon from "@material-ui/icons/Assignment";
 import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useCallback } from "react";
-import { testData } from "./testData";
+import SendIcon from '@material-ui/icons/Send';
+import React, { useContext, useEffect } from "react";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { StoreContext } from "../../services/StoreService";
 import { AnswerBar } from "./AnswerBar";
+import { green } from "@material-ui/core/colors";
+import DoneIcon from '@material-ui/icons/Done';
+import { QuestionBlock } from "./QuestionBlock";
 
 export function QuizStatsView() {
-    const [quizes, setQuizes] = React.useState<Statistic>(testData());
-    const [currentQuiz, setCurrentQuiz] = React.useState<QuizStat>(
-        quizes.quizes[0]
+    const store = useContext(StoreContext);
+    const [selectedQuizStats, setQuizStats] = React.useState<ScheduledQuiz | undefined>(
+        store.endedQuizzes.length > 0 ? store.endedQuizzes[0] : undefined
     );
 
     const theme = useTheme();
+
+    useEffect(() => {
+        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) != -1 ? prev : undefined);
+    }, [store.endedQuizzes]);
 
     const classes = makeStyles({
         root: {
@@ -45,18 +54,25 @@ export function QuizStatsView() {
             padding: "0 10px",
             paddingTop: 60,
             paddingBottom: 100,
-            gap: 30,
+            gap: 15,
         },
         quizColumn: {
-            height: "85vh",
+            height: "80vh",
             overflow: "auto",
             width: "100%",
             marginBottom: "auto",
             display: "flex",
             flexDirection: "column",
+            "& Mui-expanded": { marginBottom: 0 },
+            "& li .MuiListItemSecondaryAction-root":{
+                display: "none",
+            },
+            "& li:hover .MuiListItemSecondaryAction-root":{
+                display: "block",
+            },
         },
         statsColumn: {
-            height: "85vh",
+            height: "80vh",
             overflow: "auto",
             width: "100%",
             marginBottom: "auto",
@@ -72,13 +88,20 @@ export function QuizStatsView() {
                 content: '""',
             },
         },
+        quizStatRow:{
+            paddingTop: 16,
+            paddingBottom: 16,
+        },
         question: {
             height: "100%",
             width: "100%",
-            overflowY: "auto",
             overflowX: "hidden",
             display: "flex",
             flexDirection: "column",
+            "& .MuiCollapse-wrapperInner": {
+                maxHeight: 118,
+                overflow: "auto",
+            },
         },
         answersGrid: {
             width: "100%",
@@ -88,7 +111,7 @@ export function QuizStatsView() {
             gap: 10,
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            gridAutoRows: "calc((100% - 20px) / 3)",
+            gridAutoRows: "max(calc((100% - 20px) / 3), fit-content, 50px)",
             "&:after": {
                 gridColumn: "span 2",
                 height: "10px",
@@ -111,125 +134,122 @@ export function QuizStatsView() {
             display: "flex",
             alignItems: "center",
         },
+        extendedIcon: {
+            marginRight: theme.spacing(1),
+        },
+        showButton: (selectedQuizStats?.alreadyShowedResults ? {
+            background: green[500],
+            "&:hover": {
+                background: green[700],
+            }
+        }:{}),
+        action: {
+            position: "absolute",
+            bottom: 20,
+            left: 20,
+            display: "flex",
+            gap: 20,
+        },
+        importExport: {
+            overflow: "hidden",
+            padding: 0,
+            "& .MuiFab-label": {
+                height: "100%",
+            },
+            height: 55,
+        },
+        importExportGroup: {
+            width: "100%",
+            height: "100%",
+        },
+        importExportButton: {
+            padding: "0 10",
+            fontSize: "16px",
+            width: 144,
+            "& span": {
+                display: "flex",
+                gap: 10,
+            },
+        },
+        shareFab: {
+            height: 55,
+            fontSize: 16,
+            marginRight: "20px"
+        }
     })();
 
-    const handleQuiz = (quizNumber: number) => {
-        console.log(quizNumber);
-        console.log(quizes);
-        setCurrentQuiz(quizes.quizes[quizNumber]);
+    const handleQuiz = (quizIndex: number) => {
+        setQuizStats(store.endedQuizzes[quizIndex]);
     };
 
+    const handleDeleteStats = (quizIndex: number) => {
+        let statsToBeDeleted = store.endedQuizzes[quizIndex];
+        store.endedQuizzes = store.endedQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+    }
+    
+    const handleShowResults = () => {
+        let tmpQuizzes = store.endedQuizzes;
+        tmpQuizzes.forEach((element:ScheduledQuiz) => element === selectedQuizStats ? (element.alreadyShowedResults = true):(null))
+        store.endedQuizzes = tmpQuizzes;
+    }
+
     return (
-        <div className={classes.root}>
-            <Paper variant="outlined" square className={classes.quizColumn}>
-                <List component="nav">
-                    {quizes.quizes.map((quiz, i) => (
-                        <ListItem
-                            button
-                            selected={quiz === currentQuiz}
-                            onClick={(event) => handleQuiz(i)}
-                        >
-                            <ListItemText primary={quiz.title} />
-                            {quiz === currentQuiz && (
-                                <ListItemIcon>
-                                    <AssignmentIcon />
-                                </ListItemIcon>
-                            )}
-                        </ListItem>
-                    ))}
-                </List>
-            </Paper>
-            <Paper variant="outlined" square className={classes.statsColumn}>
-                {currentQuiz.questions.map((question, i) => (
-                    <Paper
-                        variant="outlined"
-                        square
-                        className={classes.question}
-                    >
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
+        <>
+            <div className={classes.root}>
+                <Paper variant="outlined" square className={classes.quizColumn}>
+                    <List component="nav">
+                        {store.endedQuizzes.map((quizStats, i) => (
+                            <ListItem
+                                button
+                                selected={quizStats === selectedQuizStats}
+                                onClick={(event) => handleQuiz(i)}
+                                className={classes.quizStatRow}
                             >
-                                <Typography variant="h5" component="h1">
-                                    {question.title}
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography>{question.text}</Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                        <div className={classes.answersGrid}>
-                            {(question.options ?? []).map((answer, i) => (
-                                <AnswerBar
-                                    answer={answer}
-                                    totalSelected={100}
-                                />
-                            ))}
-                        </div>
-                    </Paper>
-                ))}
-            </Paper>
-            {/* <div className={classes.column}>
-        <Grid container spacing={1}>
-          {quizes.quizes.map((quiz, i) => (
-            <>
-              <Grid item xs={10}>
-                <Button
-                  fullWidth={true}
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleQuiz(i)}
+                                <ListItemIcon>
+                                    {quizStats === selectedQuizStats && (
+                                        <AssignmentIcon />
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText primary={quizStats.quiz?.title} />
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" onClick={(event)=>handleDeleteStats(i)}>
+                                        <BackspaceIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+                <Paper
+                    variant="outlined"
+                    square
+                    className={classes.statsColumn}
                 >
-                  {quiz.title}
-                </Button>
-              </Grid>
-              <Grid item xs={2}>
-                <CircularProgressWithLabel value={progress[i]} />
-              </Grid>
-            </>
-          ))}
-        </Grid>
-      </div>
-      <div className={classes.column}>
-        <FormControl className={classes.margin}>
-          <InputLabel id="demo-customized-select-label">Question</InputLabel>
-          <Select
-            labelId="demo-customized-select-label"
-            id="demo-customized-select"
-            value={currentQuiz.questions.indexOf(currentQuestion)}
-            onChange={handleQuestion}
-          >
-            {currentQuiz.questions.map((question, i) => (
-              <MenuItem value={i}>{question.text}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Grid container spacing={1}>
-          {currentQuestion.options.map((answer, i) => (
-            <>
-              <Grid item xs={10}>
-                <TextField
-                  fullWidth={true}
-                  id={"outlined-basic-" + i}
-                  variant="outlined"
-                  defaultValue={answer.text}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={2}>
-              <InputBase
-                defaultValue={answer.selected + "%"}
-                inputProps={{ 'aria-label': 'naked' }}
-                />
-              </Grid>
-            </>
-          ))}
-        </Grid>
-      </div> */}
-        </div>
+                    {selectedQuizStats?.questionStats.sort((a, b) => a.index - b.index).map((questionStat, j) => {
+                        let question = selectedQuizStats?.quiz?.questions[j];
+                        return question ? (
+                            <QuestionBlock question={question} questionStat={questionStat} totalSelected={selectedQuizStats.students.length}/>
+                        ) : (<></>)
+                    }
+                    )}
+                </Paper>
+                <div className={classes.action}>
+                    <Fab variant="extended" className={classes.importExport}>
+                        <ButtonGroup
+                            variant="contained"
+                            color="primary"
+                            className={classes.importExportGroup}
+                        >
+                            <Button className={classes.importExportButton}> <PublishIcon /> Wczytaj </Button>
+                            <Button className={classes.importExportButton}> Zapisz <GetAppIcon />   </Button>
+                        </ButtonGroup>
+                    </Fab>
+                    <Fab variant="extended" color="secondary" className={classes.shareFab +" "+ classes.showButton} onClick={(event)=>handleShowResults()}>
+                        { selectedQuizStats?.alreadyShowedResults ? (<><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>) : (<><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>) }
+                    </Fab>
+                </div>
+            </div>
+        </>
     );
 }
+
