@@ -72,7 +72,6 @@ const Store = (props: StoreProps) => {
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
-
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
@@ -158,7 +157,7 @@ const Store = (props: StoreProps) => {
         get studentQuestions() {
             return studentQuestions;
         },
-        set setStudentQuestions(newValue: StudentQuestion[]) {
+        set studentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
         },
 
@@ -180,7 +179,7 @@ const Store = (props: StoreProps) => {
         },
         set lastReactionTime(newValue: number){
             setLastReactionTime(newValue);
-        }
+        },
     };
 
     return (
