@@ -5,12 +5,14 @@ import BackspaceIcon from '@material-ui/icons/Backspace';
 import PublishIcon from "@material-ui/icons/Assignment";
 import { makeStyles, useTheme } from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
-import React, { useContext, useEffect } from "react";
+import React, { ReactNode, useContext, useEffect } from "react";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { StoreContext } from "../../services/StoreService";
 import { AnswerBar } from "./AnswerBar";
 import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
+import Async from 'react-promise';
+import usePromise from "react-promise";
 
 interface QuestionBlockProps{
     question: Question,
@@ -20,6 +22,34 @@ interface QuestionBlockProps{
 
 export function QuestionBlock(props: QuestionBlockProps) {
     const store = useContext(StoreContext);
+    const getContent = () => {
+        return new Promise<ReactNode>((resolve) => {resolve(<><Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+            >
+                <Typography variant="h5" component="h1">
+                    {props.question.title}
+                </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>{props.question?.text}</Typography>
+            </AccordionDetails>
+        </Accordion>
+        <div className={classes.answersGrid}>
+            {(props.questionStat.options ?? []).sort((a, b) => a.index - b.index).map((answerStat, k) => {
+                let option = (props.question?.options) ? (props.question.options[k]) : (undefined);
+                return option ? (<AnswerBar
+                    answer={option}
+                    selected={answerStat.numberOfTimesSelected}
+                    totalSelected={props.totalSelected}
+                />) : (<></>)
+            }
+            )}
+        </div></>)});
+    }
+    const {value, loading} = usePromise<ReactNode>(getContent)
     const theme = useTheme();
     const classes = makeStyles({
         root: {
@@ -157,30 +187,6 @@ export function QuestionBlock(props: QuestionBlockProps) {
     square
     className={classes.question}
 >
-    <Accordion>
-        <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-        >
-            <Typography variant="h5" component="h1">
-                {props.question.title}
-            </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-            <Typography>{props.question?.text}</Typography>
-        </AccordionDetails>
-    </Accordion>
-    <div className={classes.answersGrid}>
-        {(props.questionStat.options ?? []).sort((a, b) => a.index - b.index).map((answerStat, k) => {
-            let option = (props.question?.options) ? (props.question.options[k]) : (undefined);
-            return option ? (<AnswerBar
-                answer={option}
-                selected={answerStat.numberOfTimesSelected}
-                totalSelected={props.totalSelected}
-            />) : (<></>)
-        }
-        )}
-    </div>
+    {loading ? <></> : value}
 </Paper>)
 }
