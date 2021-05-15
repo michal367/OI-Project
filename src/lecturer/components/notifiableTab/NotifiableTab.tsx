@@ -17,7 +17,10 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     const routes = props.routes?? "none";
     
     useEffect(() => {
-       if(props.observableList){ setNotifiableNumber(notifiableNumber + 1);}
+       if(props.observableList){ 
+           if(props.observableList.length !== 0){
+               setNotifiableNumber(notifiableNumber + 1);
+        }}
     }, [props.observableList]);
 
 
