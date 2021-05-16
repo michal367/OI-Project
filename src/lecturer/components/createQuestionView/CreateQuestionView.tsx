@@ -20,6 +20,7 @@ import { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { StoreContext } from '../../services/StoreService';
+import { UploadImageField } from '../uploadImageField/uploadImageField';
 
 
 export function CreateQuestionView() {
@@ -34,32 +35,36 @@ export function CreateQuestionView() {
 
     let titleVal = "";
     let questionVal = "";
+    let imageUrlVal = "";
     let modeVal = QuestionType.CLOSED;
     let answersVal: string[] = [];
     let isCorrectVal: boolean[] = [];
 
     let data: any = location.state;
-    if(data !== undefined){
+    if (data !== undefined) {
         let index = data.questionIndex;
+        if (store.questions[index]) {
+            titleVal = store.questions[index].title;
+            questionVal = store.questions[index].text;
+            imageUrlVal = store.questions[index].imageSrc ?? "";
 
-        titleVal = store.questions[index].title;
-        questionVal = store.questions[index].text;
+            if (store.questions[index].options !== undefined) {
+                modeVal = QuestionType.CLOSED;
 
-        if (store.questions[index].options !== undefined) {
-            modeVal = QuestionType.CLOSED;
-
-            let options = store.questions[index].options;
-            if (options !== undefined) {
-                answersVal = options.map(({ text }) => text);
-                isCorrectVal = options.map(({ isCorrect }) => isCorrect);
+                let options = store.questions[index].options;
+                if (options !== undefined) {
+                    answersVal = options.map(({ text }) => text);
+                    isCorrectVal = options.map(({ isCorrect }) => isCorrect);
+                }
             }
-        }
-        else {
-            modeVal = QuestionType.OPEN;
+            else {
+                modeVal = QuestionType.OPEN;
+            }
         }
     }
 
     const [title, setTitle] = useState<string>(titleVal);
+    const [imageUrl, setImageUrl] = useState<string>(imageUrlVal);
     const [question, setQuestion] = useState<string>(questionVal);
     const [mode, setMode] = useState<number>(modeVal);
     const [inputList, setInputList] = useState<string[]>(answersVal);
@@ -68,7 +73,7 @@ export function CreateQuestionView() {
         title: "",
         question: "",
         noAnswers: "",
-        emptyAnswers: [],
+        emptyAnswers: []
     });
 
     const classes = makeStyles({
@@ -93,7 +98,6 @@ export function CreateQuestionView() {
                 marginBottom: "15px",
                 margin: theme.spacing(1),
             },
-
         },
         answerRow: {
             display: "flex",
@@ -260,7 +264,8 @@ export function CreateQuestionView() {
 
             let obj: Question = {
                 title: title,
-                text: question
+                text: question,
+                imageSrc: imageUrl
             };
 
             if (mode === QuestionType.CLOSED) {
@@ -291,6 +296,7 @@ export function CreateQuestionView() {
                 timer.current = window.setTimeout(() => {
                     setTitle("");
                     setQuestion("");
+                    setImageUrl("");
                     setInputList([]);
                     setChecked([]);
                     setSuccess(true);
@@ -320,6 +326,9 @@ export function CreateQuestionView() {
                     helperText={errors.title}
                     onChange={handleTitleChange}
                 />
+
+                <UploadImageField imageSrc={imageUrl} onChange={(image) => setImageUrl(image)} />
+
                 <TextField
                     multiline={true}
                     rows={5}

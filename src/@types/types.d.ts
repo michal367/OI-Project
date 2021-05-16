@@ -16,6 +16,7 @@ interface Answer {
 }
 interface Question {
     title: string;
+    imageSrc?: string;
     text: string;
     options?: Answer[];
 }
@@ -35,31 +36,31 @@ interface ScheduledQuiz {
     canShowResults: boolean;
 }
 
-interface StudentQuestion{
+interface StudentQuestion {
     studentNick: string,
     hours: string,
     minutes: string,
     text: string;
 }
 
-interface AnswerStat{
+interface AnswerStat {
     index: number;
     text: string;
     isCorrect: boolean;
     selected: number;
 }
 
-interface QuestionStat{
+interface QuestionStat {
     title: string;
     text: string;
     options: AnswerStat[];
 }
 
-interface QuizStat{
-    title : string;
+interface QuizStat {
+    title: string;
     questions: QuestionStat[];
 }
 
-interface Statistic{
+interface Statistic {
     quizes: QuizStat[];
 }
