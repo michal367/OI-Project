@@ -158,7 +158,7 @@ const Store = (props: StoreProps) => {
         get studentQuestions() {
             return studentQuestions;
         },
-        set setStudentQuestions(newValue: StudentQuestion[]) {
+        set studentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
         },
 
