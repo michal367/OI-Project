@@ -17,6 +17,7 @@ interface Answer {
 interface Question {
     index?: number;
     title: string;
+    imageSrc?: string;
     text: string;
     options?: Answer[];
 }
@@ -43,7 +44,7 @@ interface ScheduledQuiz {
     alreadyShowedResults: boolean;
 }
 
-interface AnswerStat{
+interface AnswerStat {
     index: number;
     numberOfTimesSelected: number;
 }
