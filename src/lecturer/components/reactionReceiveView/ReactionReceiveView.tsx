@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
-
+import { useBackEndSocket } from '../../services/BackEndService';
 
 export function ReactionReceiveView() {
     const reactions = [
@@ -13,9 +13,12 @@ export function ReactionReceiveView() {
         ReactionName.UP,
         ReactionName.DOWN,
     ];
+    const { socketEmiter } = useBackEndSocket();
     const store = useContext(StoreContext);
-    const handleClick = () => {
-        let index = Math.floor(Math.random()* 5);
+    const refreshReactions = (payload: ReactionResponsePayload) => {
+        // let index = Math.floor(Math.random()* 5);
+        let indexString: ReactionName = payload.data.reaction;
+        let index = reactions.indexOf(indexString);
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
@@ -32,6 +35,12 @@ export function ReactionReceiveView() {
         return () => clearInterval(interval);
     }, [store, store.lastReactionTime]);
 
+    useEffect(() => {
+        socketEmiter.on("send_student_reaction", refreshReactions);
+        return () => {
+            socketEmiter.off("send_student_reaction", refreshReactions);
+        };
+    }, [refreshReactions, socketEmiter]);
 
     const classes = makeStyles({
         root: {
@@ -51,7 +60,6 @@ export function ReactionReceiveView() {
                     index={i}
                 />);
             })}
-            <button onClick={handleClick}>reakcja</button>
         </Paper>
     );
 }

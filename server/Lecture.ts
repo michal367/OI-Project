@@ -66,6 +66,7 @@ class Lecture {
 
         this.wsc.on("message", (message: string) => {
             const parsed = JSON.parse(message);
+            console.log(parsed);
             switch (parsed.event) {
                 case "send_quiz":
                     this.handlerSendQuiz(parsed);
