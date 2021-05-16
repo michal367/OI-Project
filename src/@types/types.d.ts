@@ -21,7 +21,7 @@ interface Question {
     options?: Answer[];
 }
 
-interface Quiz {
+interface FrontQuiz {
     title: string;
     questions: Question[];
 }
@@ -36,7 +36,7 @@ interface StudentQuestion{
     text: string;
 }
 interface ScheduledQuiz {
-    quiz?: Quiz;
+    quiz?: FrontQuiz;
     students: string[];
     timeInSec?: number;
     questionStats: QuestionStat[];

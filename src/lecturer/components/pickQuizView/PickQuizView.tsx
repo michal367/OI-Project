@@ -38,7 +38,7 @@ export function PickQuizView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px",
         },
         wrapper: {
@@ -145,7 +145,7 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
-        if(right.length === 1){
+        if (right.length === 1) {
             setQuestionFullFilled(true);
         }
     };
@@ -163,7 +163,7 @@ export function PickQuizView() {
             },
         });
     };
-    
+
     const timer = useRef<number>();
     const handleButtonClick = () => {
         if (!loading) {

@@ -25,7 +25,7 @@ interface QuizListViewProps {
     numberOfChecked: (items: number[]) => number,
 
     handleToggleAll: (items: number[]) => () => void,
-    handleToggle:    (value: number)   => () => void,
+    handleToggle: (value: number) => () => void,
 
     handleChange: (e: ChangeEvent<HTMLInputElement>) => void,
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void,
@@ -94,9 +94,8 @@ export function PickQuizList(props: QuizListViewProps) {
                     />
                 }
                 title={title}
-                subheader={`${numberOfChecked(items)}/${
-                    items.length
-                } zaznaczonych`}
+                subheader={`${numberOfChecked(items)}/${items.length
+                    } zaznaczonych`}
             />
             {isQuiz() ? (
                 <TextField

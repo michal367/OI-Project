@@ -46,7 +46,7 @@ export function QuizStatsView() {
             top: 0,
             zIndex: -1,
             padding: "0 10px",
-            paddingTop: 60,
+            paddingTop: 75,
             paddingBottom: 100,
             gap: 15,
         },
@@ -58,10 +58,10 @@ export function QuizStatsView() {
             display: "flex",
             flexDirection: "column",
             "& Mui-expanded": { marginBottom: 0 },
-            "& li .MuiListItemSecondaryAction-root":{
+            "& li .MuiListItemSecondaryAction-root": {
                 display: "none",
             },
-            "& li:hover .MuiListItemSecondaryAction-root":{
+            "& li:hover .MuiListItemSecondaryAction-root": {
                 display: "block",
             },
         },
@@ -82,7 +82,7 @@ export function QuizStatsView() {
                 content: '""',
             },
         },
-        quizStatRow:{
+        quizStatRow: {
             paddingTop: 16,
             paddingBottom: 16,
         },
@@ -109,7 +109,7 @@ export function QuizStatsView() {
             "&:hover": {
                 background: green[700],
             }
-        }:{}),
+        } : {}),
         action: {
             position: "absolute",
             bottom: 20,
@@ -153,10 +153,12 @@ export function QuizStatsView() {
         let statsToBeDeleted = store.endedQuizzes[quizIndex];
         store.endedQuizzes = store.endedQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
     }
-    
+
     const handleShowResults = () => {
         let tmpQuizzes = store.endedQuizzes;
-        tmpQuizzes.forEach((element:ScheduledQuiz) => element === selectedQuizStats ? (element.alreadyShowedResults = true):(null))
+        tmpQuizzes.forEach(
+            (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
+        )
         store.endedQuizzes = tmpQuizzes;
     }
 
@@ -179,7 +181,7 @@ export function QuizStatsView() {
                                 </ListItemIcon>
                                 <ListItemText primary={quizStats.quiz?.title} />
                                 <ListItemSecondaryAction>
-                                    <IconButton edge="end" onClick={(event)=>handleDeleteStats(i)}>
+                                    <IconButton edge="end" onClick={(event) => handleDeleteStats(i)}>
                                         <BackspaceIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
@@ -192,13 +194,16 @@ export function QuizStatsView() {
                     square
                     className={classes.statsColumn}
                 >
-                    {selectedQuizStats?.questionStats.sort((a, b) => a.index - b.index).map((questionStat, j) => {
-                        let question = selectedQuizStats?.quiz?.questions[j];
-                        return question ? (
-                            <QuestionBlock question={question} questionStat={questionStat} totalSelected={selectedQuizStats.students.length}/>
-                        ) : (<></>)
+                    {selectedQuizStats?.questionStats.sort((a, b) => a.index - b.index)
+                        .map((questionStat, j) => {
+                            let question = selectedQuizStats?.quiz?.questions[j];
+                            return question && (<QuestionBlock
+                                question={question}
+                                questionStat={questionStat}
+                                totalSelected={selectedQuizStats.students.length}
+                            />)
+                        })
                     }
-                    )}
                 </Paper>
                 <div className={classes.action}>
                     <Fab variant="extended" className={classes.importExport}>
@@ -211,8 +216,17 @@ export function QuizStatsView() {
                             <Button className={classes.importExportButton}> Zapisz <GetAppIcon />   </Button>
                         </ButtonGroup>
                     </Fab>
-                    <Fab variant="extended" color="secondary" className={classes.shareFab +" "+ classes.showButton} onClick={(event)=>handleShowResults()}>
-                        { selectedQuizStats?.alreadyShowedResults ? (<><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>) : (<><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>) }
+                    <Fab
+                        variant="extended"
+                        color="secondary"
+                        className={classes.shareFab + " " + classes.showButton}
+                        onClick={(event) => handleShowResults()}
+                    >
+                        {
+                            selectedQuizStats?.alreadyShowedResults ?
+                                (<><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>)
+                                : (<><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>)
+                        }
                     </Fab>
                 </div>
             </div>

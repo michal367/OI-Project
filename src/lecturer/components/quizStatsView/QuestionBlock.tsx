@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { AnswerBar } from "./AnswerBar";
 
-interface QuestionBlockProps{
+interface QuestionBlockProps {
     question: Question,
     questionStat: QuestionStat
     totalSelected: number
@@ -44,34 +44,35 @@ export function QuestionBlock(props: QuestionBlockProps) {
         },
     })();
     return (<Paper
-    variant="outlined"
-    square
-    className={classes.question}
->
-    <Accordion>
-        <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-        >
-            <Typography variant="h5" component="h1">
-                {props.question.title}
-            </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-            <Typography>{props.question?.text}</Typography>
-        </AccordionDetails>
-    </Accordion>
-    <div className={classes.answersGrid}>
-        {(props.questionStat.options ?? []).sort((a, b) => a.index - b.index).map((answerStat, k) => {
-            let option = (props.question?.options) ? (props.question.options[k]) : (undefined);
-            return option ? (<AnswerBar
-                answer={option}
-                selected={answerStat.numberOfTimesSelected}
-                totalSelected={props.totalSelected}
-            />) : (<></>)
-        }
-        )}
-    </div>
-</Paper>)
+        variant="outlined"
+        square
+        className={classes.question}
+    >
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+            >
+                <Typography variant="h5" component="h1">
+                    {props.question.title}
+                </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>{props.question?.text}</Typography>
+            </AccordionDetails>
+        </Accordion>
+        <div className={classes.answersGrid}>
+            {(props.questionStat.options ?? []).sort((a, b) => a.index - b.index)
+                .map((answerStat, k) => {
+                    let option = (props.question?.options) ? (props.question.options[k]) : (undefined);
+                    return option && (<AnswerBar
+                        answer={option}
+                        selected={answerStat.numberOfTimesSelected}
+                        totalSelected={props.totalSelected}
+                    />)
+                })
+            }
+        </div>
+    </Paper>)
 }

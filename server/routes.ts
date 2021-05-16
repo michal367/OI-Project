@@ -5,16 +5,16 @@ import { setupWebSocket } from './websockets.ts';
 const router = new Router();
 
 router
-    .get("/", async (ctx) => {
+    .get("/", (ctx) => {
         ctx.response.redirect("/lecturer/index.html");
     })
-    .get("/lecturer", async (ctx) => {
+    .get("/lecturer", (ctx) => {
         ctx.response.redirect("/lecturer/index.html");
     })
-    .get("/student", async (ctx) => {
+    .get("/student", (ctx) => {
         ctx.response.redirect("/student/index.html");
     })
-    .get("/student/code/:id", async (ctx) => {
+    .get("/student/code/:id", (ctx) => {
         const code = ctx.params.id;
         ctx.response.redirect("/student/index.html?" + code);
     })

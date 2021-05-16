@@ -4044,7 +4044,4 @@ const endedQuizzes: ScheduledQuiz[] = [
     }
 ]
 
-export default {
-    studentListMock,
-};
 export { studentListMock, questionListMock, studentQusestionsMock, endedQuizzes };

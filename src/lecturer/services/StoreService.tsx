@@ -47,7 +47,7 @@ export interface IStore {
     link: string,
     sessionId: string,
     questions: Question[],
-    quizzes: Quiz[],
+    quizzes: FrontQuiz[],
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
     endedQuizzes: ScheduledQuiz[],
@@ -65,7 +65,7 @@ const Store = (props: StoreProps) => {
     const [link, setLink] = useState(initialValue.link);
     const [sessionId, setSessionId] = useState(initialValue.sessionId);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizzes, setQuizzes] = useState<Quiz[]>(initialValue.quizzes);
+    const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
@@ -73,7 +73,6 @@ const Store = (props: StoreProps) => {
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
-
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
@@ -113,7 +112,7 @@ const Store = (props: StoreProps) => {
         get quizzes() {
             return quizzes;
         },
-        set quizzes(newValue: Quiz[]) {
+        set quizzes(newValue: FrontQuiz[]) {
             let array = [...newValue];
             setQuizzes(array);
             saveKey("quizzes", array);
@@ -159,7 +158,7 @@ const Store = (props: StoreProps) => {
         get studentQuestions() {
             return studentQuestions;
         },
-        set setStudentQuestions(newValue: StudentQuestion[]) {
+        set studentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
         },
 
@@ -181,7 +180,7 @@ const Store = (props: StoreProps) => {
         },
         set lastReactionTime(newValue: number){
             setLastReactionTime(newValue);
-        }
+        },
     };
 
     return (
