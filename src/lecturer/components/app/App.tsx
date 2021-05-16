@@ -19,7 +19,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import GridLoader from "react-spinners/GridLoader";
 import { useContext, useEffect } from "react";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
-
+import { TimestampView } from "../timestampView/TimestampView";
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -105,7 +105,9 @@ function App() {
                         <Route path="/stats">
                             <QuizStatsView />
                         </Route>
-
+                        <Route path="/lecturer/timestamp">
+                            <TimestampView/>
+                        </Route>
                         <Route path="/">
                             {(store.sessionId === "") ?
                                 <Redirect to="/lecturer" />
