@@ -5,10 +5,10 @@ import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardVi
 import { Route, BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import "fontsource-roboto";
 import Store, { StoreContext } from "../../services/StoreService";
-import { useBackEndSocket } from "../../services/BackEndService";
 import Backdrop from '@material-ui/core/Backdrop';
 import GridLoader from "react-spinners/GridLoader";
 import { useContext, useEffect } from "react";
+import { useSocket } from "../../services/SocketService";
 
 const theme = createMuiTheme({
     palette: {
@@ -35,7 +35,7 @@ const theme = createMuiTheme({
 
 function App() {
     const store = useContext(StoreContext);
-    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+    const { socketEmiter } = useSocket(); //for keeping socket open
 
     useEffect(() => {
         const onClose = () => {

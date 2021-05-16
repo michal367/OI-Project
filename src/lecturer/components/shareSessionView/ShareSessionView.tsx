@@ -15,7 +15,8 @@ import { red } from "@material-ui/core/colors";
 import StopIcon from '@material-ui/icons/Stop';
 import { CopyLinkForm } from "./CopyLinkForm";
 import { StoreContext } from "../../services/StoreService";
-import { useBackEndSocket } from "../../services/BackEndService";
+import { useSocket } from "../../services/SocketService";
+
 
 
 interface ShareSessionViewProps {
@@ -25,7 +26,7 @@ interface ShareSessionViewProps {
 export function ShareSessionView(props: ShareSessionViewProps) {
     const store = useContext(StoreContext);
     const history = useHistory();
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
     const location = window.location;
 
     let port: string = location.port;

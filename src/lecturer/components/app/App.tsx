@@ -12,13 +12,13 @@ import {
 import TopBar from "../topBar/topBar";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
-import { useBackEndSocket } from "../../services/BackEndService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 import Backdrop from "@material-ui/core/Backdrop";
 import GridLoader from "react-spinners/GridLoader";
 import { useContext, useEffect } from "react";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
+import { useSocket } from "../../services/SocketService";
 
 const theme = createMuiTheme({
     palette: {
@@ -45,7 +45,7 @@ const theme = createMuiTheme({
 
 function App() {
     const store = useContext(StoreContext);
-    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+    const { socketEmiter } = useSocket();
 
     useEffect(() => {
         const onClose = () => {

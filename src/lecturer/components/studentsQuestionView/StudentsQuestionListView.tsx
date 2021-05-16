@@ -1,13 +1,12 @@
 import { makeStyles, Paper } from '@material-ui/core';
 import { useCallback, useEffect, useContext } from 'react';
-import { useBackEndSocket } from '../../services/BackEndService';
-import { studentQusestionsMock } from '../../util/mockData';
+import { useSocket } from '../../services/SocketService';
 import { StoreContext } from "../../services/StoreService";
 
 
 
 export function StudentsQuestionListView() {
-    const { socketEmiter } = useBackEndSocket();
+    const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     const classes = makeStyles({
         root: {
@@ -34,7 +33,7 @@ export function StudentsQuestionListView() {
             },
             padding: 5,
         },
-        messageHeader:{
+        messageHeader: {
 
         },
         messageContent: {
@@ -58,10 +57,9 @@ export function StudentsQuestionListView() {
         const newStudentQuestions = store.studentQuestions;
         newStudentQuestions.push(studentQuestion);
         store.studentQuestions = newStudentQuestions;
-    }, []);
+    }, [store]);
 
     useEffect(() => {
-        console.log("bardzo prosze Szymon conole log");
         socketEmiter.on("send_student_question", refreshQuestionList);
         return () => {
             socketEmiter.off("send_student_question", refreshQuestionList);
