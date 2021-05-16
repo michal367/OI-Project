@@ -19,25 +19,26 @@ export default function TopBar() {
         session: "/lecturer/session",
         quiz: "/lecturer/quiz",
         questions: "/lecturer/questions",
+        stats: "/lecturer/stats",
     }
     const possibleRoutes = Object.values(routes);
 
     const classes = makeStyles({
         tab: {
-            position:"relative",
+            position: "relative",
         },
         badge: {
             position: "absolute",
             top: "-10px",
-            right:"-10px",
+            right: "-10px",
             width: "25px",
             height: "25px",
             background: "red",
-            color:"white",
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center",
-            borderRadius:"50%",
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "50%",
         },
     })();
     useEffect(() => {
@@ -45,11 +46,11 @@ export default function TopBar() {
     }, [location.pathname, possibleRoutes]);
 
     const newQuestion = () => {
-        let newStudentQuestion:StudentQuestion = {
+        let newStudentQuestion: StudentQuestion = {
             studentNick: "Null",
-            hours:"null",
-            minutes:"null",
-            text:"null",
+            hours: "null",
+            minutes: "null",
+            text: "null",
         }
         store.studentQuestions = [...store.studentQuestions, newStudentQuestion];
     }
@@ -61,13 +62,30 @@ export default function TopBar() {
                 centered
             >
                 {(store.sessionId === "") ?
-                    <NotifiableTab label="Rozpocznij sesję" routes={routes.index}/>
+                    <NotifiableTab
+                        label="Rozpocznij sesję"
+                        routes={routes.index}
+                    />
                     :
-                    <NotifiableTab label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
+                    <NotifiableTab
+                        label="Uczestnicy"
+                        observableList={store.studentQuestions}
+                        routes={routes.session}
+                    />
                 }
-                <NotifiableTab label="Stwórz Quiz" routes={routes.quiz}/>
-                <NotifiableTab label="Pytania" routes={routes.questions}/>
+                <NotifiableTab
+                    label="Stwórz Quiz"
+                    routes={routes.quiz}
+                />
+                <NotifiableTab
+                    label="Pytania"
+                    routes={routes.questions}
+                />
                 <Button onClick={newQuestion}>New question</Button>
+                {(store.sessionId != "") && (<NotifiableTab
+                    label="Statystyki"
+                    routes={routes.stats}
+                />)}
             </Tabs>
         </AppBar>
     );

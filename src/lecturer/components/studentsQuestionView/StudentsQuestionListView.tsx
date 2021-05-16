@@ -26,7 +26,7 @@ export function StudentsQuestionListView() {
             },
             padding: 5,
         },
-        messageHeader:{
+        messageHeader: {
 
         },
         messageContent: {
