@@ -51,7 +51,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeInMin ?? 10);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeInSec ?? 10);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(time === 0);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
@@ -67,10 +67,10 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     useEffect(() => {
         if (store.sendQuiz.quiz)
-            setQuiz(store.quizes.indexOf(store.sendQuiz.quiz) !== -1)
+            setQuiz(store.quizzes.indexOf(store.sendQuiz.quiz) !== -1)
         else
             setQuiz(false);
-    }, [store.quizes, store.sendQuiz.quiz]);
+    }, [store.quizzes, store.sendQuiz.quiz]);
 
     const setSelectedQuiz = (quiz: FrontQuiz | undefined) => {
         let sendQuiz = store.sendQuiz;
@@ -80,9 +80,9 @@ export function SendQuizView(props: SendQuizViewProps) {
     }
     const setSelectedTime = (value: unknown) => {
         let sendQuiz = store.sendQuiz;
-        sendQuiz.timeInMin = value as number;
+        sendQuiz.timeInSec = value as number;
         store.sendQuiz = sendQuiz;
-        setTime(store.sendQuiz.timeInMin ?? 0);
+        setTime(store.sendQuiz.timeInSec ?? 0);
     }
     const handlePicker = (event: ChangeEvent<{ value: unknown }>) => {
         setSelectedTime(event.target.value);
@@ -258,7 +258,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        delete tmpQuiz.timeInMin;
+        delete tmpQuiz.timeInSec;
         store.sendQuiz = tmpQuiz;
         setTime(0);
     };
@@ -371,7 +371,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                 <Paper square elevation={0} className={classes.resetContainer}>
                     <Typography>Quiz został wysłany.</Typography>
                     <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
-                        {clock > 0 ? "Do konca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
+                        {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
                     </Button>
                 </Paper>
             )}

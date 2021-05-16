@@ -102,7 +102,7 @@ function App() {
                             <QuestionsListView />
                         </Route>
 
-                        <Route path="/stats">
+                        <Route path="/lecturer/stats">
                             <QuizStatsView />
                         </Route>
 

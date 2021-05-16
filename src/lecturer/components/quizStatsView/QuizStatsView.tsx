@@ -1,186 +1,236 @@
 import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  InputBase,
+    Paper,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    ListItemSecondaryAction,
+    IconButton,
+    Fab,
+    ButtonGroup,
+    Button,
 } from "@material-ui/core";
-import CircularProgress, {
-  CircularProgressProps,
-} from "@material-ui/core/CircularProgress";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import BackspaceIcon from '@material-ui/icons/Backspace';
+import PublishIcon from "@material-ui/icons/Assignment";
 import { makeStyles, useTheme } from "@material-ui/core";
-import { useState } from "react";
-import { testData } from "./testData";
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Typography variant="caption" component="div" color="textSecondary">
-          {`${
-            Math.round(
-              props.value,
-            )
-          }%`}
-        </Typography>
-      </Box>
-    </Box>
-  );
-}
+import SendIcon from '@material-ui/icons/Send';
+import React, { useContext, useEffect } from "react";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { StoreContext } from "../../services/StoreService";
+import { green } from "@material-ui/core/colors";
+import DoneIcon from '@material-ui/icons/Done';
+import { QuestionBlock } from "./QuestionBlock";
 
 export function QuizStatsView() {
+    const store = useContext(StoreContext);
+    const [selectedQuizStats, setQuizStats] = React.useState<ScheduledQuiz | undefined>(
+        store.endedQuizzes.length > 0 ? store.endedQuizzes[0] : undefined
+    );
 
-  const [quizes, ] = useState<Statistic>(testData());
-  const [progress, ] = useState<number[]>([50, 70]);
-  const [currentQuiz, setCurrentQuiz] = useState<QuizStat>(
-    quizes.quizes[0],
-  );
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionStat>(
-    quizes.quizes[0].questions[0],
-  );
+    const theme = useTheme();
 
-  const theme = useTheme();
+    useEffect(() => {
+        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) != -1 ? prev : undefined);
+    }, [store.endedQuizzes]);
 
-  const classes = makeStyles({
-    root: {
-      background: theme.palette.primary.light,
-      maxHeight: "100vh",
-      height: "100vh",
-      display: "grid",
-      gridTemplateColumns: "1fr 2fr",
-      position: "absolute",
-      width: "100%",
-      top: 0,
-      zIndex: -1,
-      padding: "0 10px",
-      paddingTop: 60,
-      paddingBottom: 100,
-      gap: 30,
-    },
-    bar: {
-      borderRadius: 5,
-      backgroundColor: "#1a90ff",
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: "#fff",
-    },
-    column: {
-      height: "100%",
-      width: "100%",
-      marginBottom: "auto",
-      display: "flex",
-      flexDirection: "column",
-    },
-    columnWrapper: {
-      flexGrow: 1,
-      overflow: "auto",
-      maxHeight: "calc(100% - 100px)",
-    },
-    columnFooter: {
-      maxHeight: "100px",
-      flexShrink: 0,
-    },
-    button: {
-      marginLeft: "auto",
-      marginBottom: "auto",
-    },
-    margin: {
-      margin: theme.spacing(1),
-    },
-  })();
+    const classes = makeStyles({
+        root: {
+            background: theme.palette.primary.light,
+            maxHeight: "100vh",
+            height: "100vh",
+            display: "grid",
+            gridTemplateColumns: "400px 1fr",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            padding: "0 10px",
+            paddingTop: 75,
+            paddingBottom: 100,
+            gap: 15,
+        },
+        quizColumn: {
+            height: "80vh",
+            overflow: "auto",
+            width: "100%",
+            marginBottom: "auto",
+            display: "flex",
+            flexDirection: "column",
+            "& Mui-expanded": { marginBottom: 0 },
+            "& li .MuiListItemSecondaryAction-root": {
+                display: "none",
+            },
+            "& li:hover .MuiListItemSecondaryAction-root": {
+                display: "block",
+            },
+        },
+        statsColumn: {
+            height: "80vh",
+            overflow: "auto",
+            width: "100%",
+            marginBottom: "auto",
+            display: "grid",
+            gap: 20,
+            padding: 20,
+            gridTemplateColumns: "1fr 1fr",
+            gridAutoRows: "calc(50% - 10px)",
+            "&:after": {
+                gridColumn: "span 2",
+                height: "10px",
+                marginTop: "-10px",
+                content: '""',
+            },
+        },
+        quizStatRow: {
+            paddingTop: 16,
+            paddingBottom: 16,
+        },
+        answer: {
+            width: "100%",
+            height: "100%",
+            position: "relative",
+        },
+        answerChild: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "100%",
+            justifyContent: "center",
+            display: "flex",
+            alignItems: "center",
+        },
+        extendedIcon: {
+            marginRight: theme.spacing(1),
+        },
+        showButton: (selectedQuizStats?.alreadyShowedResults ? {
+            background: green[500],
+            "&:hover": {
+                background: green[700],
+            }
+        } : {}),
+        action: {
+            position: "absolute",
+            bottom: 20,
+            left: 20,
+            display: "flex",
+            gap: 20,
+        },
+        importExport: {
+            overflow: "hidden",
+            padding: 0,
+            "& .MuiFab-label": {
+                height: "100%",
+            },
+            height: 55,
+        },
+        importExportGroup: {
+            width: "100%",
+            height: "100%",
+        },
+        importExportButton: {
+            padding: "0 10",
+            fontSize: "16px",
+            width: 144,
+            "& span": {
+                display: "flex",
+                gap: 10,
+            },
+        },
+        shareFab: {
+            height: 55,
+            fontSize: 16,
+            marginRight: "20px"
+        }
+    })();
 
-  const handleQuiz = (quizNumber: number) => {
-    console.log(quizNumber);
-    console.log(quizes);
-    setCurrentQuiz(quizes.quizes[quizNumber]);
-    setCurrentQuestion(currentQuiz.questions[0]);
-  };
+    const handleQuiz = (quizIndex: number) => {
+        setQuizStats(store.endedQuizzes[quizIndex]);
+    };
 
-  const handleQuestion = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (typeof (event.target.value) == "number") {
-      setCurrentQuestion(currentQuiz.questions[event.target.value]);
+    const handleDeleteStats = (quizIndex: number) => {
+        let statsToBeDeleted = store.endedQuizzes[quizIndex];
+        store.endedQuizzes = store.endedQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
     }
-  };
 
-  return (
-    <div className={classes.root}>
-      <div className={classes.column}>
-        <Grid container spacing={1}>
-          {quizes.quizes.map((quiz, i) => (
-            <>
-              <Grid item xs={10}>
-                <Button
-                  fullWidth={true}
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleQuiz(i)}
+    const handleShowResults = () => {
+        let tmpQuizzes = store.endedQuizzes;
+        tmpQuizzes.forEach(
+            (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
+        )
+        store.endedQuizzes = tmpQuizzes;
+    }
+
+    return (
+        <>
+            <div className={classes.root}>
+                <Paper variant="outlined" square className={classes.quizColumn}>
+                    <List component="nav">
+                        {store.endedQuizzes.map((quizStats, i) => (
+                            <ListItem
+                                button
+                                selected={quizStats === selectedQuizStats}
+                                onClick={(event) => handleQuiz(i)}
+                                className={classes.quizStatRow}
+                            >
+                                <ListItemIcon>
+                                    {quizStats === selectedQuizStats && (
+                                        <AssignmentIcon />
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText primary={quizStats.quiz?.title} />
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" onClick={(event) => handleDeleteStats(i)}>
+                                        <BackspaceIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+                <Paper
+                    variant="outlined"
+                    square
+                    className={classes.statsColumn}
                 >
-                  {quiz.title}
-                </Button>
-              </Grid>
-              <Grid item xs={2}>
-                <CircularProgressWithLabel value={progress[i]} />
-              </Grid>
-            </>
-          ))}
-        </Grid>
-      </div>
-      <div className={classes.column}>
-        <FormControl className={classes.margin}>
-          <InputLabel id="demo-customized-select-label">Question</InputLabel>
-          <Select
-            labelId="demo-customized-select-label"
-            id="demo-customized-select"
-            value={currentQuiz.questions.indexOf(currentQuestion)}
-            onChange={handleQuestion}
-          >
-            {currentQuiz.questions.map((question, i) => (
-              <MenuItem value={i}>{question.text}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Grid container spacing={1}>
-          {currentQuestion.options.map((answer, i) => (
-            <>
-              <Grid item xs={10}>
-                <TextField
-                  fullWidth={true}
-                  id={"outlined-basic-" + i}
-                  variant="outlined"
-                  defaultValue={answer.text}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={2}>
-              <InputBase
-                defaultValue={answer.selected + "%"}
-                inputProps={{ 'aria-label': 'naked' }}
-                />
-              </Grid>
-            </>
-          ))}
-        </Grid>
-      </div>
-    </div>
-  );
+                    {selectedQuizStats?.questionStats.sort((a, b) => a.index - b.index)
+                        .map((questionStat, j) => {
+                            let question = selectedQuizStats?.quiz?.questions[j];
+                            return question && (<QuestionBlock
+                                question={question}
+                                questionStat={questionStat}
+                                totalSelected={selectedQuizStats.students.length}
+                            />)
+                        })
+                    }
+                </Paper>
+                <div className={classes.action}>
+                    <Fab variant="extended" className={classes.importExport}>
+                        <ButtonGroup
+                            variant="contained"
+                            color="primary"
+                            className={classes.importExportGroup}
+                        >
+                            <Button className={classes.importExportButton}> <PublishIcon /> Wczytaj </Button>
+                            <Button className={classes.importExportButton}> Zapisz <GetAppIcon />   </Button>
+                        </ButtonGroup>
+                    </Fab>
+                    <Fab
+                        variant="extended"
+                        color="secondary"
+                        className={classes.shareFab + " " + classes.showButton}
+                        onClick={(event) => handleShowResults()}
+                    >
+                        {
+                            selectedQuizStats?.alreadyShowedResults ?
+                                (<><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>)
+                                : (<><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>)
+                        }
+                    </Fab>
+                </div>
+            </div>
+        </>
+    );
 }
+

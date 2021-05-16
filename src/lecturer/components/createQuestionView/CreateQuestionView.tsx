@@ -88,7 +88,7 @@ export function CreateQuestionView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px",
         },
         form: {
@@ -176,7 +176,7 @@ export function CreateQuestionView() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const buttonClassname = clsx({
+    const buttonClassName = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
@@ -207,9 +207,9 @@ export function CreateQuestionView() {
 
     const handleCheckboxChange = (e: ChangeEvent<any>, index: number) => {
         const value = e.target.checked;
-        const listcb = [...checked];
-        listcb[index] = value;
-        setChecked(listcb);
+        const checkedList = [...checked];
+        checkedList[index] = value;
+        setChecked(checkedList);
     };
 
     const handleAddButtonClick = () => {
@@ -437,7 +437,7 @@ export function CreateQuestionView() {
                         variant="contained"
                         color="secondary"
                         size="large"
-                        className={buttonClassname}
+                        className={buttonClassName}
                         disabled={loading}
                         type="submit"
                     >
