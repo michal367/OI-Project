@@ -20,7 +20,7 @@ interface Question {
     options?: Answer[];
 }
 
-interface Quiz {
+interface FrontQuiz {
     title: string;
     questions: Question[];
 }
@@ -29,8 +29,8 @@ interface MatchParams {
 }
 
 interface ScheduledQuiz {
-    quiz?: Quiz;
-    students: Students[];
+    quiz?: FrontQuiz;
+    students: string[];
     timeInMin?: number;
     canShowResults: boolean;
 }

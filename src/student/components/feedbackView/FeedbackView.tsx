@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Grid, TextField, useTheme, Button } from '@material-ui/core';
+import { makeStyles, Paper, Grid, TextField, useTheme } from '@material-ui/core';
 import { testData } from '../quizView/testData';
 
 export default function FeedbackView() {

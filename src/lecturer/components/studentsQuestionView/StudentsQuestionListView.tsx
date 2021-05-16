@@ -1,10 +1,6 @@
-import { useContext } from "react";
-import { StoreContext } from "../../services/StoreService";
-import { Paper, makeStyles, useTheme } from "@material-ui/core";
+import { Paper, makeStyles } from "@material-ui/core";
 import { studentQusestionsMock } from "../../util/mockData";
 export function StudentsQuestionListView() {
-    const theme = useTheme();
-    const store = useContext(StoreContext);
     const classes = makeStyles({
         root: {
             width: "100%",

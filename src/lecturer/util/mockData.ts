@@ -708,7 +708,4 @@ const studentQusestionsMock: StudentQuestion[] = [
       }
   ]
 
-export default {
-    studentListMock,
-};
 export { studentListMock, questionListMock, studentQusestionsMock };
