@@ -64,7 +64,7 @@ export function CreateQuestionView() {
     }
 
     const [title, setTitle] = useState<string>(titleVal);
-    const [imageUrl, setImageUrl] = useState<string>(imageUrlVal);
+    const [imageUrl, setImageUrl] = useState<string | undefined>(imageUrlVal);
     const [question, setQuestion] = useState<string>(questionVal);
     const [mode, setMode] = useState<number>(modeVal);
     const [inputList, setInputList] = useState<string[]>(answersVal);

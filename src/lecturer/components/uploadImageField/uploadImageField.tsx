@@ -1,16 +1,20 @@
 
 import { Card, CardContent, makeStyles, TextField, Typography } from '@material-ui/core';
-import React, { ChangeEvent, ClipboardEventHandler, useCallback, useState } from 'react';
+import React, { ChangeEvent, ClipboardEventHandler, useCallback, useEffect, useState } from 'react';
 import BrokenImageIcon from '@material-ui/icons/BrokenImage';
 
 interface UploadImageFieldProps {
-    onChange?: (image: string) => void,
+    onChange?: (image: string | undefined) => void,
     imageSrc?: string,
 }
 
 export function UploadImageField(props: UploadImageFieldProps) {
     const [imageSrc, setImageSrc] = useState<string>(props.imageSrc ?? "");
     const [imageError, setImageError] = useState(false);
+
+    useEffect(() => {
+        setImageSrc(props.imageSrc ?? "");
+    }, [props.imageSrc])
 
 
     const classes = makeStyles({
@@ -65,7 +69,7 @@ export function UploadImageField(props: UploadImageFieldProps) {
 
     const handleImageError = useCallback(() => {
         setImageError(true);
-        if (props.onChange) props.onChange("");
+        if (props.onChange) props.onChange(undefined);
     }, [props])
 
     const handleImageLoad = useCallback(() => {
