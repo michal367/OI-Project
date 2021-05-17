@@ -236,6 +236,13 @@ export function CreateQuestionView() {
         for (let i = 0; i < inputList.length; i++)
             temp.emptyAnswers.push(inputList[i] || mode === QuestionType.OPEN ? "" : required);
 
+        for (const quest of store.questions) 
+            if (quest.title === title) {
+                temp.title = "Istnieje już pytanie z takim tytułem";
+                break;
+            }
+        
+        
         setErrors(temp);
 
         return (
@@ -255,6 +262,9 @@ export function CreateQuestionView() {
                 console.log("NOT ALL DATA ENTERED");
                 return;
             }
+            
+            
+
             setSuccess(false);
             setLoading(true);
 
