@@ -63,18 +63,18 @@ export default function TopBar() {
             >
                 {(store.sessionId === "") ?
                     <NotifiableTab
-                        label="Rozpocznij sesję"
+                        label="Sesja"
                         routes={routes.index}
                     />
                     :
                     <NotifiableTab
-                        label="Uczestnicy"
+                        label="Sesja"
                         observableList={store.studentQuestions}
                         routes={routes.session}
                     />
                 }
                 <NotifiableTab
-                    label="Stwórz Quiz"
+                    label="Quizy"
                     routes={routes.quiz}
                 />
                 <NotifiableTab

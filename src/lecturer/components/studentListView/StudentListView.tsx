@@ -1,5 +1,3 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
@@ -74,7 +72,7 @@ export function StudentListView(props: StudentListViewProps) {
 
     const headCells: HeadCell<StudentListRow>[] = [
         { id: "orderIndex", numeric: false, label: "Nr" },
-        { id: "nick", numeric: false, label: "Nick" },
+        //{ id: "nick", numeric: false, label: "Nick" },
         { id: "name", numeric: false, label: "Imię" },
         { id: "surname", numeric: false, label: "Nazwisko" },
     ];
@@ -90,7 +88,7 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <Table stickyHeader aria-label="tabela z listą studentów"
+            <Table stickyHeader
                 className={classes.table}
             >
                 <StudentListHead
@@ -118,14 +116,10 @@ export function StudentListView(props: StudentListViewProps) {
                                                         row.id
                                                     ) !== -1
                                                 }
-                                                inputProps={{
-                                                    "aria-label":
-                                                        "secondary checkbox",
-                                                }}
                                             />
                                         )}
                                     </TableCell>
-                                    <TableCell>{row.nick}</TableCell>
+                                    {/*<TableCell>{row.nick}</TableCell>*/}
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>

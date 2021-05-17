@@ -28,6 +28,13 @@ export function CreateQuestionView() {
     const store = useContext(StoreContext);
     const location: Location<Object> = useLocation();
 
+    interface ValidationErrors {
+        title: string;
+        question: string;
+        noAnswers: string;
+        emptyAnswers: string[];
+    }
+
     enum QuestionType {
         CLOSED,
         OPEN
@@ -67,9 +74,9 @@ export function CreateQuestionView() {
     const [imageUrl, setImageUrl] = useState<string | undefined>(imageUrlVal);
     const [question, setQuestion] = useState<string>(questionVal);
     const [mode, setMode] = useState<number>(modeVal);
-    const [inputList, setInputList] = useState<string[]>(answersVal);
+    const [answers, setAnswers] = useState<string[]>(answersVal);
     const [checked, setChecked] = useState<boolean[]>(isCorrectVal);
-    const [errors, setErrors] = useState({
+    const [errors, setErrors] = useState<ValidationErrors>({
         title: "",
         question: "",
         noAnswers: "",
@@ -188,21 +195,21 @@ export function CreateQuestionView() {
         setTitle(value);
     };
 
-    const handleTextAreaChange = (
+    const handleQuestionChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { value } = e.target;
         setQuestion(value);
     };
 
-    const handleInputChange = (
+    const handleAnswerChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         index: number
     ) => {
         const { value } = e.target;
-        const list = [...inputList];
+        const list = [...answers];
         list[index] = value;
-        setInputList(list);
+        setAnswers(list);
     };
 
     const handleCheckboxChange = (e: ChangeEvent<any>, index: number) => {
@@ -212,41 +219,46 @@ export function CreateQuestionView() {
         setChecked(checkedList);
     };
 
-    const handleAddButtonClick = () => {
-        setInputList([...inputList, ""]);
+    const handleAddAnswer = () => {
+        setAnswers([...answers, ""]);
         setChecked([...checked, false]);
     };
 
-    const handleRemoveButtonClick = (index: number) => {
-        const list = [...inputList];
+    const handleRemoveAnswer = (index: number) => {
+        const list = [...answers];
         list.splice(index, 1);
-        setInputList(list);
+        setAnswers(list);
         const list2 = [...checked];
         list2.splice(index, 1);
         setChecked(list2);
     };
 
+    let noError: string = "";
     const validate = () => {
-        let temp: any = {};
         let required: string = "To pole jest wymagane";
+        let tooLongTitle: string = "Tytuł może mieć maksymalnie 40 znaków";
+        let noAnswers: string = "Trzeba dodać odpowiedzi";
 
-        temp.title = title ? "" : required;
-        temp.question = question ? "" : required;
+        let errorTemp: ValidationErrors = {
+            title: title ? noError : required,
+            question: question ? noError : required,
+            noAnswers: answers.length !== 0 || mode === QuestionType.OPEN ? noError : noAnswers,
+            emptyAnswers: []
+        };
 
-        temp.noAnswers =
-            inputList.length !== 0 || mode === QuestionType.OPEN ? "" : "Trzeba dodać odpowiedzi";
+        if (title.length > 40)
+            errorTemp.title = tooLongTitle;
 
-        temp.emptyAnswers = [];
-        for (let i = 0; i < inputList.length; i++)
-            temp.emptyAnswers.push(inputList[i] || mode === QuestionType.OPEN ? "" : required);
+        for (let i = 0; i < answers.length; i++)
+            errorTemp.emptyAnswers.push(answers[i] || mode === QuestionType.OPEN ? noError : required);
 
-        setErrors(temp);
+        setErrors(errorTemp);
 
         return (
-            temp.title === "" &&
-            temp.question === "" &&
-            temp.noAnswers === "" &&
-            temp.emptyAnswers.every((x: string) => x === "")
+            errorTemp.title === noError &&
+            errorTemp.question === noError &&
+            errorTemp.noAnswers === noError &&
+            errorTemp.emptyAnswers.every((x: string) => x === noError)
         );
     };
 
@@ -256,7 +268,6 @@ export function CreateQuestionView() {
         if (!loading) {
 
             if (!validate()) {
-                console.log("NOT ALL DATA ENTERED");
                 return;
             }
             setSuccess(false);
@@ -270,10 +281,10 @@ export function CreateQuestionView() {
 
             if (mode === QuestionType.CLOSED) {
                 let options: Answer[] = [];
-                for (let i = 0; i < inputList.length; i++) {
+                for (let i = 0; i < answers.length; i++) {
                     options.push({
                         index: i + 1,
-                        text: inputList[i],
+                        text: answers[i],
                         isCorrect: checked[i],
                     });
                 }
@@ -297,7 +308,7 @@ export function CreateQuestionView() {
                     setTitle("");
                     setQuestion("");
                     setImageUrl("");
-                    setInputList([]);
+                    setAnswers([]);
                     setChecked([]);
                     setSuccess(true);
                     setLoading(false);
@@ -322,9 +333,10 @@ export function CreateQuestionView() {
                     value={title}
                     className={classes.titleInput}
                     required
-                    error={errors.title !== ""}
+                    error={errors.title !== noError}
                     helperText={errors.title}
                     onChange={handleTitleChange}
+                    inputProps={{ maxLength: 40 }}
                 />
 
                 <UploadImageField imageSrc={imageUrl} onChange={(image) => setImageUrl(image)} />
@@ -334,19 +346,19 @@ export function CreateQuestionView() {
                     rows={5}
                     required
                     value={question}
-                    error={errors.question !== ""}
+                    error={errors.question !== noError}
                     helperText={errors.question}
                     variant="filled"
                     label="Pytanie"
                     className={classes.textarea}
                     fullWidth
-                    onChange={handleTextAreaChange}
+                    onChange={handleQuestionChange}
                 ></TextField>
 
                 <ButtonGroup
                     variant="outlined"
                     color="primary"
-                    aria-label="contained primary button group"
+                    aria-label="question type"
                 >
                     <Button
                         color={mode === QuestionType.CLOSED ? "primary" : "default"}
@@ -373,7 +385,7 @@ export function CreateQuestionView() {
                         </Grid>
                     </Grid>
 
-                    {inputList.map((x, i) => {
+                    {answers.map((x, i) => {
                         return (
                             <Grid
                                 item
@@ -381,11 +393,11 @@ export function CreateQuestionView() {
                                 container
                                 className={classes.answerRow}
                             >
-                                {inputList.length !== 0 && (
+                                {answers.length !== 0 && (
                                     <IconButton
-                                        aria-label="delete"
+                                        aria-label="delete answer"
                                         className={classes.deleteBtn}
-                                        onClick={() => handleRemoveButtonClick(i)}
+                                        onClick={() => handleRemoveAnswer(i)}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
@@ -393,7 +405,7 @@ export function CreateQuestionView() {
                                 <Grid item className={classes.textarea}>
                                     <TextField
                                         value={x}
-                                        onChange={(e) => handleInputChange(e, i)}
+                                        onChange={(e) => handleAnswerChange(e, i)}
                                         label="Odpowiedź"
                                         multiline={true}
                                         rows={1}
@@ -401,7 +413,7 @@ export function CreateQuestionView() {
                                         fullWidth
                                         error={
                                             errors.emptyAnswers.length > i &&
-                                            errors.emptyAnswers[i] !== ""
+                                            errors.emptyAnswers[i] !== noError
                                         }
                                         helperText={errors.emptyAnswers[i]}
                                     ></TextField>
@@ -411,9 +423,6 @@ export function CreateQuestionView() {
                                         color="primary"
                                         checked={checked[i]}
                                         onChange={(e) => handleCheckboxChange(e, i)}
-                                        inputProps={{
-                                            "aria-label": "secondary checkbox",
-                                        }}
                                     />
                                 </Grid>
                             </Grid>
@@ -423,8 +432,8 @@ export function CreateQuestionView() {
 
                     <Fab
                         color="primary"
-                        aria-label="add"
-                        onClick={handleAddButtonClick}
+                        aria-label="add answer"
+                        onClick={handleAddAnswer}
                     >
                         <AddIcon />
                     </Fab>
