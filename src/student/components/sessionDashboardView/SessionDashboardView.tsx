@@ -25,7 +25,7 @@ export function SessionDashboardView() {
             overflow: "hidden",
         },
         backdrop: {
-            zIndex: theme.zIndex.drawer + 1,
+            zIndex: theme.zIndex.drawer + 100,
             color: "#fff",
         },
         header: {

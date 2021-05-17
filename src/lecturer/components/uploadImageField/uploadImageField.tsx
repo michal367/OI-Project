@@ -19,7 +19,7 @@ export function UploadImageField(props: UploadImageFieldProps) {
 
     const classes = makeStyles({
         root: {
-            width: "100%"
+            width: "100%",
         },
         field: {
             width: "100%",
