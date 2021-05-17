@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
-
+import { useBackEndSocket } from '../../services/BackEndService';
 
 export function ReactionReceiveView() {
     const reactions = [
@@ -13,9 +13,21 @@ export function ReactionReceiveView() {
         ReactionName.UP,
         ReactionName.DOWN,
     ];
+    // hotfix by me
+    // TODO get reaction index with string sent with payload
+    // TODO make it work nice and properly, because I do not know how 
+    const reactionsString = [
+        "HEART",
+        "HAPPY",
+        "SAD",
+        "UP",
+        "DOWN"
+    ];
+    const { socketEmiter } = useBackEndSocket();
     const store = useContext(StoreContext);
-    const handleClick = () => {
-        let index = Math.floor(Math.random() * 5);
+    const refreshReactions = (payload: ReactionResponsePayload) => {
+        let indexString: string = payload.data.reaction;
+        let index = reactionsString.indexOf(indexString);
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
@@ -32,6 +44,12 @@ export function ReactionReceiveView() {
         return () => clearInterval(interval);
     }, [store, store.lastReactionTime]);
 
+    useEffect(() => {
+        socketEmiter.on("send_student_reaction", refreshReactions);
+        return () => {
+            socketEmiter.off("send_student_reaction", refreshReactions);
+        };
+    }, [refreshReactions, socketEmiter]);
 
     const classes = makeStyles({
         root: {
@@ -51,7 +69,6 @@ export function ReactionReceiveView() {
                     value={store.reactionValues[i]}
                 />);
             })}
-            <button onClick={handleClick}>reakcja</button>
         </Paper>
     );
 }

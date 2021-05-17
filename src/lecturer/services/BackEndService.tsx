@@ -58,10 +58,16 @@ const socketEmiter = new EventEmitter();
 
 export const useBackEndSocket = () => {
 
-    let onMessage = (event: MessageEvent<any>) => {
-        socketEmiter.emit(event.data);
+    const onMessage = (event: MessageEvent<any>) => {
+        try{
+            let obj = JSON.parse(event.data);
+            socketEmiter.emit(obj.event, obj);
+        }catch(err){
+            console.log("lecturer: error in json parse");
+            socketEmiter.emit(event.data);
+        }
         console.log("onMessage", event.data);
-    }
+    };
 
     return {
         socketEmiter,
