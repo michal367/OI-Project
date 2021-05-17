@@ -43,13 +43,13 @@ export default function TopBar() {
                 centered
             >
                 {(store.sessionId === "") ?
-                    <NotifiableTab label="Rozpocznij sesję" routes={routes.index}/>
+                    <NotifiableTab value={routes.index} label="Rozpocznij sesję" routes={routes.index}/>
                     :
-                    <NotifiableTab label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
+                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
                 }
-                <NotifiableTab label="Stwórz Quiz" routes={routes.quiz}/>
-                <NotifiableTab label="Pytania" routes={routes.questions}/>
-                <NotifiableTab label="Zdarzenia" routes={routes.timestamp}/>
+                <NotifiableTab value={routes.quiz} label="Stwórz Quiz" routes={routes.quiz}/>
+                <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
+                <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
                 <Button onClick={newQuestion}>New question</Button>
             </Tabs>
         </AppBar>

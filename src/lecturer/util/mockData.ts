@@ -619,14 +619,14 @@ const questionListMock: Question[] = [
 const timestampMock: Timestamp[] = [
     {
         type: "QuestionType",
-        message: "Dołączył",
+        message: "Zadał pytanie",
         hours:"09",
         minutes:"30",
         owner: "PŚwiderski",
     },
     {
         type: "LogType",
-        message: "Zadał pytanie",
+        message: "Dołączył",
         hours:"09",
         minutes:"30",
         owner: "PŚwiderski",
