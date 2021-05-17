@@ -18,12 +18,15 @@ const setupWebSocket = (ws: WebSocket) => {
             case "subscribe_student":
                 handlerSubscribeStudent(parsed, wsc);
                 break;
+            case "ping":
+                return;
             default:
                 console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
         }
         wsc.removeListener("message", subMessageHandler);
     };
     wsc.on("message", subMessageHandler);
+    wsc.on("message", () => {});
 };
 
 function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {

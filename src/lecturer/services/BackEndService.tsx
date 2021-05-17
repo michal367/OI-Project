@@ -52,8 +52,6 @@ const getStudentsForLecture = async (id: string) => {
 
 const BackEndContext = createContext<IBackEnd>({ createLecture, getLectureLink, getStudentsForLecture });
 
-
-
 export const useBackEnd = () => {
     return useContext(BackEndContext);
 };

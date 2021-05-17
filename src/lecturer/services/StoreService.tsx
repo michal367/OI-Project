@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { endedQuizzes } from "../util/mockData";
 export interface StoreProps {
     children: ReactNode
 }
@@ -7,7 +8,7 @@ type StorageKey =
     "link" |
     "sessionId" |
     "questions" |
-    "quizes" |
+    "quizzes" |
     "sendQuizStep" |
     "selectedQuiz" |
     "timeToNextQuiz";
@@ -34,7 +35,7 @@ const loadFromStorage = () => {
         link: loadKey("link") ?? initialValue.link,
         sessionId: loadKey("sessionId") ?? initialValue.sessionId,
         questions: loadKey("questions") ?? initialValue.questions,
-        quizes: loadKey("quizes") ?? initialValue.quizes,
+        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
         timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
     }
@@ -46,10 +47,10 @@ export interface IStore {
     link: string,
     sessionId: string,
     questions: Question[],
-    quizes: FrontQuiz[],
+    quizzes: FrontQuiz[],
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
-    quizesInProgress: ScheduledQuiz[],
+    endedQuizzes: ScheduledQuiz[],
     isLoading: boolean,
     studentQuestions: StudentQuestion[],
     timeToNextQuiz: number
@@ -60,11 +61,11 @@ export interface IStore {
 
 const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
-    const [quizesInProgress, setQuizesInProgress] = useState<ScheduledQuiz[]>(initialValue.quizesInProgress);
+    const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
     const [link, setLink] = useState(initialValue.link);
     const [sessionId, setSessionId] = useState(initialValue.sessionId);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizes, setQuizes] = useState<FrontQuiz[]>(initialValue.quizes);
+    const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
@@ -72,13 +73,12 @@ const Store = (props: StoreProps) => {
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
-
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
         setSessionId(initial.sessionId);
         setQuestions(initial.questions);
-        setQuizes(initial.quizes);
+        setQuizzes(initial.quizzes);
         setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
     
@@ -109,20 +109,20 @@ const Store = (props: StoreProps) => {
             saveKey("questions", array);
         },
 
-        get quizes() {
-            return quizes;
+        get quizzes() {
+            return quizzes;
         },
-        set quizes(newValue: FrontQuiz[]) {
+        set quizzes(newValue: FrontQuiz[]) {
             let array = [...newValue];
-            setQuizes(array);
-            saveKey("quizes", array);
+            setQuizzes(array);
+            saveKey("quizzes", array);
         },
 
-        get quizesInProgress() {
-            return quizesInProgress;
+        get endedQuizzes() {
+            return endedQuizzes;
         },
-        set quizesInProgress(newValue: ScheduledQuiz[]) {
-            setQuizesInProgress([...newValue]);
+        set endedQuizzes(newValue: ScheduledQuiz[]) {
+            setEndedQuizzes([...newValue]);
         },
 
         get sendQuiz() {
@@ -180,7 +180,7 @@ const Store = (props: StoreProps) => {
         },
         set lastReactionTime(newValue: number){
             setLastReactionTime(newValue);
-        }
+        },
     };
 
     return (
@@ -193,13 +193,14 @@ const Store = (props: StoreProps) => {
 const initialValue: IStore = {
     link: "",
     sessionId: "",
-    quizes: [],
+    quizzes: [],
     questions: [],
     sendQuizStep: 0,
-    quizesInProgress: [],
+    endedQuizzes: endedQuizzes,
     sendQuiz: {
         students: [],
-        canShowResults: true,
+        questionStats: [],
+        alreadyShowedResults: true,
     },
     isLoading: true,
     studentQuestions: [],

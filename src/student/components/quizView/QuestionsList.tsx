@@ -1,5 +1,6 @@
-import { makeStyles, Paper, Button, Grid, Checkbox, TextField } from '@material-ui/core';
-import { ChangeEvent } from 'react';
+import { makeStyles, Paper, Button, Grid, Checkbox, TextField, CardContent, Card } from '@material-ui/core';
+import React, { ChangeEvent } from 'react';
+import { ImageView } from './imageView';
 import { testData } from './testData';
 
 export function QuestionsList() {
@@ -9,9 +10,9 @@ export function QuestionsList() {
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
-            background: "#fedf9d;",
+            background: "#fedf9d",
             overflow: 'auto',
-        },
+        }
     })();
 
     const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
@@ -55,7 +56,8 @@ export function QuestionsList() {
         <>
             {quiz.questions.map((question, i) => (
                 <Paper className={classes.details} variant="outlined" square >
-                    <div className='question-text' style={{ marginBottom: "10px", fontSize:"1.2rem" }}>{i + 1}.{question.text}</div>
+                    <div className='question-text' style={{ marginBottom: "10px", fontSize: "1.2rem" }}>{i + 1}.{question.text}</div>
+                    {question.imageSrc && <ImageView imageSrc={question.imageSrc} />}
                     <div className='answer-section'>
                         <Grid container spacing={1}>
                             {question.options ? (question.options.map((option, j) => (
@@ -80,7 +82,7 @@ export function QuestionsList() {
                                 />
                             )}
                         </Grid>
-        
+
                     </div>
                 </Paper>
             ))}

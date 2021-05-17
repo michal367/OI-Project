@@ -9,9 +9,9 @@ import { useLocation } from 'react-router-dom';
 export function JoinSessionView() {
     const match = useRouteMatch<MatchParams>("/student/code/:session");
     const location: Location<Object> = useLocation();
-    
+
     let sessionId;
-    if(match)
+    if (match)
         sessionId = match.params.session;
     else
         sessionId = location.search.substring(1);
@@ -36,7 +36,9 @@ export function JoinSessionView() {
     return (
         <div className={classes.root}>
             <Paper variant="outlined" square className={classes.card}>
-                <StudentFormView session={sessionId} />
+                {sessionId.length === 7 ?
+                    <StudentFormView session={sessionId} /> : <StudentFormView />
+                }
             </Paper>
         </div>
     );

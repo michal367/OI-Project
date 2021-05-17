@@ -82,7 +82,7 @@ export function SessionDashboardView() {
             top: 0,
             zIndex: -1,
             padding: "0 10px",
-            paddingTop: 60,
+            paddingTop: 75,
             paddingBottom: 100,
             gap: 30,
         },
