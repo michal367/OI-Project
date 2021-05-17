@@ -81,11 +81,11 @@ export default function TopBar() {
                     label="Pytania"
                     routes={routes.questions}
                 />
+                <Button onClick={newQuestion}>New question</Button>
                 {(store.sessionId != "") && (<NotifiableTab
                     label="Statystyki"
                     routes={routes.stats}
                 />)}
-                <Button onClick={newQuestion}>New question</Button>
             </Tabs>
         </AppBar>
     );
