@@ -174,7 +174,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                     style={{ width: '100%', maxWidth: "350px" }}
                 />}
             </Backdrop>
-            {(!session || session.length !== 7) && (
+            {(!props?.session) && (
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <TextField
                         id="outlined-secondary"
