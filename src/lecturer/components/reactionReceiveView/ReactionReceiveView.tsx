@@ -13,12 +13,21 @@ export function ReactionReceiveView() {
         ReactionName.UP,
         ReactionName.DOWN,
     ];
+    // hotfix by me
+    // TODO get reaction index with string sent with payload
+    // TODO make it work nice and properly, because I do not know how 
+    const reactionsString = [
+        "HEART",
+        "HAPPY",
+        "SAD",
+        "UP",
+        "DOWN"
+    ];
     const { socketEmiter } = useBackEndSocket();
     const store = useContext(StoreContext);
     const refreshReactions = (payload: ReactionResponsePayload) => {
-        // let index = Math.floor(Math.random()* 5);
-        let indexString: ReactionName = payload.data.reaction;
-        let index = reactions.indexOf(indexString);
+        let indexString: string = payload.data.reaction;
+        let index = reactionsString.indexOf(indexString);
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;

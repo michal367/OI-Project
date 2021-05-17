@@ -1,10 +1,4 @@
-enum ReactionName {
-    HAPPY = "HAPPY",
-    SAD = "SAD",
-    UP = "UP",
-    DOWN = "DOWN",
-    HEART = "HEART"
-}
+
 interface Payload {
     event: string,
     data?:any
@@ -64,13 +58,13 @@ interface QuizEndedPayload extends Payload {
 
 interface ReactionRequestPayload extends Payload{
     data:{
-        reaction: ReactionName
+        reaction: string
     }
 }
 
 interface ReactionResponsePayload extends Payload{
     data: {
-        reaction: ReactionName,
+        reaction: string,
         student_id: string
     }
 }
