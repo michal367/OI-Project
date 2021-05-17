@@ -6,21 +6,18 @@ import {
     ListItemText,
     ListItemSecondaryAction,
     IconButton,
-    Fab,
-    ButtonGroup,
-    Button,
+    Fab
 } from "@material-ui/core";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import BackspaceIcon from '@material-ui/icons/Backspace';
-import PublishIcon from "@material-ui/icons/Assignment";
 import { makeStyles, useTheme } from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
 import React, { useContext, useEffect } from "react";
-import GetAppIcon from '@material-ui/icons/GetApp';
 import { StoreContext } from "../../services/StoreService";
 import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
 import { QuestionBlock } from "./QuestionBlock";
+import { ImportExport } from "../importExport/ImportExport";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
@@ -31,7 +28,7 @@ export function QuizStatsView() {
     const theme = useTheme();
 
     useEffect(() => {
-        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) != -1 ? prev : undefined);
+        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) !== -1 ? prev : undefined);
     }, [store.endedQuizzes]);
 
     const classes = makeStyles({
@@ -117,27 +114,6 @@ export function QuizStatsView() {
             display: "flex",
             gap: 20,
         },
-        importExport: {
-            overflow: "hidden",
-            padding: 0,
-            "& .MuiFab-label": {
-                height: "100%",
-            },
-            height: 55,
-        },
-        importExportGroup: {
-            width: "100%",
-            height: "100%",
-        },
-        importExportButton: {
-            padding: "0 10",
-            fontSize: "16px",
-            width: 144,
-            "& span": {
-                display: "flex",
-                gap: 10,
-            },
-        },
         shareFab: {
             height: 55,
             fontSize: 16,
@@ -160,6 +136,13 @@ export function QuizStatsView() {
             (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
         )
         store.endedQuizzes = tmpQuizzes;
+    }
+
+    const onImport = (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result != null) {
+            let jsonString = e.target.result as string;
+            store.endedQuizzes = [...store.endedQuizzes, ...JSON.parse(jsonString)];
+        }
     }
 
     return (
@@ -206,16 +189,9 @@ export function QuizStatsView() {
                     }
                 </Paper>
                 <div className={classes.action}>
-                    <Fab variant="extended" className={classes.importExport}>
-                        <ButtonGroup
-                            variant="contained"
-                            color="primary"
-                            className={classes.importExportGroup}
-                        >
-                            <Button className={classes.importExportButton}> <PublishIcon /> Wczytaj </Button>
-                            <Button className={classes.importExportButton}> Zapisz <GetAppIcon />   </Button>
-                        </ButtonGroup>
-                    </Fab>
+
+                    <ImportExport onImport={onImport} objectToExport={store.endedQuizzes} fileName="endedQuizzes.json" />
+
                     <Fab
                         variant="extended"
                         color="secondary"
