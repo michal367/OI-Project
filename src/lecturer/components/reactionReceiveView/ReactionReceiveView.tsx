@@ -22,12 +22,12 @@ export function ReactionReceiveView() {
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
-        store.lastReactionTime = Date.now()+15000;
-    };    
+        store.lastReactionTime = Date.now() + 15000;
+    };
     useEffect(() => {
         const interval = setInterval(() => {
-            if(store.lastReactionTime !== 0 && Date.now() - store.lastReactionTime >= 0){
-                store.reactionValues = [0,0,0,0,0];
+            if (store.lastReactionTime !== 0 && Date.now() - store.lastReactionTime >= 0) {
+                store.reactionValues = [0, 0, 0, 0, 0];
                 store.lastReactionTime = 0;
                 console.log(store.lastReactionTime - store.lastReactionTime)
             }
@@ -57,7 +57,7 @@ export function ReactionReceiveView() {
             {reactions.map((reaction, i) => {
                 return (<ReactionCounter
                     icon={reactionsIcons[reaction]}
-                    index={i}
+                    value={store.reactionValues[i]}
                 />);
             })}
         </Paper>

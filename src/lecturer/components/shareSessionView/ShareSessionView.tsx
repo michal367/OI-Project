@@ -108,12 +108,16 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                     Podziel się zaproszeniem do utworzonej sesji
                 </DialogTitle>
                 <DialogContent className={classes.content}>
+
                     <div>
                         <CopyLinkForm prefix={`${link}/student/code/`} />
                         <CopyLinkForm />
                     </div>
-
-                    <QRCode style={{ alignSelf: "center" }} size={256} value={`${link}/student/code/${store.link}`} />
+                    <QRCode
+                        style={{ alignSelf: "center" }}
+                        size={256}
+                        value={`${link}/student/code/${store.link}`}
+                    />
 
                 </DialogContent>
                 <DialogActions>

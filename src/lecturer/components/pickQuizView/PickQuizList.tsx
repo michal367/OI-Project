@@ -1,3 +1,4 @@
+
 import React, { ChangeEvent } from "react";
 import {
     Card,
@@ -25,7 +26,7 @@ interface QuizListViewProps {
     numberOfChecked: (items: number[]) => number,
 
     handleToggleAll: (items: number[]) => () => void,
-    handleToggle:    (value: number)   => () => void,
+    handleToggle: (value: number) => () => void,
 
     handleChange: (e: ChangeEvent<HTMLInputElement>) => void,
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void,
@@ -94,9 +95,8 @@ export function PickQuizList(props: QuizListViewProps) {
                     />
                 }
                 title={title}
-                subheader={`${numberOfChecked(items)}/${
-                    items.length
-                } zaznaczonych`}
+                subheader={`${numberOfChecked(items)}/${items.length
+                    } zaznaczonych`}
             />
             {isQuiz() ? (
                 <TextField
@@ -104,6 +104,7 @@ export function PickQuizList(props: QuizListViewProps) {
                     className={classes.quizInput}
                     label="Nazwa Quizu"
                     onChange={handleChange}
+                    inputProps={{ maxLength: 40 }}
                 />
             ) : (
                 <TextField

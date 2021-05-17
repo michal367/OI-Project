@@ -74,6 +74,8 @@ class Lecture {
                 case "show_answers":
                     this.handlerShowAnswers(parsed);
                     break;
+                case "ping":
+                    break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
 

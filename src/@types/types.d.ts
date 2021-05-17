@@ -15,7 +15,9 @@ interface Answer {
     isCorrect: boolean;
 }
 interface Question {
+    index?: number;
     title: string;
+    imageSrc?: string;
     text: string;
     options?: Answer[];
 }
@@ -28,38 +30,26 @@ interface MatchParams {
     session: string;
 }
 
-interface ScheduledQuiz {
-    quiz?: FrontQuiz;
-    students: string[];
-    timeInMin?: number;
-    canShowResults: boolean;
-}
-
 interface StudentQuestion{
     studentNick: string,
     hours: string,
     minutes: string,
     text: string;
 }
+interface ScheduledQuiz {
+    quiz?: FrontQuiz;
+    students: string[];
+    timeInSec?: number;
+    questionStats: QuestionStat[];
+    alreadyShowedResults: boolean;
+}
 
-interface AnswerStat{
+interface AnswerStat {
     index: number;
-    text: string;
-    isCorrect: boolean;
-    selected: number;
+    numberOfTimesSelected: number;
 }
 
 interface QuestionStat{
-    title: string;
-    text: string;
+    index: number;
     options: AnswerStat[];
-}
-
-interface QuizStat{
-    title : string;
-    questions: QuestionStat[];
-}
-
-interface Statistic{
-    quizes: QuizStat[];
 }
