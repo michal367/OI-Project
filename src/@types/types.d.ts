@@ -53,3 +53,26 @@ interface QuestionStat{
     index: number;
     options: AnswerStat[];
 }
+
+interface QuizStat{
+    title : string;
+    questions: QuestionStat[];
+}
+
+interface Statistic{
+    quizes: QuizStat[];
+}
+type TimestampType = 
+    "QuestionType" |
+    "LogType" |
+    "QuizType" |
+    "ReactionType";
+
+
+interface Timestamp{
+    type: TimestampType,
+    message: string,
+    minutes: string,
+    hours: string,
+    owner: string,
+}

@@ -615,6 +615,87 @@ const questionListMock: Question[] = [
     },
 ];
 
+
+const timestampMock: Timestamp[] = [
+    {
+        type: "QuestionType",
+        message: "Zadał pytanie",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "LogType",
+        message: "Dołączył",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"37",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"37",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"37",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"37",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "QuizType",
+        message: "Zakończył quiz",
+        hours:"09",
+        minutes:"37",
+        owner: "PŚwiderski",
+    },
+    {
+        type: "ReactionType",
+        message: "Zareagował",
+        hours:"09",
+        minutes:"30",
+        owner: "PŚwiderski",
+    }
+];
+
 const studentQusestionsMock: StudentQuestion[] = [
     {
         studentNick: "Erickson Bradley",
@@ -4044,4 +4125,5 @@ const endedQuizzes: ScheduledQuiz[] = [
     }
 ]
 
-export { studentListMock, questionListMock, studentQusestionsMock, endedQuizzes };
+export { studentListMock, questionListMock, studentQusestionsMock, timestampMock, endedQuizzes };
+

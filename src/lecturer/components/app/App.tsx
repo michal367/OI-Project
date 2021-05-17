@@ -15,9 +15,9 @@ import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
+import { TimestampView } from "../timestampView/TimestampView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 import TopBar from "../topBar/topBar";
-
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -107,7 +107,9 @@ function App() {
                         <Route path="/lecturer/stats">
                             <QuizStatsView />
                         </Route>
-
+                        <Route path="/lecturer/timestamp">
+                            <TimestampView/>
+                        </Route>
                         <Route path="/">
                             {(store.sessionId === "") ?
                                 <Redirect to="/lecturer" />
