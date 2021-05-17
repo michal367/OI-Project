@@ -1,10 +1,6 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
-import { useHistory } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 import {TimestampTable} from "./TimestampTable";
 
 export function TimestampView() {

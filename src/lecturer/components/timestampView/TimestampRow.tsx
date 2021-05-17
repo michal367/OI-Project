@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core";
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
