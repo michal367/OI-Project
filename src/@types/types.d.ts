@@ -32,8 +32,7 @@ interface MatchParams {
 
 interface StudentQuestion{
     studentNick: string,
-    hours: string,
-    minutes: string,
+    time: Date;
     text: string;
 }
 interface ScheduledQuiz {
