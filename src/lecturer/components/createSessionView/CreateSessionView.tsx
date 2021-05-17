@@ -1,4 +1,4 @@
-import { useContext,  useState } from "react";
+import { useContext, useState } from "react";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -30,7 +30,7 @@ export function CreateSessionView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px",
         },
         wrapper: {
@@ -63,7 +63,7 @@ export function CreateSessionView() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const buttonClassname = clsx({
+    const buttonClassName = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
@@ -102,7 +102,7 @@ export function CreateSessionView() {
                 <Fab
                     aria-label="save"
                     color="primary"
-                    className={buttonClassname}
+                    className={buttonClassName}
                     onClick={handleButtonClick}
                 >
                     {success ? (
