@@ -1,24 +1,22 @@
 import { CssBaseline } from "@material-ui/core";
-import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { CreateSessionView } from "../createSessionView/CreateSessionView";
-import { PickQuizView } from "../pickQuizView/PickQuizView";
+import Backdrop from "@material-ui/core/Backdrop";
+import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
+import { useContext, useEffect } from "react";
 import {
     BrowserRouter as Router,
-    Switch,
-    Route,
-    Redirect,
+    Redirect, Route, Switch
 } from "react-router-dom";
-import TopBar from "../topBar/topBar";
-import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
-import { QuestionsListView } from "../questionsListView/QuestionsListView";
+import GridLoader from "react-spinners/GridLoader";
 import { useBackEndSocket } from "../../services/BackEndService";
 import Store, { StoreContext } from "../../services/StoreService";
-import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
-import Backdrop from "@material-ui/core/Backdrop";
-import GridLoader from "react-spinners/GridLoader";
-import { useContext, useEffect } from "react";
+import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
+import { CreateSessionView } from "../createSessionView/CreateSessionView";
+import { PickQuizView } from "../pickQuizView/PickQuizView";
+import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
+import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import TopBar from "../topBar/topBar";
 
 const theme = createMuiTheme({
     palette: {
@@ -26,26 +24,30 @@ const theme = createMuiTheme({
             light: "#E1F1FF",
             main: "#80A3E4",
             dark: "#4870AC",
-            // contrastText: will be calculated,
         },
         secondary: {
             light: "#FFEECB",
             main: "#D9A21B",
             dark: "#877455",
         },
-        // Used by `getContrastText()` to maximize the contrast between
-        // the background and the text.
         contrastThreshold: 3,
-        // Used by the functions below to shift a color's luminance by approximately
-        // two indexes within its tonal palette.
-        // E.g., shift from Red 500 to Red 300 or Red 700.
         tonalOffset: 0.2,
     },
 });
 
 function App() {
     const store = useContext(StoreContext);
-    const { socketEmiter } = useBackEndSocket(); //for keeping socket open
+    const { socketEmiter, sendJsonMessage } = useBackEndSocket(); //for keeping socket open
+
+    // heroku 55s timeout fix
+    useEffect(() => {
+        if (window.location.hostname.includes("heroku")) {
+            const interval = setInterval(() => {
+                sendJsonMessage({ event: "ping" });
+            }, 50000)
+            return () => clearInterval(interval);
+        }
+    }, []);
 
     useEffect(() => {
         const onClose = () => {
@@ -102,7 +104,7 @@ function App() {
                             <QuestionsListView />
                         </Route>
 
-                        <Route path="/stats">
+                        <Route path="/lecturer/stats">
                             <QuizStatsView />
                         </Route>
 

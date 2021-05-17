@@ -18,7 +18,7 @@ import { HeadCell, StudentListHead } from "./StudentListHead";
 
 interface StudentListViewProps {
     studentList?: StudentListRow[];
-    students?: [string[], any];
+    students?: [string[], (id: string) => void];
 }
 
 export interface StudentListRow extends Student {
@@ -29,7 +29,7 @@ export function StudentListView(props: StudentListViewProps) {
 
     const store = useContext(StoreContext);
     const studentList: StudentListRow[] = props.studentList ?? [];
-    let [selectedStudents, toggleStudentSelection]: [string[], any] = props.students ?? [[], () => { }]
+    let [selectedStudents, toggleStudentSelection]: [string[], (id: string) => void] = props.students ?? [[], () => { }]
     const [students, setStudents] = useState<string[]>(selectedStudents);
 
 
@@ -91,8 +91,8 @@ export function StudentListView(props: StudentListViewProps) {
     return (
         <TableContainer component={Paper} className={classes.root}>
             <Table stickyHeader
-                    className={classes.table}
-                    >
+                className={classes.table}
+            >
                 <StudentListHead
                     order={order}
                     orderBy={orderBy}

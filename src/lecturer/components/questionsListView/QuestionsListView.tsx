@@ -54,7 +54,7 @@ export function QuestionsListView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px"
         },
         cardWrapper: {
@@ -139,7 +139,7 @@ export function QuestionsListView() {
     const handleExportButtonClick = () => {
         exportQuestions(store.questions);
         // for future use
-        //store.quizes.forEach(quiz => {
+        //store.quizzes.forEach(quiz => {
         //    exportQuestions(quiz.questions, quiz.title+".json")
         //})
     }

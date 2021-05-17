@@ -1,11 +1,10 @@
 import { WebSocket } from "https://deno.land/std/ws/mod.ts";
 import { WebSocketAcceptedClient, WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import { LectureSubPayload, Payload, StudentSubPayload } from "./@types/payloads/types.d.ts";
 import { lectures } from "./controllers/lectures.ts";
 import Lecture, { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
 
-const setupWebSocket = async (ws: WebSocket) => {
+const setupWebSocket = (ws: WebSocket) => {
     const wsc: WebSocketAcceptedClient = new WebSocketAcceptedClient(ws);
 
     const subMessageHandler = (message: string) => {
@@ -19,12 +18,15 @@ const setupWebSocket = async (ws: WebSocket) => {
             case "subscribe_student":
                 handlerSubscribeStudent(parsed, wsc);
                 break;
+            case "ping":
+                return;
             default:
                 console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
         }
         wsc.removeListener("message", subMessageHandler);
     };
     wsc.on("message", subMessageHandler);
+    wsc.on("message", () => {});
 };
 
 function handlerSubscribeStudent(parsed: StudentSubPayload, ws: WebSocketClient) {
