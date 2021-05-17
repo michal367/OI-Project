@@ -1,22 +1,19 @@
-import { Chip,  makeStyles, Slide } from "@material-ui/core";
+import { Chip, makeStyles, Slide } from "@material-ui/core";
 import React, {
     JSXElementConstructor,
     ReactElement,
-    useContext,
     useEffect,
     useState,
 } from "react";
-import { StoreContext } from "../../services/StoreService";
 
 interface ReactionCounterProps {
     icon: ReactElement<any, string | JSXElementConstructor<any>>;
-    index: number;
+    value: number;
 }
 
 export function ReactionCounter(props: ReactionCounterProps) {
-    const store = useContext(StoreContext);
-    const [value, setValue] = useState<number>(store.reactionValues[props.index]);
-    const [changed, setChanged] = React.useState<boolean>(true);
+    const [value, setValue] = useState<number>(props.value);
+    const [changed, setChanged] = useState<boolean>(true);
     const classes = makeStyles({
         reaction: {
             minWidth: 70,
@@ -26,12 +23,12 @@ export function ReactionCounter(props: ReactionCounterProps) {
 
     useEffect(() => {
         setChanged(false);
-        setValue(store.reactionValues[props.index]);
+        setValue(props.value);
         setTimeout(() => {
             setChanged(true);
-        },150)
-    }, [store.reactionValues[props.index]]);
-    
+        }, 150)
+    }, [props.value]);
+
     return (
         <Slide direction="up" in={changed} mountOnEnter timeout={{ appear: 200, enter: 200, exit: 400 }}>
             <Chip

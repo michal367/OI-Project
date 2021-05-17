@@ -18,20 +18,40 @@ export default function TopBar() {
         session: "/lecturer/session",
         quiz: "/lecturer/quiz",
         questions: "/lecturer/questions",
+        stats: "/lecturer/stats",
         timestamp: "/lecturer/timestamp",
     }
     const possibleRoutes = Object.values(routes);
 
+    const classes = makeStyles({
+        tab: {
+            position: "relative",
+        },
+        badge: {
+            position: "absolute",
+            top: "-10px",
+            right: "-10px",
+            width: "25px",
+            height: "25px",
+            background: "red",
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "50%",
+        },
+    })();
+  
     useEffect(() => {
         if (possibleRoutes.includes(location.pathname)) setSelectedTab(location.pathname);
     }, [location.pathname, possibleRoutes]);
 
     const newQuestion = () => {
-        let newStudentQuestion:StudentQuestion = {
+        let newStudentQuestion: StudentQuestion = {
             studentNick: "Null",
-            hours:"null",
-            minutes:"null",
-            text:"null",
+            hours: "null",
+            minutes: "null",
+            text: "null",
         }
         store.studentQuestions = [...store.studentQuestions, newStudentQuestion];
     }
@@ -51,6 +71,10 @@ export default function TopBar() {
                 <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
                 <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
                 <Button onClick={newQuestion}>New question</Button>
+                {(store.sessionId != "") && (<NotifiableTab
+                    label="Statystyki"
+                    routes={routes.stats}
+                />)}
             </Tabs>
         </AppBar>
     );
