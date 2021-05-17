@@ -2,22 +2,23 @@ import { CssBaseline } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
     BrowserRouter as Router,
     Redirect, Route, Switch
 } from "react-router-dom";
-import GridLoader from "react-spinners/GridLoader";
-import { useBackEndSocket } from "../../services/BackEndService";
+import { GridLoader } from "react-spinners";
+import { useSocket } from "../../services/SocketService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
-import { TimestampView } from "../timestampView/TimestampView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import { TimestampView } from "../timestampView/TimestampView";
 import TopBar from "../topBar/topBar";
+
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -37,7 +38,7 @@ const theme = createMuiTheme({
 
 function App() {
     const store = useContext(StoreContext);
-    const { socketEmiter, sendJsonMessage } = useBackEndSocket(); //for keeping socket open
+    const { socketEmiter, sendJsonMessage } = useSocket(); //for keeping socket open
 
     // heroku 55s timeout fix
     useEffect(() => {

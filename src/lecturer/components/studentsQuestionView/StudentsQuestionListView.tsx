@@ -1,6 +1,13 @@
-import { Paper, makeStyles } from "@material-ui/core";
-import { studentQusestionsMock } from "../../util/mockData";
+import { makeStyles, Paper } from '@material-ui/core';
+import { useCallback, useEffect, useContext } from 'react';
+import { useSocket } from '../../services/SocketService';
+import { StoreContext } from "../../services/StoreService";
+
+
+
 export function StudentsQuestionListView() {
+    const { socketEmiter } = useSocket();
+    const store = useContext(StoreContext);
     const classes = makeStyles({
         root: {
             width: "100%",
@@ -37,10 +44,32 @@ export function StudentsQuestionListView() {
         },
     })();
 
+    const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
+        console.log("refreshQuestionList");
+        console.log(payload);
+        let date: Date = new Date();
+        const studentQuestion: StudentQuestion = {
+            studentNick: payload.data.studentID,
+            hours: date.getHours().toString(),
+            minutes: date.getMinutes().toString(),
+            text: payload.data.text
+        };
+        const newStudentQuestions = store.studentQuestions;
+        newStudentQuestions.push(studentQuestion);
+        store.studentQuestions = newStudentQuestions;
+    }, [store]);
+
+    useEffect(() => {
+        socketEmiter.on("send_student_question", refreshQuestionList);
+        return () => {
+            socketEmiter.off("send_student_question", refreshQuestionList);
+        };
+    }, [refreshQuestionList, socketEmiter]);
+
 
     return (
         <Paper className={classes.root} variant="outlined" square>
-            {studentQusestionsMock.map((studentQuestion, index) => {
+            {store.studentQuestions.map((studentQuestion, index) => {
                 return (
                     <div
                         key={index}

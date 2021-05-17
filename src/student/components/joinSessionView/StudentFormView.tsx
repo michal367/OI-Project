@@ -5,11 +5,12 @@ import { green } from "@material-ui/core/colors";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { useHistory } from "react-router-dom";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import IconButton from '@material-ui/core/IconButton';
 import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
 import QrReader from "react-qr-reader";
+import { useSocket } from "../../services/SocketService";
 
 
 interface StudentFormViewProps {
@@ -19,7 +20,7 @@ interface StudentFormViewProps {
 export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
     const history = useHistory();
 

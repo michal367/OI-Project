@@ -6,9 +6,10 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { useHistory } from "react-router-dom";
 import { StoreContext } from "../../services/StoreService";
+import { useSocket } from "../../services/SocketService";
 
 
 export function CreateSessionView() {
@@ -16,7 +17,7 @@ export function CreateSessionView() {
     const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
 
     const classes = makeStyles({
         root: {

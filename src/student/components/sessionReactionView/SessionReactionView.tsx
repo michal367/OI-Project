@@ -1,12 +1,12 @@
 import { makeStyles, Paper } from '@material-ui/core';
+import { useSocket } from '../../services/SocketService';
 import { ReactionName } from '../../util/reactionsEnum';
 import { ReactionItem } from './ReactionItem';
-import { useBackEndSocket } from '../../services/BackEndService';
 interface SessionReactionViewProps {
     onReaction?: (reaction: ReactionName) => void
 }
 export default function SessionReactionView(props: SessionReactionViewProps) {
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
     const classes = makeStyles({
         details: {
             padding: 20,

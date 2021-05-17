@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
-import { useBackEndSocket } from '../../services/BackEndService';
+import { useSocket } from "../../services/SocketService";
 
 export function ReactionReceiveView() {
     const reactions = [
@@ -23,7 +23,7 @@ export function ReactionReceiveView() {
         "UP",
         "DOWN"
     ];
-    const { socketEmiter } = useBackEndSocket();
+    const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     const refreshReactions = (payload: ReactionResponsePayload) => {
         let indexString: string = payload.data.reaction;
