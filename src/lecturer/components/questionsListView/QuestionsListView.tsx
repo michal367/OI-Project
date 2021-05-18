@@ -15,7 +15,9 @@ import {
     makeStyles,
     TextField,
     useTheme,
+    Snackbar,
 } from '@material-ui/core';
+import { SnackbarOrigin } from '@material-ui/core/Snackbar';
 import { red } from '@material-ui/core/colors';
 import { styled } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
@@ -23,8 +25,9 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
-import { ChangeEvent, useContext, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import { exportQuestions } from '../../services/FileService';
 import { StoreContext } from '../../services/StoreService';
@@ -34,10 +37,22 @@ interface IndexedQuestion {
     question: Question;
 }
 
+export interface State extends SnackbarOrigin {
+    open: boolean;
+}
+
 export function QuestionsListView() {
     const theme = useTheme();
     const store = useContext(StoreContext);
     const history = useHistory();
+
+    const [message, setMessage] = useState<string>("");
+    const [state, setState] = useState<State>({
+        open: false,
+        vertical: 'top',
+        horizontal: 'center',
+    });
+    const { vertical, horizontal, open } = state;
 
     const [filterFn, setFilterFn] = useState({ fn: (items: IndexedQuestion[]) => { return items } });
 
@@ -86,7 +101,6 @@ export function QuestionsListView() {
         },
     })();
 
-
     const handleRemoveButtonClick = (index: number) => {
         const list = store.questions;
         list.splice(index, 1);
@@ -125,7 +139,32 @@ export function QuestionsListView() {
                 return function (e: ProgressEvent<FileReader>) {
                     if (e.target?.result != null) {
                         let jsonString = e.target.result as string
-                        store.questions = [...store.questions, ...JSON.parse(jsonString)];
+                        let result = [];
+                        let counter = 0;
+                        for (const quest of JSON.parse(jsonString)) {
+                            counter++;
+                            let correct = true;
+
+                            if  (typeof quest.title != "string" || typeof quest.text != "string"){
+                               correct = false;
+                            }
+                            
+                            if (quest.options != undefined && correct == true) {
+                            
+                                for (const option of quest.options){
+                                    if (typeof option.index != 'number' || typeof option.text != 'string' || typeof option.isCorrect != 'boolean'){
+                                        correct = false;
+                                        break;
+                                    }
+                                }
+                                
+                            }
+                            if (correct) result.push(quest);
+                        } 
+
+                        store.questions = [...store.questions, ...result];
+                        setMessage("Importowano " + result.length + " z " + counter + " pytań");
+                        setState({ ...state, open: true });
                     }
                 }
             })(f);
@@ -144,9 +183,21 @@ export function QuestionsListView() {
         //})
     }
 
-    return (
-        <div className={classes.root}>
+    const handleClose = () => {
+        setState({ ...state, open: false });
+    };
+    
 
+    return (
+        <>
+        <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={open}
+            onClose={handleClose}
+            message={message}
+            key={vertical + horizontal}
+        />
+        <div className={classes.root}>
             <Card className={classes.cardWrapper}>
                 <CardHeader
                     title="Lista pytań"
@@ -213,5 +264,6 @@ export function QuestionsListView() {
                 </ButtonGroup>
             </div>
         </div>
+        </>
     );
 }
