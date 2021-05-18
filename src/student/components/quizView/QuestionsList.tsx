@@ -19,7 +19,7 @@ export function QuestionsList() {
             overflow: 'auto',
         }
     })();
-    // 
+
     const refreshQuiz = useCallback((payload: ServerQuizRequestPayload) => {
         console.log("refreshQuiz");
         setQuiz(payload.data.questions);
@@ -32,8 +32,6 @@ export function QuestionsList() {
             socketEmiter.removeListener("send_quiz", refreshQuiz);
         };
     }, [refreshQuiz, socketEmiter]);
-
-        // 
 
     const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
 

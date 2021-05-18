@@ -289,7 +289,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                 event: "send_quiz",
                 data:{
                     student_ids: store.sendQuiz.students,
-                    time_seconds: (store.sendQuiz.timeInSec??0),
+                    time_seconds: 60 * (time ?? 0),
                     questions: store.sendQuiz.quiz
                 }
             };
