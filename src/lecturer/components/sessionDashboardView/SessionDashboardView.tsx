@@ -1,6 +1,6 @@
 import { makeStyles, useTheme } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
 import { useHistory } from "react-router-dom";
@@ -11,19 +11,20 @@ import {
 import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
+import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { useSocket } from "../../services/SocketService";
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
-    if (location.state !== undefined)
-        isOpen = location.state.isOpen ?? false;
+    if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
     const history = useHistory();
     const store = useContext(StoreContext);
     if (!store.sessionId || store.sessionId.length === 0) {
         history.goBack();
     }
     const backEnd = useBackEnd();
-    const { socketEmiter } = useBackEndSocket();
+    const { socketEmiter } = useSocket();
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<string[]>(
@@ -51,7 +52,7 @@ export function SessionDashboardView() {
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
     };
-    
+
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
@@ -81,7 +82,7 @@ export function SessionDashboardView() {
             top: 0,
             zIndex: -1,
             padding: "0 10px",
-            paddingTop: 60,
+            paddingTop: 75,
             paddingBottom: 100,
             gap: 30,
         },
@@ -99,7 +100,7 @@ export function SessionDashboardView() {
         columnWrapper: {
             flexGrow: 1,
             overflow: "auto",
-            maxHeight: "calc(100% - 100px)",
+            maxHeight: "calc(80vh)",
         },
         columnFooter: {
             maxHeight: "100px",
@@ -108,7 +109,7 @@ export function SessionDashboardView() {
         button: {
             marginLeft: "auto",
             marginBottom: "auto",
-        },
+        }
     })();
 
     const refreshList = useCallback(() => {
@@ -148,7 +149,9 @@ export function SessionDashboardView() {
                     <div className={classes.columnWrapper}>
                         <StudentsQuestionListView />
                     </div>
-                    <div className={classes.columnFooter}>{"reakcje"}</div>
+                    <div className={classes.columnFooter}>
+                        <ReactionReceiveView />
+                    </div>
                 </div>
                 <div className={classes.column}>
                     <SendQuizView
@@ -156,7 +159,7 @@ export function SessionDashboardView() {
                         students={[
                             selectedStudents,
                             toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,                            
+                            toggleRandomSelectedStudents,
                         ]}
                     />
                 </div>

@@ -9,9 +9,9 @@ import { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
-import { ReactionName } from "../sessionReactionView/ReactionItem";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
+import { ReactionName } from "../../util/reactionsEnum";
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -25,28 +25,48 @@ export function SessionDashboardView() {
             overflow: "hidden",
         },
         backdrop: {
-            zIndex: theme.zIndex.drawer + 1,
+            zIndex: theme.zIndex.drawer + 100,
             color: "#fff",
         },
         header: {
             width: "100%",
-            padding: "10px 10px",
+            flexShrink: 4,
+            flexGrow: 1,
+            height: "150%",
+            minHeight: 100,
+            padding: "0px 10px",
         },
         body: {
             width: "100%",
+            flexShrink: 2,
+            flexGrow: 1,
+            height: "100%",
             display: "flex",
             gap: 10,
+            minHeight: 100,
             padding: "0 10px",
-            flexGrow: 1,
         },
-        questionBody: {
+        feedBackBody:{
+            display: "flex",
+            flexDirection:"column",
+            flexGrow: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+        },
+        questionBody:{
             width: "100%",
+            flexShrink: 2,
+            flexGrow: 1,
             display: "flex",
             gap: 10,
             padding: "0 10px",
         },
         footer: {
             width: "100%",
+            flexShrink: 4,
+            flexGrow: 1,
+            height: "100%",
+            minHeight: 100,
             padding: "10px 10px",
         },
         overlay: {
@@ -56,8 +76,17 @@ export function SessionDashboardView() {
             height: 400,
             padding: "5px 10px",
             display: "flex",
-            flexDirection: "column"
-        }
+            flexDirection: "column",
+        },
+        okButton:{
+            color:"white",
+            backgroundColor:"green",
+        },
+        wrapper:{
+            display: "flex",
+            flexDirection:"column",
+            flexGrow: 1,
+        },
     })();
 
     const [open, setOpen] = useState(false);
@@ -77,16 +106,22 @@ export function SessionDashboardView() {
     return (
         <div className={classes.root}>
             <div className={classes.header}>
+                
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
-                <FeedbackView />
+                <div className={classes.wrapper}>
+                    <div className={classes.feedBackBody}>
+                        <FeedbackView/>
+                    </div>
+                    <Button className={classes.okButton}>Ok</Button>
+                </div>
                 <Button
                     variant="outlined"
                     color="primary"
                     onClick={handleToggle}
                 >
-                    Rozwiąż quiz
+                Rozwiąż quiz
                 </Button>
             </div>
             <div className={classes.questionBody}>

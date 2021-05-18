@@ -1,6 +1,7 @@
 
 interface Payload {
-    event: string
+    event: string,
+    data?:any
 }
 
 interface LectureSubPayload extends Payload {
@@ -54,40 +55,40 @@ interface QuizEndedPayload extends Payload {
     }
 }
 
-interface ReactionRequestPayload extends Payload {
-    data: {
+interface ReactionRequestPayload extends Payload{
+    data:{
         reaction: string
     }
 }
 
-interface ReactionResponsePayload extends Payload {
+interface ReactionResponsePayload extends Payload{
     data: {
         reaction: string,
         student_id: string
     }
 }
 
-interface ShowAnswersPayload extends Payload {
-    data: {
+interface ShowAnswersPayload extends Payload{
+    data:{
         quizID: string
     }
 }
 
-interface ShowAnswersToStudentPayload extends Payload {
-    data: {
+interface ShowAnswersToStudentPayload extends Payload{
+    data:{
         quizID: string,
         correctAnswers: any,
         studentAnswers: any
     }
 }
-interface SendQuestionRequestPayload extends Payload {
-    data: {
+interface SendQuestionRequestPayload extends Payload{
+    data:{
         text: string
     }
 }
 
-interface SendQuestionResponsePayload extends Payload {
-    data: {
+interface SendQuestionResponsePayload extends Payload{
+    data:{
         text: string,
         studentID: string
     }

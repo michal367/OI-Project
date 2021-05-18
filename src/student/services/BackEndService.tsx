@@ -1,7 +1,5 @@
-import EventEmitter from "events";
 import { createContext, ReactNode, useContext } from "react";
-import useWebSocket from "react-use-websocket";
-import { API_URL, SOCKET_URL } from "../../common/util/config";
+import { API_URL } from "../../common/util/config";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode;
@@ -30,36 +28,6 @@ const joinLecture = async (link: string, student: Student) => {
         body: JSON.stringify(student),
     });
     return await response.json();
-};
-
-const socketEmiter = new EventEmitter();
-
-export const useBackEndSocket = () => {
-    let onMessage = (event: MessageEvent<any>) => {
-        try{
-            let obj = JSON.parse(event.data);
-            socketEmiter.emit(obj.event, obj);
-        }catch(err){
-            console.log("student: error in json parse");
-        }
-        console.log("onMessage", event.data);
-    };
-
-    return {
-        socketEmiter,
-        ...useWebSocket(SOCKET_URL, {
-            onMessage,
-            onOpen: () => socketEmiter.emit('onOpen'),
-            onClose: () => socketEmiter.emit('onClose'),
-            share: true,
-            shouldReconnect: (closeEvent) => {
-                console.log("closeEvent");
-                return true;
-            },
-            reconnectAttempts: Number.POSITIVE_INFINITY,
-            reconnectInterval: 3000,
-        }),
-    };
 };
 
 const BackEndContext = createContext<IBackEnd>({ joinLecture });

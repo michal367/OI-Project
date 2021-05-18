@@ -8,7 +8,7 @@ export interface IStore {
     invitation: string,
     studentNick: string,
     studentId: string,
-    quizes: Quiz[],
+    quizes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
 }
@@ -43,8 +43,7 @@ const initialValue: IStore = {
     isLoading: true,
     studentQuestion:{
         studentNick: "",
-        hours: "",
-        minutes: "",
+        time: new Date(),
         text: ""
     },
 }
@@ -103,7 +102,7 @@ const Store = (props: StoreProps) => {
         get quizes() {
             return quizes;
         },
-        set quizes(newValue: Quiz[]) {
+        set quizes(newValue: FrontQuiz[]) {
             let array = [...newValue];
             setQuizes(array);
             saveKey("quizes", array);

@@ -8,16 +8,16 @@ import {
     makeStyles,
 } from "@material-ui/core";
 import React, { useContext } from "react";
-import { CopyLinkForm } from "./CopyLinkForm";
-import ShareIcon from "@material-ui/icons/Share";
-import { StoreContext } from "../../services/StoreService";
+import { useHistory } from "react-router-dom";
 import QRCode from "qrcode.react";
-import { Location } from 'history';
-import { useLocation } from 'react-router-dom';
+import ShareIcon from "@material-ui/icons/Share";
 import { red } from "@material-ui/core/colors";
 import StopIcon from '@material-ui/icons/Stop';
-import { useBackEndSocket } from "../../services/BackEndService";
-import { useHistory } from "react-router-dom";
+import { CopyLinkForm } from "./CopyLinkForm";
+import { StoreContext } from "../../services/StoreService";
+import { useSocket } from "../../services/SocketService";
+
+
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
@@ -26,13 +26,13 @@ interface ShareSessionViewProps {
 export function ShareSessionView(props: ShareSessionViewProps) {
     const store = useContext(StoreContext);
     const history = useHistory();
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
     const location = window.location;
 
     let port: string = location.port;
-    if(location.port === "3000")
+    if (port === "3000")
         port = "3001";
-    const link = location.protocol + '//' + location.hostname + (port ? ':'+port: '');
+    const link = location.protocol + '//' + location.hostname + (port ? ':' + port : '');
 
     const classes = makeStyles({
         shareIcon: {
@@ -46,6 +46,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         },
         endButton: {
             background: red[500],
+            "&:hover": {
+                background: red[700],
+            }
         },
         action: {
             position: "absolute",
@@ -80,6 +83,8 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const handleClickEnd = () => {
         store.link = "";
         store.sessionId = "";
+        store.timeToNextQuiz = 0;
+        store.sendQuizStep = 0;
 
         let event: Payload = {
             event: "delete_lecture"
@@ -104,12 +109,16 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                     Podziel się zaproszeniem do utworzonej sesji
                 </DialogTitle>
                 <DialogContent className={classes.content}>
+
                     <div>
                         <CopyLinkForm prefix={`${link}/student/code/`} />
                         <CopyLinkForm />
                     </div>
-
-                    <QRCode style={{ alignSelf: "center" }} size={256} value={`${link}/student/code/${store.link}`} />
+                    <QRCode
+                        style={{ alignSelf: "center" }}
+                        size={256}
+                        value={`${link}/student/code/${store.link}`}
+                    />
 
                 </DialogContent>
                 <DialogActions>
