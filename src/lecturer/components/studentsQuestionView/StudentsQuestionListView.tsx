@@ -47,11 +47,9 @@ export function StudentsQuestionListView() {
     const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
         console.log("refreshQuestionList");
         console.log(payload);
-        let date: Date = new Date();
         const studentQuestion: StudentQuestion = {
             studentNick: payload.data.studentID,
-            hours: date.getHours().toString(),
-            minutes: date.getMinutes().toString(),
+            time: new Date(),
             text: payload.data.text
         };
         const newStudentQuestions = store.studentQuestions;
@@ -77,7 +75,7 @@ export function StudentsQuestionListView() {
                         <div className={classes.message}>
                             <div className={classes.messageText}>
                                 <b className={classes.messageHeader}>
-                                    {studentQuestion.hours + ":" + studentQuestion.minutes + " | " + studentQuestion.studentNick}:
+                                    {studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"}:
                                 </b>
                                 <div className="question-text">
                                     {studentQuestion.text}

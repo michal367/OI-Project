@@ -31,8 +31,7 @@ export default function TopBar() {
     const newQuestion = () => {
         let newStudentQuestion: StudentQuestion = {
             studentNick: "Null",
-            hours: "null",
-            minutes: "null",
+            time: new Date(),
             text: "null",
         }
         store.studentQuestions = [...store.studentQuestions, newStudentQuestion];
