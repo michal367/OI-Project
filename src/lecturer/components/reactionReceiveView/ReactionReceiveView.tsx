@@ -26,9 +26,14 @@ export function ReactionReceiveView() {
     ];
     const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
-    const refreshReactions = (payload: ReactionResponsePayload) => {
-        let indexString: string = payload.data.reaction;
-        let index = reactionsString.indexOf(indexString);
+    const refreshReactions = (payload?: ReactionResponsePayload) => {
+        let index: number;
+        if(payload){
+            let indexString: string= payload.data.reaction;
+            index = reactionsString.indexOf(indexString);
+        }else{
+            index = Math.round(Math.random() * reactionsString.length);
+        }
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
@@ -69,7 +74,7 @@ export function ReactionReceiveView() {
                     icon={reactionsIcons[reaction]}
                     value={store.reactionValues[i]}
                 />);
-            })}
+            })}<button onClick={()=> refreshReactions()}>react</button>
         </Paper>
     );
 }

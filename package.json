@@ -30,6 +30,7 @@
     "react-spring": "^9.1.2",
     "react-use-websocket": "^2.5.0",
     "typescript": "^4.2.3",
+    "use-lodash-debounce-throttle": "^0.3.5",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
