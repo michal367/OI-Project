@@ -173,7 +173,7 @@ export function QuestionsListView() {
                     <AddIcon />
                 </Fab>
 
-                <ImportExport onImport={onImport} objectToExport={store.questions} fileName="questions.json" />
+                <ImportExport onImport={onImport} objectToExport={store.questions} fileName="questions" />
             </div>
         </div>
     );

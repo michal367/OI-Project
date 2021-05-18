@@ -190,7 +190,7 @@ export function QuizStatsView() {
                 </Paper>
                 <div className={classes.action}>
 
-                    <ImportExport onImport={onImport} objectToExport={store.endedQuizzes} fileName="endedQuizzes.json" />
+                    <ImportExport onImport={onImport} objectToExport={store.endedQuizzes} fileName="endedQuizzes" />
 
                     <Fab
                         variant="extended"
