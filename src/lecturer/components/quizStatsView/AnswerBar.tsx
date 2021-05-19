@@ -1,8 +1,7 @@
-import { makeStyles, createStyles, withStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, createStyles, withStyles } from '@material-ui/core/styles';
 import { LinearProgress, Paper, Typography } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import React from 'react';
 
 interface AnswerBarProps {
     answer: {

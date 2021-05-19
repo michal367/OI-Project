@@ -1,6 +1,4 @@
 import {
-    Button,
-    ButtonGroup,
     Card,
     CardHeader,
     Divider,
@@ -17,7 +15,6 @@ import {
     useTheme,
 } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
-import { styled } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -25,9 +22,8 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import { ChangeEvent, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-
-import { exportQuestions } from '../../services/FileService';
 import { StoreContext } from '../../services/StoreService';
+import { ImportExport } from '../importExport/ImportExport';
 
 interface IndexedQuestion {
     index: number;
@@ -70,6 +66,7 @@ export function QuestionsListView() {
             width: "500px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             "& > div": {
                 marginLeft: "auto"
             }
@@ -115,33 +112,11 @@ export function QuestionsListView() {
         return q;
     }
 
-    const onChangeImport = (event: ChangeEvent<HTMLInputElement>) => {
-        //const target = event.target as Element;
-        var files = event.target.files;
-        if (files !== null && files.length !== 0) {
-            var f = files[0];
-            var reader = new FileReader();
-            reader.onload = (function (theFile) {
-                return function (e: ProgressEvent<FileReader>) {
-                    if (e.target?.result != null) {
-                        let jsonString = e.target.result as string
-                        store.questions = [...store.questions, ...JSON.parse(jsonString)];
-                    }
-                }
-            })(f);
-            reader.readAsText(f);
+    const onImport = (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result != null) {
+            let jsonString = e.target.result as string
+            store.questions = [...store.questions, ...JSON.parse(jsonString)];
         }
-    }
-    const Input = styled('input')({
-        display: 'none',
-    });
-
-    const handleExportButtonClick = () => {
-        exportQuestions(store.questions);
-        // for future use
-        //store.quizzes.forEach(quiz => {
-        //    exportQuestions(quiz.questions, quiz.title+".json")
-        //})
     }
 
     return (
@@ -198,19 +173,7 @@ export function QuestionsListView() {
                     <AddIcon />
                 </Fab>
 
-                <ButtonGroup color="primary" size="large" aria-label="contained primary button group">
-                    <label>
-                        <Input accept=".json" id="contained-button-file" type="file" onChange={(e) => onChangeImport(e)} />
-                        <Button color="primary" variant="contained" component="span">
-                            Import
-                    </Button>
-                    </label>
-                    <label>
-                        <Button color="primary" onClick={handleExportButtonClick} variant="contained">
-                            Export
-                    </Button>
-                    </label>
-                </ButtonGroup>
+                <ImportExport onImport={onImport} objectToExport={store.questions} fileName="questions" />
             </div>
         </div>
     );
