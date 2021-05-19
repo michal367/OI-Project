@@ -38,7 +38,7 @@ export function PickQuizView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px",
         },
         wrapper: {
@@ -147,7 +147,7 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
-        if(right.length === 1){
+        if (right.length === 1) {
             setQuestionFullFilled(true);
         }
     };
@@ -165,18 +165,17 @@ export function PickQuizView() {
             },
         });
     };
-    
+
     const timer = useRef<number>();
-    const handleButtonClick = () => {
+    const handleSaveQuiz = () => {
         if (!loading) {
             let selectedQuestions: Question[] = [];
             right.forEach((i) => {
                 selectedQuestions.push(questions[i]);
             });
 
-            for (const quiz of store.quizes) {
+            for (const quiz of store.quizzes) {
                 if(quiz.title === title) {
-                    console.log("SAME TITLE ALREADY EXISTS");
                     setError("Istnieje już quiz o takiej nazwie");
                     return;
                 }
@@ -185,13 +184,13 @@ export function PickQuizView() {
             setSuccess(false);
             setLoading(true);
 
-            store.quizes = [
-                ...store.quizes,
+            store.quizzes = [
+                ...store.quizzes,
                 { title, questions: selectedQuestions },
             ];
 
             timer.current = window.setTimeout(() => {
-                console.log(store.quizes);
+                console.log(store.quizzes);
                 setLeft(indexArray);
                 setRight([]);
                 setChecked(not(checked, rightChecked));
@@ -274,8 +273,8 @@ export function PickQuizView() {
                     variant="contained"
                     color="secondary"
                     className={buttonClassName}
-                    disabled={loading || questionFullFilled || title.length === 0}
-                    onClick={handleButtonClick}
+                    disabled={loading || questionFullFilled || title.length === 0 || title.length > 40}
+                    onClick={handleSaveQuiz}
                 >
                     {success ? `Zapisano Quiz` : `Zapisz Quiz`}
                 </Button>

@@ -1,6 +1,6 @@
 import { makeStyles, useTheme } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
 import { useHistory } from "react-router-dom";
@@ -12,6 +12,7 @@ import { ShareSessionView } from "../shareSessionView/ShareSessionView";
 import { useLocation } from "react-router-dom";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { useSocket } from "../../services/SocketService";
 
 export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
@@ -23,7 +24,7 @@ export function SessionDashboardView() {
         history.goBack();
     }
     const backEnd = useBackEnd();
-    const { socketEmiter } = useBackEndSocket();
+    const { socketEmiter } = useSocket();
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<string[]>(
@@ -81,7 +82,7 @@ export function SessionDashboardView() {
             top: 0,
             zIndex: -1,
             padding: "0 10px",
-            paddingTop: 60,
+            paddingTop: 75,
             paddingBottom: 100,
             gap: 30,
         },

@@ -1,8 +1,10 @@
 import { makeStyles, Paper, Grid, TextField, useTheme } from '@material-ui/core';
+import React from 'react';
+import { ImageView } from '../quizView/imageView';
 import { testData } from '../quizView/testData';
 
 export default function FeedbackView() {
-    let answers:Map<number, number[]> = new Map();
+    let answers: Map<number, number[]> = new Map();
 
     const fullFillMap = () => {
         var i;
@@ -13,18 +15,18 @@ export default function FeedbackView() {
             answers.set(i, array);
         }
     }
-    const correctFullFilled = (i:number, j:number) => {
-        if(answers.get(i)?.includes(j)){
+    const correctFullFilled = (i: number, j: number) => {
+        if (answers.get(i)?.includes(j)) {
             return classes.correctFullFilledAnswer;
-        } else{
+        } else {
             return classes.correctAnswer;
         };
     }
 
-    const wrongFullFilled = (i:number, j:number) => {
-        if(answers.get(i)?.includes(j)){
+    const wrongFullFilled = (i: number, j: number) => {
+        if (answers.get(i)?.includes(j)) {
             return classes.wrongFullFilledAnswer;
-        } else{
+        } else {
             return classes.wrongAnswer;
         };
     }
@@ -41,55 +43,56 @@ export default function FeedbackView() {
         },
         correctFullFilledAnswer: {
             border: '5px solid #80A3E4',
-            color:"green",
+            color: "green",
             fontWeight: 'bold',
         },
         correctAnswer: {
-            color:"green",
+            color: "green",
             fontWeight: 'bold',
         },
-        wrongFullFilledAnswer:{
+        wrongFullFilledAnswer: {
             border: '5px solid #80A3E4',
-            color:"red",
+            color: "red",
             fontWeight: 'bold',
         },
-        wrongAnswer:{
-            color:"red",
+        wrongAnswer: {
+            color: "red",
             fontWeight: 'bold',
         },
-        questionText:{
-            fontSize:"20px",
+        questionText: {
+            fontSize: "20px",
         },
     })();
 
     return (
         <>
             {fullFillMap()}
-            {quiz.questions.map((question, i) => ( 
+            {quiz.questions.map((question, i) => (
                 <div>
-                {question.options ? 
-                (<Paper className={classes.details} variant="outlined" square >
-                    <b className={classes.questionText}>{(i+1) +". " +question.text}</b>
-                    <Grid container spacing={1}>
-                    {(question.options.map((option, j) => (
-                        <Grid item xs={11}>
-                            {(option.isCorrect ? (
-                            <TextField  variant="outlined" defaultValue={option.text} InputProps={{
-                                    className: correctFullFilled(i,j),
-                                    readOnly: true,
-                                }}/>     
-                            ) : (
-                            <TextField variant="outlined" defaultValue={option.text} InputProps={{
-                                className: wrongFullFilled(i,j),
-                                readOnly: true,
-                            }}/>
-                        ))}
-                    </Grid>)
-                    ))}
-                    </Grid>
-                </Paper>
-                ) : (<></>) }
-            </div>
+                    {question.options ?
+                        (<Paper className={classes.details} variant="outlined" square >
+                            <b className={classes.questionText}>{(i + 1) + ". " + question.text}</b>
+                            {question.imageSrc && <ImageView imageSrc={question.imageSrc} />}
+                            <Grid container spacing={1}>
+                                {(question.options.map((option, j) => (
+                                    <Grid item xs={11}>
+                                        {(option.isCorrect ? (
+                                            <TextField variant="outlined" defaultValue={option.text} InputProps={{
+                                                className: correctFullFilled(i, j),
+                                                readOnly: true,
+                                            }} />
+                                        ) : (
+                                            <TextField variant="outlined" defaultValue={option.text} InputProps={{
+                                                className: wrongFullFilled(i, j),
+                                                readOnly: true,
+                                            }} />
+                                        ))}
+                                    </Grid>)
+                                ))}
+                            </Grid>
+                        </Paper>
+                        ) : (<></>)}
+                </div>
             ))}
         </>
     );

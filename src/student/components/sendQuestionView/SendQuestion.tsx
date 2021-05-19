@@ -1,13 +1,15 @@
 
-import { useContext, useState } from "react";
-import { StoreContext } from "../../services/StoreService";
-import { Button, ButtonGroup, TextField, makeStyles } from "@material-ui/core";
+import { Button, ButtonGroup, makeStyles, TextField } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
+import { useContext, useState } from "react";
+import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
 
 export function SendQuestion() {
     const store = useContext(StoreContext);
     const [value, setValue] = useState("");
     const [waitTime, setWaitingTime] = useState(false);
+    const { sendJsonMessage } = useSocket();
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
     };
@@ -35,14 +37,22 @@ export function SendQuestion() {
     const sendQuestion = () => {
         store.studentQuestion.studentNick = store.studentNick;
         let date = new Date();
-        store.studentQuestion.hours = String(date.getHours());
-        store.studentQuestion.minutes = String(date.getMinutes());
+        store.studentQuestion.time = new Date();
+
         store.studentQuestion.text = value
         setValue("");
 
         setWaitingTime(true);
         setTimeout(stopWaiting, 5000);
-        console.log(store.studentQuestion.text);
+
+        const payload: SendQuestionRequestPayload = {
+            event: "send_question",
+            data: {
+                text: store.studentQuestion.text
+            }
+        };
+        console.log(payload);
+        sendJsonMessage(payload);
     };
     return (
         <div>

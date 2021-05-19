@@ -43,8 +43,7 @@ const initialValue: IStore = {
     isLoading: true,
     studentQuestion:{
         studentNick: "",
-        hours: "",
-        minutes: "",
+        time: new Date(),
         text: ""
     },
 }

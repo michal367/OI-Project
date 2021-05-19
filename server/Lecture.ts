@@ -66,12 +66,15 @@ class Lecture {
 
         this.wsc.on("message", (message: string) => {
             const parsed = JSON.parse(message);
+            console.log(parsed);
             switch (parsed.event) {
                 case "send_quiz":
                     this.handlerSendQuiz(parsed);
                     break;
                 case "show_answers":
                     this.handlerShowAnswers(parsed);
+                    break;
+                case "ping":
                     break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
