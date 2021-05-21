@@ -1,22 +1,44 @@
-import { useContext } from "react";
-import { makeStyles, Paper } from '@material-ui/core';
+import React, { useContext } from "react";
+import { Button, makeStyles, Paper } from '@material-ui/core';
 import { StoreContext } from "../../services/StoreService";
+import StopIcon from '@material-ui/icons/Stop';
+import { useHistory } from "react-router-dom";
 
 export default function SessionDetailsView() {
     const store = useContext(StoreContext);
+    const history = useHistory();
 
     const classes = makeStyles({
         details: {
             padding: 20,
             width: "100%",
             height: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start"
+        },
+        icon: {
+            marginRight: 10,
+            fontSize: 20,
         }
     })();
 
+    const handleClickEnd = () => history.push("/student", { dialogOpen: true });
+
     return (
-        <Paper className={classes.details} variant="outlined" square >            
-            <p><span>Kod zaproszenia: </span> {store.invitation}</p>
-            <p><span>Nick: </span> {store.studentNick}</p>
+        <Paper className={classes.details} variant="outlined" square >
+            <div>
+                <p><span>Kod zaproszenia: </span> {store.invitation}</p>
+                <p><span>Nick: </span> {store.studentNick}</p>
+            </div>
+            <Button
+                onClick={handleClickEnd}
+                color="inherit"
+                variant="contained"
+            >
+                <StopIcon fontSize="large" className={classes.icon} />
+                    Rozłącz się
+            </Button >
         </Paper>
     );
 }

@@ -1,14 +1,28 @@
-import { Paper } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogTitle, Paper } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
 import { StudentFormView } from "../joinSessionView/StudentFormView";
-import { Location } from 'history';
 import { useRouteMatch } from "react-router";
 import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+
+interface JoinSessionLocationState {
+    dialogOpen?: boolean;
+}
 
 export function JoinSessionView() {
     const match = useRouteMatch<MatchParams>("/student/code/:session");
-    const location: Location<Object> = useLocation();
+    const location = useLocation<JoinSessionLocationState>();
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
+    useEffect(() => {
+        if (location.state)
+            setDialogOpen(location.state.dialogOpen ?? false);
+    }, [location.state]);
 
     let sessionId;
     if (match)
@@ -35,6 +49,25 @@ export function JoinSessionView() {
 
     return (
         <div className={classes.root}>
+            <Dialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+            >
+                <DialogTitle>Sesja została zakończona</DialogTitle>
+                {/* <DialogContent>
+                    <DialogContentText >
+                        Let Google help apps determine location. This means sending anonymous location data to
+                        Google, even when no apps are running.
+                    </DialogContentText>
+                </DialogContent> */}
+                <DialogActions>
+                    <Button onClick={handleDialogClose} color="primary">
+                        Rozumiem
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
             <Paper variant="outlined" square className={classes.card}>
                 {sessionId.length === 7 ?
                     <StudentFormView session={sessionId} /> : <StudentFormView />

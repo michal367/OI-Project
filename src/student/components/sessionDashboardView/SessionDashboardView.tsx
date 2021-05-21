@@ -12,6 +12,9 @@ import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { ReactionName } from "../../util/reactionsEnum";
+
+
+
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -46,14 +49,14 @@ export function SessionDashboardView() {
             minHeight: 100,
             padding: "0 10px",
         },
-        feedBackBody:{
+        feedBackBody: {
             display: "flex",
-            flexDirection:"column",
+            flexDirection: "column",
             flexGrow: 1,
             overflowY: "auto",
             overflowX: "hidden",
         },
-        questionBody:{
+        questionBody: {
             width: "100%",
             flexShrink: 2,
             flexGrow: 1,
@@ -78,13 +81,13 @@ export function SessionDashboardView() {
             display: "flex",
             flexDirection: "column",
         },
-        okButton:{
-            color:"white",
-            backgroundColor:"green",
+        okButton: {
+            color: "white",
+            backgroundColor: "green",
         },
-        wrapper:{
+        wrapper: {
             display: "flex",
-            flexDirection:"column",
+            flexDirection: "column",
             flexGrow: 1,
         },
     })();
@@ -100,19 +103,19 @@ export function SessionDashboardView() {
     };
 
     const handleReaction = (reaction: ReactionName) => {
-        console.log(reaction);
+        console.log(reaction);        
     }
 
     return (
         <div className={classes.root}>
+
             <div className={classes.header}>
-                
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
                 <div className={classes.wrapper}>
                     <div className={classes.feedBackBody}>
-                        <FeedbackView/>
+                        <FeedbackView />
                     </div>
                     <Button className={classes.okButton}>Ok</Button>
                 </div>
@@ -121,7 +124,7 @@ export function SessionDashboardView() {
                     color="primary"
                     onClick={handleToggle}
                 >
-                Rozwiąż quiz
+                    Rozwiąż quiz
                 </Button>
             </div>
             <div className={classes.questionBody}>
