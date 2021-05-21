@@ -5,7 +5,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { StoreContext } from '../../services/StoreService';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import NotifiableTab from "../notifiableTab/NotifiableTab"
+import NotifiableTab from "./NotifiableTab"
 import Button from '@material-ui/core/Button';
 export default function TopBar() {
     const store = useContext(StoreContext);
@@ -16,7 +16,7 @@ export default function TopBar() {
     const routes = {
         index: "/lecturer",
         session: "/lecturer/session",
-        quiz: "/lecturer/quiz",
+        quiz: "/lecturer/quizzes",
         questions: "/lecturer/questions",
         stats: "/lecturer/stats",
         timestamp: "/lecturer/timestamp",
@@ -48,7 +48,7 @@ export default function TopBar() {
                     :
                     <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
                 }
-                <NotifiableTab value={routes.quiz} label="Stwórz Quiz" routes={routes.quiz}/>
+                <NotifiableTab value={routes.quiz} label="Quizy" routes={routes.quiz}/>
                 <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
                 <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
                 <Button onClick={newQuestion}>New question</Button>
