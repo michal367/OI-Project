@@ -39,7 +39,7 @@ function App() {
             }, 50000)
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [sendJsonMessage]);
 
     useEffect(() => {
         const onClose = () => {
