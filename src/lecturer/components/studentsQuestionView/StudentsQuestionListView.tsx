@@ -1,4 +1,4 @@
-import { makeStyles, Paper } from '@material-ui/core';
+import { makeStyles, Paper, TextField } from '@material-ui/core';
 import { useCallback, useEffect, useContext } from 'react';
 import { useSocket } from '../../services/SocketService';
 import { StoreContext } from "../../services/StoreService";
@@ -11,8 +11,22 @@ export function StudentsQuestionListView() {
     const classes = makeStyles({
         root: {
             width: "100%",
-            padding: 10,
+            height: "100%",
             borderRadius: "0",
+
+        },
+        questionsHeader:{
+            padding: 10,
+            fontSize:"16px",
+            textDecoration:"underline",
+
+        },
+        questionField:{
+            padding: 10,
+            display:"flex",
+            flexDirection:"column-reverse",
+            overflow:"auto",
+            height:"95%"   
         },
         tmp: {
             maxHeight: "100%",
@@ -41,6 +55,10 @@ export function StudentsQuestionListView() {
         },
         messageText: {
             flexGrow: 1,
+            width:"100%"
+        },
+        questionText:{
+            width:"100%"
         },
     })();
 
@@ -50,7 +68,8 @@ export function StudentsQuestionListView() {
         const studentQuestion: StudentQuestion = {
             studentNick: payload.data.studentID,
             time: new Date(),
-            text: payload.data.text
+            text: payload.data.text,
+            processed: false,
         };
         const newStudentQuestions = store.studentQuestions;
         newStudentQuestions.push(studentQuestion);
@@ -64,9 +83,12 @@ export function StudentsQuestionListView() {
         };
     }, [refreshQuestionList, socketEmiter]);
 
-
     return (
         <Paper className={classes.root} variant="outlined" square>
+        <b className={classes.questionsHeader}>
+            Pytania od studentów:
+        </b>
+        <div className={classes.questionField}>
             {store.studentQuestions.map((studentQuestion, index) => {
                 return (
                     <div
@@ -74,18 +96,32 @@ export function StudentsQuestionListView() {
                     >
                         <div className={classes.message}>
                             <div className={classes.messageText}>
-                                <b className={classes.messageHeader}>
-                                    {studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"}:
-                                </b>
-                                <div className="question-text">
-                                    {studentQuestion.text}
-                                </div>
+                            {studentQuestion.processed ? (
+                                    <TextField variant="outlined" fullWidth={true}
+                                    multiline
+                                    label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
+                                    defaultValue={studentQuestion.text} 
+                                    InputProps={{
+                                        className: classes.questionText,
+                                        readOnly: true,
+                                    }} />                            
+                            ):(
+                                <TextField error variant="outlined"
+                                 fullWidth={true} 
+                                 multiline
+                                 label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
+                                 defaultValue={studentQuestion.text} InputProps={{
+                                    className: classes.questionText,
+                                    readOnly: true,
+                                }}/>
+                            )}
                             </div>
 
                         </div>
                     </div>
                 );
             })}
+            </div>
         </Paper>
     );
 }

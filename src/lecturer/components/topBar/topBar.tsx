@@ -28,15 +28,9 @@ export default function TopBar() {
         if (possibleRoutes.includes(location.pathname)) setSelectedTab(location.pathname);
     }, [location.pathname, possibleRoutes]);
 
-    const newQuestion = () => {
-        let newStudentQuestion: StudentQuestion = {
-            studentNick: "Null",
-            time: new Date(),
-            text: "null",
-        }
-        store.studentQuestions = [...store.studentQuestions, newStudentQuestion];
+    const processQuestions = () =>{
+        store.studentQuestions.forEach(question => question.processed = true)
     }
-
     return (
         <AppBar position="static">
             <Tabs
@@ -46,12 +40,11 @@ export default function TopBar() {
                 {(store.sessionId === "") ?
                     <NotifiableTab value={routes.index} label="Rozpocznij sesję" routes={routes.index}/>
                     :
-                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
+                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session} resetFunction={processQuestions}/>
                 }
                 <NotifiableTab value={routes.quiz} label="Stwórz Quiz" routes={routes.quiz}/>
                 <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
                 <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
-                <Button onClick={newQuestion}>New question</Button>
                 {(store.sessionId != "") && (<NotifiableTab
                     label="Statystyki"
                     routes={routes.stats}

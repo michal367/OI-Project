@@ -2,7 +2,7 @@ import Tab from '@material-ui/core/Tab';
 import { Link as RouterLink } from 'react-router-dom';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Badge, makeStyles } from "@material-ui/core";
+import { Badge } from "@material-ui/core";
 import { Theme, withStyles, createStyles } from "@material-ui/core/styles";
 
 interface NotifiableTabProps {
@@ -10,6 +10,7 @@ interface NotifiableTabProps {
     label?: string;
     routes?: string;
     value?: string;
+    resetFunction?: () => void;
 }
 
 const StyledBadge = withStyles((theme: Theme) =>
@@ -21,11 +22,12 @@ const StyledBadge = withStyles((theme: Theme) =>
     })
 )(Badge);
 export default function NotifiableTab(props: NotifiableTabProps) {
-
+    const nothing = () =>{}
     const [notifiableNumber, setNotifiableNumber] = useState(0);
     const label = props.label ?? "none";
     const routes = props.routes ?? "";
     const value = props.value ?? "";
+    const resetFunction = props.resetFunction?? nothing;
     useEffect(() => {
         if (props.observableList) {
             if (props.observableList.length !== 0) {
@@ -33,9 +35,9 @@ export default function NotifiableTab(props: NotifiableTabProps) {
             }
         }
     }, [props.observableList]);
-
     const resetNewQuestionsValue = () => {
         setNotifiableNumber(0);
+        resetFunction();
     }
 
     return (
