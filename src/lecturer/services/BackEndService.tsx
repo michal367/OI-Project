@@ -1,7 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
-import useWebSocket from 'react-use-websocket';
-import EventEmitter from "events";
-import { API_URL, SOCKET_URL } from "../../common/util/config";
+import { API_URL } from "../../common/util/config";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode
@@ -53,35 +51,6 @@ const getStudentsForLecture = async (id: string) => {
 };
 
 const BackEndContext = createContext<IBackEnd>({ createLecture, getLectureLink, getStudentsForLecture });
-
-const socketEmiter = new EventEmitter();
-
-export const useBackEndSocket = () => {
-
-    let onMessage = (event: MessageEvent<any>) => {
-        socketEmiter.emit(event.data);
-        console.log("onMessage", event.data);
-    }
-
-    return {
-        socketEmiter,
-        ...useWebSocket(SOCKET_URL, {
-            onMessage,
-            onOpen: () => console.log('onOpen'),
-            onClose: () => {
-                socketEmiter.emit('onClose');
-                console.log('onClose');
-            },
-            share: true,
-            shouldReconnect: (closeEvent) => {                
-                console.log("closeEvent");
-                return true;
-            },
-            reconnectAttempts: Number.POSITIVE_INFINITY,
-            reconnectInterval: 3000,
-        })
-    };
-};
 
 export const useBackEnd = () => {
     return useContext(BackEndContext);

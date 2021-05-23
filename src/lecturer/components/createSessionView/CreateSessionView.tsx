@@ -6,9 +6,10 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useBackEnd } from "../../services/BackEndService";
 import { useHistory } from "react-router-dom";
 import { StoreContext } from "../../services/StoreService";
+import { useSocket } from "../../services/SocketService";
 
 
 export function CreateSessionView() {
@@ -16,7 +17,7 @@ export function CreateSessionView() {
     const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
-    const { sendJsonMessage } = useBackEndSocket();
+    const { sendJsonMessage } = useSocket();
 
     const classes = makeStyles({
         root: {
@@ -30,7 +31,7 @@ export function CreateSessionView() {
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
+            paddingTop: 75,
             paddingBottom: "10px",
         },
         wrapper: {
@@ -63,7 +64,7 @@ export function CreateSessionView() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const buttonClassname = clsx({
+    const buttonClassName = clsx({
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
@@ -79,10 +80,14 @@ export function CreateSessionView() {
 
                 store.sessionId = lecture.id;
                 store.sendQuizStep = 0;
+                store.timeToNextQuiz = 0;
                 backEnd.getLectureLink(lecture.id)
                     .then((link) => {
                         store.link = link;
-                        history.push("/session");
+                        history.push({
+                            pathname: "lecturer/session",
+                            state: { isOpen: true }
+                        });
                     })
 
                 sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
@@ -98,7 +103,7 @@ export function CreateSessionView() {
                 <Fab
                     aria-label="save"
                     color="primary"
-                    className={buttonClassname}
+                    className={buttonClassName}
                     onClick={handleButtonClick}
                 >
                     {success ? (

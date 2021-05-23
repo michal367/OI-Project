@@ -1,21 +1,35 @@
-import {
-    makeStyles,
-    useTheme,
-} from "@material-ui/core";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { makeStyles, useTheme } from "@material-ui/core";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useBackEnd } from "../../services/BackEndService";
 import { StoreContext } from "../../services/StoreService";
 import { SendQuizView } from "../sendQuizView/SendQuizView";
-import { StudentListView, StudentListRow } from "../studentListView/StudentListView";
-import { CopyLinkButton } from "../studentListView/CopyLinkButton";
+import { useHistory } from "react-router-dom";
+import {
+    StudentListView,
+    StudentListRow,
+} from "../studentListView/StudentListView";
+import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import { useLocation } from "react-router-dom";
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
+import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { useSocket } from "../../services/SocketService";
 
 export function SessionDashboardView() {
-    const backEnd = useBackEnd();
+    const location = useLocation<{ isOpen: boolean }>();
+    let isOpen = false;
+    if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
+    const history = useHistory();
     const store = useContext(StoreContext);
-    const { socketEmiter } = useBackEndSocket();
+    if (!store.sessionId || store.sessionId.length === 0) {
+        history.goBack();
+    }
+    const backEnd = useBackEnd();
+    const { socketEmiter } = useSocket();
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
-    const [selectedStudents, setSelectedStudents] = useState<string[]>(store.sendQuiz.students);
+    const [selectedStudents, setSelectedStudents] = useState<string[]>(
+        store.sendQuiz.students
+    );
 
     const toggleAllSelectedStudents = (checked: boolean) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
@@ -28,15 +42,17 @@ export function SessionDashboardView() {
 
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
+
     const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        let selectedStudents = randomNumbers.map(i => studentList[i])
+        let selectedStudents = randomNumbers.map((i) => studentList[i]);
         let mapById = (student: Student) => student.id;
         tmpQuiz.students = [...selectedStudents.map(mapById)];
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
+
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let currentIndex = store.sendQuiz.students.indexOf(id);
@@ -51,7 +67,7 @@ export function SessionDashboardView() {
         tmpQuiz.students = newSelected;
         store.sendQuiz = tmpQuiz;
         setSelectedStudents(tmpQuiz.students);
-    }
+    };
     const theme = useTheme();
 
     const classes = makeStyles({
@@ -59,43 +75,40 @@ export function SessionDashboardView() {
             background: theme.palette.primary.light,
             maxHeight: "100vh",
             height: "100vh",
-            display: "flex",
-            flexDirection: "row",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
             position: "absolute",
             width: "100%",
             top: 0,
             zIndex: -1,
-            paddingTop: "55px",
-            paddingBottom: "10px",
+            padding: "0 10px",
+            paddingTop: 75,
+            paddingBottom: 100,
+            gap: 30,
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
             color: "#fff",
         },
-        main: {
-            width: "100%",
-            flexShrink: 2,
-            flexGrow: 1,
+        column: {
             height: "100%",
+            width: "100%",
+            marginBottom: "auto",
             display: "flex",
-            gap: 10,
-            minHeight: 100,
-            padding: "0 10px",
             flexDirection: "column",
         },
-        aside: {
-            width: "100%",
-            flexShrink: 4,
+        columnWrapper: {
             flexGrow: 1,
-            height: "100%",
-            minHeight: 100,
-            padding: "10px 10px",
+            overflow: "auto",
+            maxHeight: "calc(80vh)",
         },
-        overlay: {
-            minWidth: "80%",
-            minHeight: "90%",
-            width: 300,
-            height: 400,
+        columnFooter: {
+            maxHeight: "100px",
+            flexShrink: 0,
+        },
+        button: {
+            marginLeft: "auto",
+            marginBottom: "auto",
         }
     })();
 
@@ -124,15 +137,34 @@ export function SessionDashboardView() {
     }, [refreshList]);
 
     return (
-        <div className={classes.root}>
-            <div className={classes.main}>
-                <StudentListView studentList={studentList} students={[selectedStudents, toggleStudentSelection]} />
-                <CopyLinkButton />
+        <>
+            <div className={classes.root}>
+                <div className={classes.column}>
+                    <StudentListView
+                        studentList={studentList}
+                        students={[selectedStudents, toggleStudentSelection]}
+                    />
+                </div>
+                <div className={classes.column}>
+                    <div className={classes.columnWrapper}>
+                        <StudentsQuestionListView />
+                    </div>
+                    <div className={classes.columnFooter}>
+                        <ReactionReceiveView />
+                    </div>
+                </div>
+                <div className={classes.column}>
+                    <SendQuizView
+                        studentList={studentList}
+                        students={[
+                            selectedStudents,
+                            toggleAllSelectedStudents,
+                            toggleRandomSelectedStudents,
+                        ]}
+                    />
+                </div>
             </div>
-
-            <div className={classes.aside}>
-                <SendQuizView studentList={studentList} students={[selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents]} />
-            </div>
-        </div>
+            <ShareSessionView isOpen={isOpen} />
+        </>
     );
 }

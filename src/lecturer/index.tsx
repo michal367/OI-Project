@@ -4,10 +4,13 @@ import "./index.css";
 import App from "./components/app/App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
+import { SocketService } from "./services/SocketService";
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <SocketService>
+            <App />
+        </SocketService>
     </React.StrictMode>,
     document.getElementById("root")
 );

@@ -1,5 +1,3 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
@@ -11,16 +9,14 @@ import {
     Checkbox,
     TableRow,
 } from "@material-ui/core";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd, useBackEndSocket } from "../../services/BackEndService";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
-import copy from "copy-to-clipboard";
 
 interface StudentListViewProps {
     studentList?: StudentListRow[];
-    students?: [string[],any];
+    students?: [string[], (id: string) => void];
 }
 
 export interface StudentListRow extends Student {
@@ -28,29 +24,29 @@ export interface StudentListRow extends Student {
 }
 
 export function StudentListView(props: StudentListViewProps) {
-    const backEnd = useBackEnd();
+
     const store = useContext(StoreContext);
-    const studentList:StudentListRow[] = props.studentList ?? [];
-    let [selectedStudents, toggleStudentSelection]:[string[], any] = props.students ?? [[], ()=>{}]
+    const studentList: StudentListRow[] = props.studentList ?? [];
+    let [selectedStudents, toggleStudentSelection]: [string[], (id: string) => void] = props.students ?? [[], () => { }]
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const { socketEmiter } = useBackEndSocket();
+
 
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
-    const changeSelectedStudents = (index:string) => () =>{
+    const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
     }
 
     useEffect(() => {
-        [selectedStudents, toggleStudentSelection] = props.students ?? [[], ()=>{}];
+        if (props.students)
+            [selectedStudents, toggleStudentSelection] = props.students;
         setStudents(selectedStudents);
     }, [props.students]);
 
     const theme = useTheme();
     const classes = makeStyles({
         root: {
-            width: "500px",
-            margin: "15px auto",
+            width: "100%",
             background: theme.palette.secondary.light,
             borderRadius: "0",
         },
@@ -69,11 +65,14 @@ export function StudentListView(props: StudentListViewProps) {
                 background: "#fedf9d;",
             },
         },
+        table: {
+            maxHeight: "100%",
+        },
     })();
 
     const headCells: HeadCell<StudentListRow>[] = [
         { id: "orderIndex", numeric: false, label: "Nr" },
-        { id: "nick", numeric: false, label: "Nick" },
+        //{ id: "nick", numeric: false, label: "Nick" },
         { id: "name", numeric: false, label: "Imię" },
         { id: "surname", numeric: false, label: "Nazwisko" },
     ];
@@ -89,7 +88,9 @@ export function StudentListView(props: StudentListViewProps) {
 
     return (
         <TableContainer component={Paper} className={classes.root}>
-            <Table aria-label="tabela z listą studentów">
+            <Table stickyHeader
+                className={classes.table}
+            >
                 <StudentListHead
                     order={order}
                     orderBy={orderBy}
@@ -115,14 +116,10 @@ export function StudentListView(props: StudentListViewProps) {
                                                         row.id
                                                     ) !== -1
                                                 }
-                                                inputProps={{
-                                                    "aria-label":
-                                                        "secondary checkbox",
-                                                }}
                                             />
                                         )}
                                     </TableCell>
-                                    <TableCell>{row.nick}</TableCell>
+                                    {/*<TableCell>{row.nick}</TableCell>*/}
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>

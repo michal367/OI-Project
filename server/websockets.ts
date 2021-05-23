@@ -1,43 +1,45 @@
-import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
-import Lecture from "./Lecture.ts";
-import { linkLectureMap } from "./Lecture.ts";
+import { WebSocket } from "https://deno.land/std/ws/mod.ts";
+import { WebSocketAcceptedClient, WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
+import Lecture, { linkLectureMap } from "./Lecture.ts";
 import Student from "./Student.ts";
 
 const lectures = new Map();
 
-const setupWebSocketServer = () => {
-    const wss = new WebSocketServer(8080);
-    wss.on("connection", function (ws: WebSocketClient) {
-        const subMessageHandler = (message: string) => {
-            const parsed = JSON.parse(message);
-            let success = false;
-            switch (parsed.event) {
-                case "create_lecture":
-                    success = handlerCreateLecture(parsed, ws);
-                    break;
-                case "create_student":
-                    success = handlerCreateStudent(parsed, ws);
-                    break;
-                case "reconnect_lecture":
-                    success = handlerReconnectLecture(parsed, ws);
-                    break;
-                case "reconnect_student":
-                    success = handlerReconnectStudent(parsed, ws);
-                    break;
-                case "check_link":
-                    handlerCheckLink(parsed, ws);
-                    break;
-                default:
-                    console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
+const setupWebSocket = (ws: WebSocket) => {
+    const wsc: WebSocketAcceptedClient = new WebSocketAcceptedClient(ws);
 
-            }
-            if (success) {
-                ws.removeListener("message", subMessageHandler);
-            }
-        };
-        ws.on("message", subMessageHandler);
-    });
-    wss.on("error", function (error: Error) {
+    const subMessageHandler = (message: string) => {
+        const parsed = JSON.parse(message);
+        console.log(parsed);
+        let success = false;
+        switch (parsed.event) {
+            case "create_lecture":
+                success = handlerCreateLecture(parsed, wsc);
+                break;
+            case "create_student":
+                success = handlerCreateStudent(parsed, wsc);
+                break;
+            case "reconnect_lecture":
+                success = handlerReconnectLecture(parsed, wsc);
+                break;
+            case "reconnect_student":
+                success = handlerReconnectStudent(parsed, wsc);
+                break;
+            case "check_link":
+                handlerCheckLink(parsed, wsc);
+                break;
+            case "ping":
+                return;
+            default:
+                console.log(`Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
+        }
+        if (success) {
+            wsc.removeListener("message", subMessageHandler);
+        }
+    };
+    wsc.on("message", subMessageHandler);
+    wsc.on("message", () => {});
+    wsc.on("error", function (error: Error) {
         console.log(error.message);
     });
 };
@@ -157,4 +159,5 @@ function handlerCheckLink(parsed: CheckLinkPayload, ws: WebSocketClient) {
     }
 }
 
-export { setupWebSocketServer, lectures };
+export { setupWebSocket, lectures };
+

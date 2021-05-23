@@ -15,12 +15,14 @@ interface Answer {
     isCorrect: boolean;
 }
 interface Question {
+    index?: number;
     title: string;
+    imageSrc?: string;
     text: string;
     options?: Answer[];
 }
 
-interface Quiz {
+interface FrontQuiz {
     title: string;
     questions: Question[];
 }
@@ -28,9 +30,48 @@ interface MatchParams {
     session: string;
 }
 
+interface StudentQuestion{
+    studentNick: string,
+    time: Date;
+    text: string;
+}
 interface ScheduledQuiz {
-    quiz?: Quiz;
-    students: Students[];
-    timeInMin?: number;
-    canShowResults: boolean;
+    quiz?: FrontQuiz;
+    students: string[];
+    timeInSec?: number;
+    questionStats: QuestionStat[];
+    alreadyShowedResults: boolean;
+}
+
+interface AnswerStat {
+    index: number;
+    numberOfTimesSelected: number;
+}
+
+interface QuestionStat{
+    index: number;
+    options: AnswerStat[];
+}
+
+interface QuizStat{
+    title : string;
+    questions: QuestionStat[];
+}
+
+interface Statistic{
+    quizes: QuizStat[];
+}
+type TimestampType = 
+    "QuestionType" |
+    "LogType" |
+    "QuizType" |
+    "ReactionType";
+
+
+interface Timestamp{
+    type: TimestampType,
+    message: string,
+    minutes: string,
+    hours: string,
+    owner: string,
 }

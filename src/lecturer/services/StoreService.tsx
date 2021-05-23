@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-
+import { endedQuizzes } from "../util/mockData";
 export interface StoreProps {
     children: ReactNode
 }
@@ -8,9 +8,10 @@ type StorageKey =
     "link" |
     "sessionId" |
     "questions" |
-    "quizes" |
+    "quizzes" |
     "sendQuizStep" |
-    "selectedQuiz";
+    "selectedQuiz" |
+    "timeToNextQuiz";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.lecturer." + key;
@@ -18,12 +19,13 @@ const stringKey = (key: StorageKey) => {
 
 const loadKey = (key: StorageKey) => {
     let obj = JSON.parse(localStorage.getItem(stringKey(key)) ?? "null");
-    console.log("loadKey", obj);
+    console.log("loadKey", key, obj);
     return obj;
 }
 
 const saveKey = (key: StorageKey, value: any) => {
-    console.log("saveKey", value);
+    if (value === undefined) return;
+    console.log("saveKey", key, value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
 
@@ -33,8 +35,9 @@ const loadFromStorage = () => {
         link: loadKey("link") ?? initialValue.link,
         sessionId: loadKey("sessionId") ?? initialValue.sessionId,
         questions: loadKey("questions") ?? initialValue.questions,
-        quizes: loadKey("quizes") ?? initialValue.quizes,
+        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
+        timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
     }
 
     return obj;
@@ -44,35 +47,47 @@ export interface IStore {
     link: string,
     sessionId: string,
     questions: Question[],
-    quizes: Quiz[],
+    quizzes: FrontQuiz[],
     sendQuizStep: number,
-    sendQuiz: ScheduledQuiz;
-    quizesInProgress: ScheduledQuiz[];
+    sendQuiz: ScheduledQuiz,
+    endedQuizzes: ScheduledQuiz[],
+    isLoading: boolean,
+    studentQuestions: StudentQuestion[],
+    timeToNextQuiz: number
+    reactionValues: number[],
+    lastReactionTime: number,
 }
+
 
 const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
-    const [quizesInProgress, setQuizesInProgress] = useState<ScheduledQuiz[]>(initialValue.quizesInProgress);
+    const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
     const [link, setLink] = useState(initialValue.link);
     const [sessionId, setSessionId] = useState(initialValue.sessionId);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizes, setQuizes] = useState<Quiz[]>(initialValue.quizes);
+    const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
     const [sendQuizStep, setSendQuizStep] = useState(0);
-
+    const [isLoading, setIsLoading] = useState(initialValue.isLoading);
+    const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
+    const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
+    const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
+    const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
         setSessionId(initial.sessionId);
         setQuestions(initial.questions);
-        setQuizes(initial.quizes);
-    }, [])
+        setQuizzes(initial.quizzes);
+        setTimeToNextQuiz(initial.timeToNextQuiz);
+    }, []);
+    
 
     const value = {
         get link() {
             return link;
         },
-        set link(newValue: string) {           
+        set link(newValue: string) {
             setLink(newValue);
             saveKey("link", newValue);
         },
@@ -94,20 +109,20 @@ const Store = (props: StoreProps) => {
             saveKey("questions", array);
         },
 
-        get quizes() {
-            return quizes;
+        get quizzes() {
+            return quizzes;
         },
-        set quizes(newValue: Quiz[]) {
+        set quizzes(newValue: FrontQuiz[]) {
             let array = [...newValue];
-            setQuizes(array);
-            saveKey("quizes", array);
+            setQuizzes(array);
+            saveKey("quizzes", array);
         },
 
-        get quizesInProgress() {
-            return quizesInProgress;
+        get endedQuizzes() {
+            return endedQuizzes;
         },
-        set quizesInProgress(newValue: ScheduledQuiz[]) {
-            setQuizesInProgress([...newValue]);
+        set endedQuizzes(newValue: ScheduledQuiz[]) {
+            setEndedQuizzes([...newValue]);
         },
 
         get sendQuiz() {
@@ -132,6 +147,40 @@ const Store = (props: StoreProps) => {
             setSendQuizStep(newValue);
             saveKey("sendQuizStep", newValue);
         },
+
+        get isLoading() {
+            return isLoading;
+        },
+        set isLoading(newValue: boolean) {
+            setIsLoading(newValue);
+        },
+
+        get studentQuestions() {
+            return studentQuestions;
+        },
+        set studentQuestions(newValue: StudentQuestion[]) {
+            setStudentQuestions([...newValue]);
+        },
+
+        get timeToNextQuiz() {
+            return timeToNextQuiz;
+        },
+        set timeToNextQuiz(newValue: number) {
+            setTimeToNextQuiz(newValue);
+            saveKey("timeToNextQuiz", newValue);
+        },
+        get reactionValues(){
+            return reactionValues;
+        },
+        set reactionValues(newValue: number[]){
+            setReactionValues([...newValue]);
+        },
+        get lastReactionTime(){
+            return lastReactionTime;
+        },
+        set lastReactionTime(newValue: number){
+            setLastReactionTime(newValue);
+        },
     };
 
     return (
@@ -144,15 +193,22 @@ const Store = (props: StoreProps) => {
 const initialValue: IStore = {
     link: "",
     sessionId: "",
-    quizes: [],
+    quizzes: [],
     questions: [],
     sendQuizStep: 0,
-    quizesInProgress: [],
+    endedQuizzes: endedQuizzes,
     sendQuiz: {
         students: [],
-        canShowResults: true,
-    }
+        questionStats: [],
+        alreadyShowedResults: true,
+    },
+    isLoading: true,
+    studentQuestions: [],
+    timeToNextQuiz: 0,
+    reactionValues: [0,0,0,0,0],
+    lastReactionTime: 30,
 }
+
 
 export const StoreContext = createContext<IStore>(initialValue);
 

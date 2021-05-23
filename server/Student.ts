@@ -12,8 +12,11 @@ class Student extends EventEmitter {
     lecture: Lecture;
     wsc?: WebSocketClient;
     reactions: Map<Date, string>;
+    questions: Map<Date, string>;
     canSendReaction: boolean;
     REACTION_TIMEOUT = 1000;
+    canSendQuestion: boolean;
+    QUESTION_TIMEOUT = 5000;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -24,6 +27,9 @@ class Student extends EventEmitter {
         this.lecture = lecture;
         this.reactions = new Map();
         this.canSendReaction = true;
+        this.questions = new Map();
+        this.canSendQuestion = true;
+
     }
 
     idEquals(id: string): boolean {
@@ -35,6 +41,7 @@ class Student extends EventEmitter {
 
         this.wsc.on("message", (message: string) => {
             const parsed = JSON.parse(message);
+            console.log(parsed);
             switch (parsed.event) {
                 case "send_quiz_response":
                     this.handlerSendQuizResponse(parsed);
@@ -44,6 +51,10 @@ class Student extends EventEmitter {
                     break;
                 case "delete_student":
                     this.handleDelete();
+                case "send_question":
+                    this.handlerSendQuestion(parsed);
+                    break;
+                case "ping":
                     break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
@@ -112,6 +123,24 @@ class Student extends EventEmitter {
         this.name = "";
         this.surname = "";
         this.nick = "";
+    }
+    
+    handlerSendQuestion(parsed: SendQuestionRequestPayload) {
+        if (this.canSendQuestion) {
+            this.canSendQuestion = false;
+            this.questions.set(new Date(), parsed.data.text);
+            this.emit("question_added", parsed.data.text);
+            const response: Payload = {
+                event: "student_question_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+            setTimeout(() => this.canSendQuestion = true, this.QUESTION_TIMEOUT);
+        } else {
+            const response: Payload = {
+                event: "student_question_not_sent"
+            };
+            this.wsc?.send(JSON.stringify(response));
+        }
     }
 
 }

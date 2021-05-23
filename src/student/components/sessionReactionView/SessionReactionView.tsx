@@ -1,10 +1,12 @@
 import { makeStyles, Paper } from '@material-ui/core';
-import ReactionItem, { ReactionName } from './ReactionItem';
+import { useSocket } from '../../services/SocketService';
+import { ReactionName } from '../../util/reactionsEnum';
+import { ReactionItem } from './ReactionItem';
 interface SessionReactionViewProps {
     onReaction?: (reaction: ReactionName) => void
 }
-
 export default function SessionReactionView(props: SessionReactionViewProps) {
+    const { sendJsonMessage } = useSocket();
     const classes = makeStyles({
         details: {
             padding: 20,
@@ -30,6 +32,15 @@ export default function SessionReactionView(props: SessionReactionViewProps) {
 
     const onReaction = (reaction: ReactionName) => {
         if (props.onReaction) props.onReaction(reaction);
+        console.log(reaction);
+        const payload: ReactionRequestPayload = {
+            event: "send_reaction",
+            data:{
+                reaction: reaction
+            }
+        };
+        console.log(payload);
+        sendJsonMessage(payload);
     }
 
     return (
