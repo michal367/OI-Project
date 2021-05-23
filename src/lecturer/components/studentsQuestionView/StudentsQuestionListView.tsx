@@ -1,8 +1,8 @@
 import { makeStyles, Paper, TextField } from '@material-ui/core';
-import { useCallback, useEffect, useContext } from 'react';
+import { useCallback, useEffect, useContext, useRef } from 'react';
 import { useSocket } from '../../services/SocketService';
 import { StoreContext } from "../../services/StoreService";
-
+import ReactScrollableFeed from 'react-scrollable-feed';
 
 
 export function StudentsQuestionListView() {
@@ -23,13 +23,14 @@ export function StudentsQuestionListView() {
         },
         questionField:{
             padding: 10,
-            display:"flex",
-            flexDirection:"column-reverse",
             overflow:"auto",
-            height:"95%"   
+            height:"98%"   
         },
         tmp: {
             maxHeight: "100%",
+        },
+        field:{
+            margin:"5px 0px"
         },
         messageReplyButton: {
             flexShrink: 0,
@@ -89,6 +90,7 @@ export function StudentsQuestionListView() {
             Pytania od studentów:
         </b>
         <div className={classes.questionField}>
+            <ReactScrollableFeed>
             {store.studentQuestions.map((studentQuestion, index) => {
                 return (
                     <div
@@ -97,7 +99,7 @@ export function StudentsQuestionListView() {
                         <div className={classes.message}>
                             <div className={classes.messageText}>
                             {studentQuestion.processed ? (
-                                    <TextField variant="outlined" fullWidth={true}
+                                    <TextField className={classes.field} variant="outlined" fullWidth={true}
                                     multiline
                                     label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
                                     defaultValue={studentQuestion.text} 
@@ -106,7 +108,7 @@ export function StudentsQuestionListView() {
                                         readOnly: true,
                                     }} />                            
                             ):(
-                                <TextField error variant="outlined"
+                                <TextField className={classes.field} error variant="outlined"
                                  fullWidth={true} 
                                  multiline
                                  label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
@@ -121,6 +123,7 @@ export function StudentsQuestionListView() {
                     </div>
                 );
             })}
+            </ReactScrollableFeed>
             </div>
         </Paper>
     );
