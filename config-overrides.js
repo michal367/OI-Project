@@ -20,7 +20,7 @@ if (typeof src_dir === 'undefined' || (cmd === "build.js" && typeof build_dir ==
 module.exports = {
 	paths: function (paths, env) {
 		paths.appIndexJs = path.resolve(__dirname, src_dir + '/index.tsx');
-		paths.appSrc = path.resolve(__dirname, src_dir);
+		paths.appSrc = path.resolve(__dirname, "src");
 		paths.testsSetup = path.resolve(__dirname, src_dir + '/setupTests.ts');
 		paths.proxySetup = path.resolve(__dirname, src_dir + '/setupProxy.js');
 		paths.swSrc = path.resolve(__dirname, src_dir + '/service-worker.ts');
