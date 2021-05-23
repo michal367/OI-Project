@@ -3,23 +3,23 @@ import { StoreContext } from '../../services/StoreService';
 import { ListView, TitleType } from '../listView/ListView';
 
 
-export function QuestionsListView() {
+export function QuizzesListView() {
     const store = useContext(StoreContext);
 
-    const getContainer: () => Question[] = () => {
-        return store.questions;
+    const getContainer: () => FrontQuiz[] = () => {
+        return store.quizzes;
     }
     const setContainer = (value: TitleType[]) => {
-        store.questions = value as Question[];
+        store.quizzes = value as FrontQuiz[];
     }
 
     return (
         <ListView
             getContainer={getContainer}
             setContainer={setContainer}
-            exportFilename="questions"
-            createEditPathname="/lecturer/question"
-            listElements="pytań"
+            exportFilename="quizzes"
+            createEditPathname="/lecturer/quiz"
+            listElements="quizów"
         />
     );
 }
