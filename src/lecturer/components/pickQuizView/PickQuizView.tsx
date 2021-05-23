@@ -9,7 +9,7 @@ import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { not, union, intersection } from "../../util/boolAlgebra";
+import { not, union, intersection } from "../../../common/util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
 import { PickQuizList } from "./PickQuizList";
 

@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { endedQuizzes } from "../util/mockData";
+import { endedQuizzes } from "../../common/util/mockData";
 export interface StoreProps {
     children: ReactNode
 }

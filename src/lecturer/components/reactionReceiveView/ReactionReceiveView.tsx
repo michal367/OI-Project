@@ -2,8 +2,9 @@ import { makeStyles, Paper } from "@material-ui/core";
 import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
-import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
+import { reactionsIcons } from "../../../common/util/reactions/icons";
 import { useSocket } from "../../services/SocketService";
+import { ReactionName } from "../../../common/util/reactions/enum";
 
 export function ReactionReceiveView() {
     const reactions = [

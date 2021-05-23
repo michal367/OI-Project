@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { StoreContext } from '../../services/StoreService';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -52,7 +52,7 @@ export default function TopBar() {
                 <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
                 <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
                 <Button onClick={newQuestion}>New question</Button>
-                {(store.sessionId != "") && (<NotifiableTab
+                {(store.sessionId !== "") && (<NotifiableTab
                     label="Statystyki"
                     routes={routes.stats}
                 />)}

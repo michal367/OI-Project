@@ -24,9 +24,9 @@ import {
 import { useContext, useState, useEffect, ChangeEvent } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
-import { getRandomIndexes } from "../../util/random";
 import { useCallback } from "react";
-import { formatTime } from "../../util/time";
+import { getRandomIndexes } from "../../../common/util/random";
+import { formatTime } from "../../../common/util/time";
 
 interface SendQuizViewProps {
     studentList?: Student[];

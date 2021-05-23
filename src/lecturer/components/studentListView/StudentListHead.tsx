@@ -5,8 +5,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles, useTheme } from "@material-ui/core";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
-import { Order } from "../../util/comparators";
 import { StudentListRow } from "./StudentListView";
+import { Order } from "../../../common/util/comparators";
 
 export interface HeadCell<T> {
     id: keyof T;
