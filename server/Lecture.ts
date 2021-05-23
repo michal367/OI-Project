@@ -48,7 +48,7 @@ class Lecture {
             const payload: StudentAddedPayload = {
                 event: "student_added",
                 data: {
-                    studentID: student.id,
+                    id: student.id,
                     nick: student.nick,
                     name: student.name,
                     surname: student.surname
@@ -68,7 +68,6 @@ class Lecture {
             };
             student.on("question_added", questionHandler);
 
-            this.wsc?.send("studentAdded");
         });
         this.studentList.on("studentDeleted", (student: Student) => {
             const payload: StudentDeletedPayload = {
@@ -93,6 +92,7 @@ class Lecture {
                     break;
                 case "get_student_list":
                     this.handlerGetStudentList();
+                    break;
                 case "show_answers":
                     this.handlerShowAnswers(parsed);
                     break;
@@ -112,8 +112,8 @@ class Lecture {
     }
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
-        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data));
-        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data));
+        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions));
+        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions));
         const questionsWithoutAnswers: Question[] = quizWithoutAnswers.questions;
         questionsWithoutAnswers.forEach((q: Question) => {
             const answers: Answer[] | undefined = q.options;
@@ -199,12 +199,13 @@ class Lecture {
 
         this.tutor = "";
         lectures.delete(this.id);
+        console.log("Lecture has been deleted");
     }
 
     handlerGetStudentList() {
         const studentDataList: StudentData[] = this.studentList.asArray().map((s: Student) => {
             const studentData: StudentData = {
-                studentID: s.id,
+                id: s.id,
                 nick: s.nick,
                 name: s.name,
                 surname: s.surname

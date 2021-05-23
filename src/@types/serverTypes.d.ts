@@ -137,7 +137,7 @@ interface StudentDeletedPayload extends Payload {
 
 interface StudentAddedPayload extends Payload {
     data: {
-        studentID: string,
+        id: string,
         nick: string,
         name: string,
         surname: string
@@ -145,7 +145,7 @@ interface StudentAddedPayload extends Payload {
 }
 
 interface StudentData {
-    studentID: string,
+    id: string,
     nick: string,
     name: string,
     surname: string
@@ -178,5 +178,20 @@ interface SendQuestionResponsePayload extends Payload{
     data:{
         text: string,
         studentID: string
+    }
+}
+
+
+
+interface LectureSubPayload extends Payload {
+    data: {
+        lecture_id: string
+    }
+}
+
+interface StudentSubPayload extends Payload {
+    data: {
+        student_id: string,
+        lecture_link: string
     }
 }

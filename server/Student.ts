@@ -51,6 +51,7 @@ class Student extends EventEmitter {
                     break;
                 case "delete_student":
                     this.handleDelete();
+                    break;
                 case "send_question":
                     this.handlerSendQuestion(parsed);
                     break;
@@ -117,6 +118,7 @@ class Student extends EventEmitter {
 
         this.handleGDPR();
         this.lecture.studentList.deleteStudent(this.id);
+        console.log("Student has been deleted");
     }
 
     handleGDPR() {

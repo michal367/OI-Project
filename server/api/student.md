@@ -22,7 +22,7 @@
     {
         "event": "create_student",
         "data": {
-            "lectureLink": "2571327",
+            "lectureLink": "6059794",
             "nick": "nickomowicz",
             "name": "namowiczowin",
             "surname": "surnamowicz"
@@ -64,8 +64,8 @@
     {
         "event": "reconnect_student",
         "data": {
-            "lectureLink": "2571327",
-            "studentID": "6f545cd3-6586-4e0f-b7d4-847b024c09f9"
+            "lectureLink": "6059794",
+            "studentID": "52506b0b-a113-4951-bff5-d86643f83b29"
         }
     }
     ```
@@ -127,7 +127,7 @@
     {
         "event": "send_quiz_response",
         "data": {
-            "quizID": "3e8baec5-13b0-4d5a-90a6-d6ad72d10727",
+            "quizID": "e1cb341e-73d3-4481-80e4-2f71371f845c",
             "answers": "literally any type"
         }
     }
@@ -232,3 +232,50 @@
 
 -   **Emitted Payload Content:** `None`
 -   **Payload Content Emitted On Event:** `None`
+
+
+## **sendQuestionFromStudent**
+
+    Wysyła pytanie studenta TYLKO do wykładowcy.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `send_question`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "send_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_sent"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "student_question_not_sent"
+    }
+    ```
+
+-   **Payload Content Emitted On Event:** `student added question`
+
+    ```json
+    {
+        "event": "send_student_question",
+        "data": {
+            "text": "Czy pingwiny maja kolana?",
+            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+        }
+    }
+    ```
+

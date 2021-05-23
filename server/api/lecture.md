@@ -146,7 +146,7 @@
 
     Wysyła do wybranych studentów zadany quiz.
 
--   **Requirements:** `createLecture`
+-   **Requirements:** `subsribeToLecture`
 -   **Event type:** `send_quiz`
 -   **Payload Content:**
 
@@ -154,13 +154,35 @@
     {
         "event": "send_quiz",
         "data": {
-            "quizID": "some identifiable string",
             "studentIDs": [
-                "6f545cd3-6586-4e0f-b7d4-847b024c09f9",
-                "a9e471b0-d188-485b-91b0-abba40a25de1"
+                "c3b6e86d-8b12-472b-85f2-f8452380ca87",
+                "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
-            "timeSeconds": 60,
-            "questions": "literally any type"
+            "timeSeconds": 90,
+            "questions": {
+                "title":"Zwierze",
+                "questions":
+                [
+                    {
+                        "title":"Jeż",
+                        "text":"Dokąd nocą tupta",
+                        "options":
+                        [
+                            {"index":1,"text":"nocna wyczieka","isCorrect":false},
+                            {"index":2,"text":"pracia","isCorrect":true}
+                        ]
+                    },
+                    {
+                        "title":"Koń",
+                        "text":"Czy koń liczy kroki?",
+                        "options":
+                        [
+                            {"index":1,"text":"tak","isCorrect":true},
+                            {"index":2,"text":"nie","isCorrect":false}
+                        ]
+                    }
+                ]
+            }
         }
     }
     ```
@@ -169,7 +191,10 @@
 
     ```json
     {
-        "event": "quiz_in_progress"
+        "event": "quiz_in_progress",
+        "data": {
+            "quizID": "a3d577db-9b81-4d03-9cbc-6ecaa3fcf381"
+        }
     }
     ```
 
@@ -181,6 +206,7 @@
         "event": "send_quiz",
         "data": {
             "quizID": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "timeSeconds": 90,
             "questions": "literally any type"
         }
     }
@@ -223,6 +249,7 @@
     }
     ```
 
+
 ## **getStudentList**
 
     Odysła listę zapisanych do wykładu studentów.
@@ -245,13 +272,13 @@
         "data":{
             "studentList":[
                 {
-                    "studentID":"20f52cf6-ddbb-4380-a046-5f528b76beca",
+                    "id":"20f52cf6-ddbb-4380-a046-5f528b76beca",
                     "nick":"nickomowicz",
                     "name":"namowicz",
                     "surname":"surnamowicz"
                 },
                 {
-                    "studentID":"80a93b73-d017-487f-aa2c-b14222d1e70a",
+                    "id":"80a93b73-d017-487f-aa2c-b14222d1e70a",
                     "nick":"nickomowicz",
                     "name":"namowicz",
                     "surname":"surnamowicz"
@@ -264,3 +291,50 @@
 -   **Error Response Payload:** `None`
 -   **Emitted Payload Content:**  `None`
 -   **Payload Content Emitted On Event:** `None`
+
+
+## **showAnswersToStudent**
+
+    Pokazuje odpowiedzi na dany quiz.
+
+-   **Requirements:** `subsribeStudentToLecture`
+-   **Event type:** `show_answers`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "show_answers",
+        "data": {
+            "quizID": "e1cb341e-73d3-4481-80e4-2f71371f845c"
+        }
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "answers_showed"
+    }
+    ```
+
+-   **Error Response Payload:**
+
+    ```json
+    {
+        "event": "answers_not_showed"
+    }
+    ```
+
+-   **Emitted Payload Content:**
+
+    ```json
+    {
+        "event": "show_answers",
+        "data": {
+            "quizID": "2e847f59-aa76-4621-a853-b0af852998e3",
+            "correctAnswers": "answers",
+            "studentAnswers": "student answers"
+        }
+    }
+    ```
