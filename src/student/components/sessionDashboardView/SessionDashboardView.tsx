@@ -13,8 +13,6 @@ import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { ReactionName } from "../../util/reactionsEnum";
 
-
-
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -103,7 +101,7 @@ export function SessionDashboardView() {
     };
 
     const handleReaction = (reaction: ReactionName) => {
-        console.log(reaction);        
+        console.log(reaction);
     }
 
     return (

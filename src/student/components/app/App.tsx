@@ -31,7 +31,6 @@ function App() {
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket();
 
-
     // heroku 55s timeout fix
     useEffect(() => {
         if (window.location.hostname.includes("heroku")) {

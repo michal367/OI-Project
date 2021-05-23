@@ -3,10 +3,12 @@ import { Button, makeStyles, Paper } from '@material-ui/core';
 import { StoreContext } from "../../services/StoreService";
 import StopIcon from '@material-ui/icons/Stop';
 import { useHistory } from "react-router-dom";
+import { useSocket } from "../../services/SocketService";
 
 export default function SessionDetailsView() {
     const store = useContext(StoreContext);
     const history = useHistory();
+    const { sendJsonMessage } = useSocket();
 
     const classes = makeStyles({
         details: {
@@ -23,7 +25,15 @@ export default function SessionDetailsView() {
         }
     })();
 
-    const handleClickEnd = () => history.push("/student", { dialogOpen: true });
+    const handleClickEnd = () => {
+        let message: Payload = {
+            event: "delete_student"
+        };
+        sendJsonMessage(message);
+
+        store.operation?.clear();
+        history.push("/student", { dialogOpen: true });
+    };
 
     return (
         <Paper className={classes.details} variant="outlined" square >

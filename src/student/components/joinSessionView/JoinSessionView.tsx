@@ -8,20 +8,29 @@ import React, { useState, useEffect } from "react";
 
 interface JoinSessionLocationState {
     dialogOpen?: boolean;
+    dialogText?: string;
+}
+
+const text = {
+    sessionEnded: "Sesja została zakończona",
+    failedToJoin: "Nie udało się połaczyć",
 }
 
 export function JoinSessionView() {
     const match = useRouteMatch<MatchParams>("/student/code/:session");
     const location = useLocation<JoinSessionLocationState>();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogText, setDialogText] = useState(text.sessionEnded);
 
     const handleDialogClose = () => {
         setDialogOpen(false);
     };
 
     useEffect(() => {
-        if (location.state)
+        if (location.state) {
             setDialogOpen(location.state.dialogOpen ?? false);
+            setDialogText(location.state.dialogText ?? text.sessionEnded);
+        }
     }, [location.state]);
 
     let sessionId;
@@ -47,19 +56,18 @@ export function JoinSessionView() {
         }
     })();
 
+    const handleJoinFailed = (error?: string) => {
+        setDialogOpen(true);
+        setDialogText(text.failedToJoin)
+    }
+
     return (
         <div className={classes.root}>
             <Dialog
                 open={dialogOpen}
                 onClose={handleDialogClose}
             >
-                <DialogTitle>Sesja została zakończona</DialogTitle>
-                {/* <DialogContent>
-                    <DialogContentText >
-                        Let Google help apps determine location. This means sending anonymous location data to
-                        Google, even when no apps are running.
-                    </DialogContentText>
-                </DialogContent> */}
+                <DialogTitle>{dialogText}</DialogTitle>
                 <DialogActions>
                     <Button onClick={handleDialogClose} color="primary">
                         Rozumiem
@@ -69,9 +77,7 @@ export function JoinSessionView() {
 
 
             <Paper variant="outlined" square className={classes.card}>
-                {sessionId.length === 7 ?
-                    <StudentFormView session={sessionId} /> : <StudentFormView />
-                }
+                <StudentFormView session={sessionId.length === 7 ? sessionId : undefined} onFail={handleJoinFailed} />
             </Paper>
         </div>
     );
