@@ -59,7 +59,7 @@ interface QuizStat{
 }
 
 interface Statistic{
-    quizes: QuizStat[];
+    quizzes: QuizStat[];
 }
 type TimestampType = 
     "QuestionType" |

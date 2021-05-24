@@ -14,7 +14,7 @@ class Lecture {
     link: string;
     studentList: StudentList;
     wsc?: WebSocketClient;
-    quizes: Map<string, Quiz>;
+    quizzes: Map<string, Quiz>;
 
     constructor(tutor: string) {
         this.tutor = tutor;
@@ -28,7 +28,7 @@ class Lecture {
         }
 
         this.studentList = new StudentList();
-        this.quizes = new Map();
+        this.quizzes = new Map();
     }
 
     setWebSocketClient(wsc: WebSocketClient): void {
@@ -124,7 +124,7 @@ class Lecture {
             }
         });
         const quiz: Quiz = new Quiz(parsed.data.timeSeconds, quizWithoutAnswers, wholeQuiz, parsed.data.studentIDs);
-        this.quizes.set(quiz.IDFromServer, quiz);
+        this.quizzes.set(quiz.IDFromServer, quiz);
         const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.studentIDs.includes(student.id));
 
         const response: ShowAnswersPayload = {
@@ -224,7 +224,7 @@ class Lecture {
 
     handlerShowAnswers(parsed: ShowAnswersPayload): void {
         const quizID: string = parsed.data.quizID;
-        const quiz: Quiz | undefined = this.quizes.get(quizID);
+        const quiz: Quiz | undefined = this.quizzes.get(quizID);
         if (quiz) {
             quiz.answeredStudents().forEach((studentID: string) => {
                 const serverToStudent: ShowAnswersToStudentPayload = {

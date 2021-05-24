@@ -70,7 +70,7 @@ class Student extends EventEmitter {
     }
 
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
-        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quizID);
+        const quiz: Quiz | undefined = this.lecture.quizzes.get(parsed.data.quizID);
         if (quiz?.isActive()) {
             quiz.addStudentAnswers(this, parsed.data.answers);
 

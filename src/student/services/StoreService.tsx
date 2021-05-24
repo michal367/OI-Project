@@ -8,7 +8,7 @@ export interface IStore {
     invitation: string,
     studentNick: string,
     studentId: string,
-    quizes: FrontQuiz[],
+    quizzes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
 }
@@ -17,7 +17,7 @@ type StorageKey =
     "invitation" |
     "studentNick" |
     "studentId" |
-    "quizes";
+    "quizzes";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.student." + key;
@@ -39,7 +39,7 @@ const initialValue: IStore = {
     invitation: "",
     studentNick: "",
     studentId: "",
-    quizes: [],
+    quizzes: [],
     isLoading: true,
     studentQuestion:{
         studentNick: "",
@@ -52,7 +52,7 @@ const loadFromStorage = () => {
         ...initialValue,
         invitation: loadKey("invitation") ?? initialValue.invitation,
         studentNick: loadKey("studentNick") ?? initialValue.studentNick,
-        quizes: loadKey("quizes") ?? initialValue.quizes,
+        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
         studentId: loadKey("studentId") ?? initialValue.studentId,
     }
 
@@ -64,14 +64,14 @@ const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
     const [studentNick, setStudentNick] = useState(initialValue.studentNick);
     const [studentId, setStudentId] = useState(initialValue.studentId);
-    const [quizes, setQuizes] = useState(initialValue.quizes);
+    const [quizzes, setQuizzes] = useState(initialValue.quizzes);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestion, setStudentQuestion] = useState<StudentQuestion>(initialValue.studentQuestion);
     useEffect(() => {
         let initial = loadFromStorage();
         setInvitation(initial.invitation);
         setStudentNick(initial.studentNick);
-        setQuizes(initial.quizes);
+        setQuizzes(initial.quizzes);
     }, [])
 
     const value = {
@@ -99,13 +99,13 @@ const Store = (props: StoreProps) => {
             saveKey("studentId", newValue);
         },
 
-        get quizes() {
-            return quizes;
+        get quizzes() {
+            return quizzes;
         },
-        set quizes(newValue: FrontQuiz[]) {
+        set quizzes(newValue: FrontQuiz[]) {
             let array = [...newValue];
-            setQuizes(array);
-            saveKey("quizes", array);
+            setQuizzes(array);
+            saveKey("quizzes", array);
         },
 
         get isLoading() {
