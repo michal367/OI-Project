@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { endedQuizzes } from "../util/mockData";
+import { scheduledQuizzes } from "../util/mockData";
 export interface StoreProps {
     children: ReactNode
 }
@@ -11,7 +11,8 @@ type StorageKey =
     "quizzes" |
     "sendQuizStep" |
     "selectedQuiz" |
-    "timeToNextQuiz";
+    "timeToNextQuiz" |
+    "scheduledQuizzes";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.lecturer." + key;
@@ -37,7 +38,7 @@ const loadFromStorage = () => {
         questions: loadKey("questions") ?? initialValue.questions,
         quizzes: loadKey("quizzes") ?? initialValue.quizzes,
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
-        timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
+        scheduledQuizzes: loadKey("scheduledQuizzes") ?? initialValue.scheduledQuizzes,
     }
 
     return obj;
@@ -50,10 +51,9 @@ export interface IStore {
     quizzes: FrontQuiz[],
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
-    endedQuizzes: ScheduledQuiz[],
+    scheduledQuizzes: ScheduledQuiz[],
     isLoading: boolean,
     studentQuestions: StudentQuestion[],
-    timeToNextQuiz: number
     reactionValues: number[],
     lastReactionTime: number,
 }
@@ -61,7 +61,7 @@ export interface IStore {
 
 const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
-    const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
+    const [scheduledQuizzes, setScheduledQuizzes] = useState<ScheduledQuiz[]>(initialValue.scheduledQuizzes);
     const [link, setLink] = useState(initialValue.link);
     const [sessionId, setSessionId] = useState(initialValue.sessionId);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
@@ -70,7 +70,6 @@ const Store = (props: StoreProps) => {
     const [sendQuizStep, setSendQuizStep] = useState(0);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
-    const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
     useEffect(() => {
@@ -79,9 +78,8 @@ const Store = (props: StoreProps) => {
         setSessionId(initial.sessionId);
         setQuestions(initial.questions);
         setQuizzes(initial.quizzes);
-        setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
-    
+
 
     const value = {
         get link() {
@@ -118,11 +116,11 @@ const Store = (props: StoreProps) => {
             saveKey("quizzes", array);
         },
 
-        get endedQuizzes() {
-            return endedQuizzes;
+        get scheduledQuizzes() {
+            return scheduledQuizzes;
         },
-        set endedQuizzes(newValue: ScheduledQuiz[]) {
-            setEndedQuizzes([...newValue]);
+        set scheduledQuizzes(newValue: ScheduledQuiz[]) {
+            setScheduledQuizzes([...newValue]);
         },
 
         get sendQuiz() {
@@ -143,6 +141,7 @@ const Store = (props: StoreProps) => {
         get sendQuizStep() {
             return sendQuizStep;
         },
+
         set sendQuizStep(newValue: number) {
             setSendQuizStep(newValue);
             saveKey("sendQuizStep", newValue);
@@ -161,24 +160,16 @@ const Store = (props: StoreProps) => {
         set studentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
         },
-
-        get timeToNextQuiz() {
-            return timeToNextQuiz;
-        },
-        set timeToNextQuiz(newValue: number) {
-            setTimeToNextQuiz(newValue);
-            saveKey("timeToNextQuiz", newValue);
-        },
-        get reactionValues(){
+        get reactionValues() {
             return reactionValues;
         },
-        set reactionValues(newValue: number[]){
+        set reactionValues(newValue: number[]) {
             setReactionValues([...newValue]);
         },
-        get lastReactionTime(){
+        get lastReactionTime() {
             return lastReactionTime;
         },
-        set lastReactionTime(newValue: number){
+        set lastReactionTime(newValue: number) {
             setLastReactionTime(newValue);
         },
     };
@@ -196,16 +187,18 @@ const initialValue: IStore = {
     quizzes: [],
     questions: [],
     sendQuizStep: 0,
-    endedQuizzes: endedQuizzes,
+    scheduledQuizzes: scheduledQuizzes,
     sendQuiz: {
         students: [],
         questionStats: [],
-        alreadyShowedResults: true,
+        alreadyShowedResults: false,
+        timeInSec: 0,
+        inProgress: true,
+        timeToEnd: 0,
     },
     isLoading: true,
     studentQuestions: [],
-    timeToNextQuiz: 0,
-    reactionValues: [0,0,0,0,0],
+    reactionValues: [0, 0, 0, 0, 0],
     lastReactionTime: 30,
 }
 

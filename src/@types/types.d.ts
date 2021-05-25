@@ -39,9 +39,11 @@ interface StudentQuestion{
 interface ScheduledQuiz {
     quiz?: FrontQuiz;
     students: string[];
-    timeInSec?: number;
+    timeInSec: number;
     questionStats: QuestionStat[];
     alreadyShowedResults: boolean;
+    inProgress?: boolean;
+    timeToEnd?: number;
 }
 
 interface AnswerStat {

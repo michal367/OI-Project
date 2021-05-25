@@ -1,36 +1,29 @@
 import {
     Paper,
     List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    ListItemSecondaryAction,
-    IconButton,
     Fab
 } from "@material-ui/core";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import BackspaceIcon from '@material-ui/icons/Backspace';
 import { makeStyles, useTheme } from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
 import { QuestionBlock } from "./QuestionBlock";
+import { StatsListItem } from "./StatsListItem";
 import { ImportExport } from "../importExport/ImportExport";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
-    const [selectedQuizStats, setQuizStats] = React.useState<ScheduledQuiz | undefined>(
-        store.endedQuizzes.length > 0 ? store.endedQuizzes[0] : undefined
+    const [selectedQuizStats, setQuizStats] = useState<ScheduledQuiz | undefined>(
+        store.scheduledQuizzes.length > 0 ? store.scheduledQuizzes[0] : undefined
     );
 
-    const theme = useTheme();
-
     useEffect(() => {
-        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) !== -1 ? prev : undefined);
-    }, [store.endedQuizzes]);
+        setQuizStats((prev) => prev && store.scheduledQuizzes.indexOf(prev) !== -1 ? prev : undefined);
+    }, [store.scheduledQuizzes]);
 
+    const theme = useTheme();
     const classes = makeStyles({
         root: {
             background: theme.palette.primary.light,
@@ -79,10 +72,6 @@ export function QuizStatsView() {
                 content: '""',
             },
         },
-        quizStatRow: {
-            paddingTop: 16,
-            paddingBottom: 16,
-        },
         answer: {
             width: "100%",
             height: "100%",
@@ -122,26 +111,49 @@ export function QuizStatsView() {
     })();
 
     const handleQuiz = (quizIndex: number) => {
-        setQuizStats(store.endedQuizzes[quizIndex]);
+        setQuizStats(store.scheduledQuizzes[quizIndex]);
     };
 
+    // const refreshClock = useCallback((timeToWait) => {
+    //     if (timeToWait - Date.now() < 0) {
+    //         if (timerWait)
+    //             clearTimeout(timerWait);
+    //         setClock(0);
+    //     } else
+    //         setClock(timeToWait - Date.now());
+    // }, [timerWait])
+
+    // useEffect(() => {
+    //     if (store.sendQuiz.timeToEnd - Date.now() > 0 && !timerWait) {
+    //         setClock(store.sendQuiz.timeToEnd - Date.now());
+    //         setTimerWait(setInterval(() => { refreshClock(store.sendQuiz.timeToEnd) }, 1000));
+    //     }
+    // }, [store.sendQuiz.timeToEnd, refreshClock, timerWait, store])
+
+
     const handleDeleteStats = (quizIndex: number) => {
-        let statsToBeDeleted = store.endedQuizzes[quizIndex];
-        store.endedQuizzes = store.endedQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+        let statsToBeDeleted = store.scheduledQuizzes[quizIndex];
+        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+    }
+
+    const handleEnded = (quizIndex: number) => {
+        let scheduledQuizzes = store.scheduledQuizzes;
+        scheduledQuizzes[quizIndex].inProgress = false;
+        store.scheduledQuizzes = scheduledQuizzes;
     }
 
     const handleShowResults = () => {
-        let tmpQuizzes = store.endedQuizzes;
+        let tmpQuizzes = store.scheduledQuizzes;
         tmpQuizzes.forEach(
             (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
         )
-        store.endedQuizzes = tmpQuizzes;
+        store.scheduledQuizzes = tmpQuizzes;
     }
 
     const onImport = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
             let jsonString = e.target.result as string;
-            store.endedQuizzes = [...store.endedQuizzes, ...JSON.parse(jsonString)];
+            store.scheduledQuizzes = [...store.scheduledQuizzes, ...JSON.parse(jsonString)];
         }
     }
 
@@ -150,26 +162,21 @@ export function QuizStatsView() {
             <div className={classes.root}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
-                        {store.endedQuizzes.map((quizStats, i) => (
-                            <ListItem
-                                button
-                                selected={quizStats === selectedQuizStats}
-                                onClick={(event) => handleQuiz(i)}
-                                className={classes.quizStatRow}
-                            >
-                                <ListItemIcon>
-                                    {quizStats === selectedQuizStats && (
-                                        <AssignmentIcon />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText primary={quizStats.quiz?.title} />
-                                <ListItemSecondaryAction>
-                                    <IconButton edge="end" onClick={(event) => handleDeleteStats(i)}>
-                                        <BackspaceIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))}
+                        {store.scheduledQuizzes.map((quizStats, i) => {
+                            return (
+                                <StatsListItem
+                                    index={i}
+                                    isSelected={quizStats === selectedQuizStats}
+                                    onSelect={() => handleQuiz(i)}
+                                    onDelete={() => handleDeleteStats(i)}
+                                    onEnded={() => handleEnded(i)}
+                                    timeToEnd={quizStats.timeToEnd ?? 0}
+                                    inProgress={!!quizStats.inProgress} // !! changes (boolean | undefined) to boolean
+                                    title={quizStats.quiz?.title ?? ""}
+                                />
+                            )
+                        }
+                        )}
                     </List>
                 </Paper>
                 <Paper
@@ -190,7 +197,7 @@ export function QuizStatsView() {
                 </Paper>
                 <div className={classes.action}>
 
-                    <ImportExport onImport={onImport} objectToExport={store.endedQuizzes} fileName="endedQuizzes" />
+                    <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
 
                     <Fab
                         variant="extended"

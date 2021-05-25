@@ -83,7 +83,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const handleClickEnd = () => {
         store.link = "";
         store.sessionId = "";
-        store.timeToNextQuiz = 0;
+        store.sendQuiz.timeToEnd = 0;
         store.sendQuizStep = 0;
 
         let event: Payload = {

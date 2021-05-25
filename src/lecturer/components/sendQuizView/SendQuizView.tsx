@@ -258,7 +258,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        delete tmpQuiz.timeInSec;
+        tmpQuiz.timeInSec = 0;
         store.sendQuiz = tmpQuiz;
         setTime(0);
     };
@@ -270,6 +270,14 @@ export function SendQuizView(props: SendQuizViewProps) {
             if (timerWait)
                 clearTimeout(timerWait);
             setClock(0);
+            store.sendQuiz = {
+                students: [],
+                questionStats: [],
+                alreadyShowedResults: false,
+                timeInSec: 0,
+                inProgress: true,
+                timeToEnd: 0,
+            }
         } else
             setClock(timeToWait - Date.now());
     }, [timerWait])
@@ -278,8 +286,9 @@ export function SendQuizView(props: SendQuizViewProps) {
         if (store.sendQuizStep === steps.length - 1) {
             console.log("scheduled quiz", store.sendQuiz);
             let timeToWait = Date.now() + 60000 * (time ?? 0);
-            store.timeToNextQuiz = timeToWait;
+            store.sendQuiz.timeToEnd = timeToWait;
             setClock(timeToWait - Date.now());
+            store.scheduledQuizzes.push(store.sendQuiz);
             setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
         }
         store.sendQuizStep = store.sendQuizStep + 1;
@@ -293,12 +302,13 @@ export function SendQuizView(props: SendQuizViewProps) {
     }, [timerWait])
 
     useEffect(() => {
-        if (store.timeToNextQuiz - Date.now() > 0 && !timerWait) {
-            setClock(store.timeToNextQuiz - Date.now());
-            setTimerWait(setInterval(() => { refreshClock(store.timeToNextQuiz) }, 1000));
+        let timeToEnd = store.sendQuiz.timeToEnd ?? 0;
+        if (timeToEnd > 0 && timeToEnd - Date.now() > 0 && !timerWait) {
+            setClock(store.sendQuiz.timeToEnd ?? 0 - Date.now());
+            setTimerWait(setInterval(() => { refreshClock(store.sendQuiz.timeToEnd) }, 1000));
             store.sendQuizStep = 4;
         }
-    }, [store.timeToNextQuiz, refreshClock, timerWait, store])
+    }, [store.sendQuiz.timeToEnd, refreshClock, timerWait, store])
 
 
     const handleBack = () => {
