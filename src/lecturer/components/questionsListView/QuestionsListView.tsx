@@ -141,6 +141,20 @@ export function QuestionsListView() {
                         let jsonString = e.target.result as string
                         let result = [];
                         let counter = 0;
+                        try{
+                            const tmp = JSON.parse(jsonString);
+                            if (!(tmp instanceof Array)) {
+                                setMessage("Pytania muszą być zapisane jako lista");
+                                setState({ ...state, open: true });
+                                return;    
+                            }
+                        }
+                        catch (e) {
+                            console.log(e);
+                            setMessage("Nie da się zaimportować tego pliku");
+                            setState({ ...state, open: true });
+                            return;
+                        }
                         for (const quest of JSON.parse(jsonString)) {
                             counter++;
                             let correct = true;
@@ -159,11 +173,18 @@ export function QuestionsListView() {
                                 }
                                 
                             }
+                            if (correct) {
+                                for (const  item of store.questions) 
+                                    if (item.title === quest.title) {
+                                        correct = false;
+                                        break;
+                                }
+                            }
                             if (correct) result.push(quest);
                         } 
 
                         store.questions = [...store.questions, ...result];
-                        setMessage("Importowano " + result.length + " z " + counter + " pytań");
+                        setMessage("Zaimportowano " + result.length + " z " + counter + " pytań");
                         setState({ ...state, open: true });
                     }
                 }
@@ -196,6 +217,7 @@ export function QuestionsListView() {
             onClose={handleClose}
             message={message}
             key={vertical + horizontal}
+            autoHideDuration={1000}
         />
         <div className={classes.root}>
             <Card className={classes.cardWrapper}>
