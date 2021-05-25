@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Button, Grid, Checkbox, TextField, CardContent, Card } from '@material-ui/core';
+import { makeStyles, Paper, Button, Grid, Checkbox, TextField } from '@material-ui/core';
 import React, { ChangeEvent } from 'react';
 import { ImageView } from './imageView';
 import { testData } from './testData';
