@@ -3,7 +3,11 @@ import React, { ChangeEvent } from 'react';
 import { ImageView } from './imageView';
 import { testData } from './testData';
 
-export function QuestionsList() {
+interface ClosingFunction {
+    handleClose: (() => void);
+}
+
+export function QuestionsList(props: ClosingFunction) {
     let answers = new Map();
     let quiz = testData();
 
@@ -50,6 +54,7 @@ export function QuestionsList() {
             console.log("answer for question: ", i, "is:", answer);
         }
         console.log(result);
+        props.handleClose();
     }
 
     return (

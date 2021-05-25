@@ -1,8 +1,12 @@
 import { makeStyles, Paper } from '@material-ui/core';
+import { propTypes } from 'qrcode.react';
 import { QuestionsList } from './QuestionsList';
 
+interface ClosingFunction {
+    handleClose: (() => void);
+}
 
-export default function QuizView() {
+export default function QuizView(props: ClosingFunction) {
 
     const classes = makeStyles({
         overlay : {
@@ -14,7 +18,7 @@ export default function QuizView() {
     
     return (
         <Paper className={classes.overlay}>
-            <QuestionsList></QuestionsList>
+            <QuestionsList handleClose={props.handleClose}></QuestionsList>
         </Paper>
     );
 }
