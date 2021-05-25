@@ -39,7 +39,7 @@ function SocketService(props: ISocketProps) {
         },
         share: true,
         shouldReconnect: (closeEvent) => {
-            console.log("closeEvent");
+            console.log("Student: closeEvent", closeEvent);
             return true;
         },
         reconnectAttempts: Number.POSITIVE_INFINITY,

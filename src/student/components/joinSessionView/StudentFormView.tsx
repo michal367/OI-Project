@@ -1,4 +1,4 @@
-import React, { useContext, useState, ChangeEvent } from "react";
+import React, { useContext, useState, ChangeEvent, useCallback } from "react";
 import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -15,6 +15,7 @@ import { useSocket } from "../../services/SocketService";
 
 interface StudentFormViewProps {
     session?: string;
+    onFail?: (error: string) => void;
 }
 
 export function StudentFormView(props: StudentFormViewProps) {
@@ -106,12 +107,12 @@ export function StudentFormView(props: StudentFormViewProps) {
             surname.length > 0 && surname.length <= 30;
     };
 
-    const handleButtonClick = () => {
+    const handleButtonClick = useCallback(() => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
 
-            let fakeStudent: Student = {
+            let student: Student = {
                 id: "",
                 nick: name[0] + surname,
                 name: name,
@@ -119,10 +120,14 @@ export function StudentFormView(props: StudentFormViewProps) {
             };
 
             if (session)
-                backEnd?.joinLecture(session, fakeStudent)
+                backEnd?.joinLecture(session, student)
                     .then((response) => {
-                        console.log(response);
-                        store.studentNick = fakeStudent.nick;
+                        console.log("Success: ", response);
+
+                        if (!("student_id" in response))
+                            throw new Error(response.msg);
+
+                        store.studentNick = student.nick;
                         store.invitation = session;
                         store.studentId = response.student_id;
 
@@ -137,12 +142,13 @@ export function StudentFormView(props: StudentFormViewProps) {
 
                         history.replace("/student/session");
                     })
-                    .catch((response) => {
+                    .catch((error) => {
                         setLoading(false);
-                        console.error(response);
+                        console.error(error);
+                        if (props.onFail) props.onFail(error);
                     });
         }
-    };
+    }, [backEnd, history, loading, name, props, sendJsonMessage, session, store, surname]);
 
     const handleScan = (data: string | null) => {
         if (!data) return;
