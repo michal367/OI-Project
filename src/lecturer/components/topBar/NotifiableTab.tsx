@@ -9,7 +9,6 @@ interface NotifiableTabProps {
     observableList?: any[];
     label?: string;
     routes?: string;
-    value?: string;
     resetFunction?: () => void;
 }
 

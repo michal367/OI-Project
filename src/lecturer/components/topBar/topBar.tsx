@@ -36,18 +36,13 @@ export default function TopBar() {
                 value={selectedTab}
                 centered
             >
-                {(store.sessionId === "") ?
-                    <NotifiableTab value={routes.index} label="Rozpocznij sesję" routes={routes.index}/>
-                    :
-                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session} resetFunction={processQuestions}/>
-                }
-                <NotifiableTab value={routes.quiz} label="Quizy" routes={routes.quiz}/>
-                <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
-                <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
-                {(store.sessionId !== "") && (<NotifiableTab
-                    label="Statystyki"
-                    routes={routes.stats}
-                />)}
+                <NotifiableTab label="Sesja" observableList={store.studentQuestions} routes={(store.sessionId === "") ? routes.index : routes.session}/>
+                <NotifiableTab label="Quizy" routes={routes.quiz}/>
+                <NotifiableTab label="Pytania" routes={routes.questions}/>
+                <NotifiableTab label="Zdarzenia" routes={routes.timestamp}/>
+                {(store.sessionId != "") && (
+                    <NotifiableTab label="Statystyki" routes={routes.stats}/>
+                )}
             </Tabs>
         </AppBar>
     );
