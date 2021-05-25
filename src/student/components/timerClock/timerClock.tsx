@@ -2,7 +2,7 @@
 import { Typography } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 import { useCallback, useEffect, useState } from 'react';
-import { formatTime } from '../../util/time';
+import { formatTime } from '../../../common/util/time';
 
 interface TimerClockProps {
     targetTime: Date

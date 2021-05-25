@@ -1,4 +1,3 @@
-import { makeStyles } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
@@ -19,13 +18,6 @@ export function TimestampRow(props: TimestampRowProps) {
     const hours = props.hours?? "";
     const minutes = props.minutes??"";
     const message = props.message?? "";
-
-    const classes = makeStyles({
-        root: {
-            width: "100%",
-            borderRadius: "0",
-        },
-    })();
 
     return (
         <>

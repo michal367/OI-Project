@@ -11,8 +11,8 @@ import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
-import { ReactionName } from "../../util/reactionsEnum";
 import { TimerClock } from "../timerClock/timerClock";
+import { ReactionName } from "../../../common/util/reactions/enum";
 
 export function SessionDashboardView() {
     const theme = useTheme();

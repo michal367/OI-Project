@@ -8,8 +8,8 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
+import { intersection, not, union } from "../../../common/util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
-import { intersection, not, union } from "../../util/boolAlgebra";
 import { PickQuizList } from "./PickQuizList";
 
 

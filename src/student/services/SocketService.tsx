@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import useWebSocket from "react-use-websocket";
 import { WebSocketHook } from "react-use-websocket/dist/lib/types";
 import { SOCKET_URL } from "../../common/util/config";
-import { createGenericContext } from "../util/GenericContext";
+import { createGenericContext } from "../../common/util/GenericContext";
 
 interface ISocketProps {
     children?: ReactNode
