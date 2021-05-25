@@ -35,6 +35,7 @@ interface StudentQuestion{
     studentNick: string,
     time: Date;
     text: string;
+    processed: boolean;
 }
 interface ScheduledQuiz {
     quiz?: FrontQuiz;
