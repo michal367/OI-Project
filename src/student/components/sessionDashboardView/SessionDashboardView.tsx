@@ -149,7 +149,7 @@ export function SessionDashboardView() {
                         <p>00:00</p>
                         <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
                     </div>
-                    <QuizView handleBlock={handleBlock} handleEnable={handleEnable}/>
+                    <QuizView handleBlock={handleBlock} handleEnable={handleEnable} handleClose={handleClose} />
                 </Card>
             </Backdrop>
         </div>

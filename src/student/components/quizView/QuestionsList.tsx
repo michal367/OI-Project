@@ -6,12 +6,13 @@ import Store, { StoreContext } from "../../services/StoreService";
 import { useContext, useEffect } from "react";
 import { useSocket } from '../../services/SocketService';
 
-interface BlockFunction {
+interface QuestionsListProps {
     handleBlock: (() => void);
     handleEnable: (() => void);
+    handleClose: (() => void);
 }
 
-export function QuestionsList(props: BlockFunction) {
+export function QuestionsList(props: QuestionsListProps) {
     let answers = new Map();
     const [quiz, setQuiz] = useState(testData());
     const [quizID, setQuizID] = useState("");
@@ -84,6 +85,7 @@ export function QuestionsList(props: BlockFunction) {
         console.log(payload);
         sendJsonMessage(payload);
         props.handleBlock();
+        props.handleClose();
     }
 
     return (
