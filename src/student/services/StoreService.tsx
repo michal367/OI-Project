@@ -1,16 +1,20 @@
-import { createContext,  ReactNode,  useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export interface StoreProps {
     children: ReactNode
 }
 
 export interface IStore {
+    [key: string]: any;
     invitation: string,
     studentNick: string,
     studentId: string,
     quizes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
+    operation?: {
+        clear: () => void
+    }
 }
 
 type StorageKey =
@@ -30,7 +34,7 @@ const loadKey = (key: StorageKey) => {
 }
 
 const saveKey = (key: StorageKey, value: any) => {
-    if(value === undefined) return;
+    if (value === undefined) return;
     console.log("saveKey", value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
@@ -41,7 +45,7 @@ const initialValue: IStore = {
     studentId: "",
     quizes: [],
     isLoading: true,
-    studentQuestion:{
+    studentQuestion: {
         studentNick: "",
         time: new Date(),
         text: "",
@@ -75,7 +79,7 @@ const Store = (props: StoreProps) => {
         setQuizes(initial.quizes);
     }, [])
 
-    const value = {
+    const value : IStore = {
         get invitation() {
             return invitation;
         },
@@ -115,12 +119,20 @@ const Store = (props: StoreProps) => {
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
         },
-        get studentQuestion(){
+        get studentQuestion() {
             return studentQuestion
         },
-        set studentQuestion(newQuestion: StudentQuestion){
+        set studentQuestion(newQuestion: StudentQuestion) {
             setStudentQuestion(newQuestion);
         },
+
+        operation: {
+            clear: () => {
+                for (const property in initialValue) {
+                    value[property] = initialValue[property as keyof typeof initialValue];
+                }
+            }
+        }
     };
 
     return (

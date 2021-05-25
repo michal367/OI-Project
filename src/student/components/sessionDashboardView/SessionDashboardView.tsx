@@ -13,6 +13,7 @@ import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { ReactionName } from "../../util/reactionsEnum";
 import { TimerClock } from "../timerClock/timerClock";
+
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -112,8 +113,8 @@ export function SessionDashboardView() {
 
     return (
         <div className={classes.root}>
-            <div className={classes.header}>
 
+            <div className={classes.header}>
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
@@ -130,6 +131,7 @@ export function SessionDashboardView() {
                     className={classes.quizButton}
                 >
                     Rozwiąż quiz
+
                     {
                         //TODO: set target time from loaded quiz 
                     }
