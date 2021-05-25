@@ -17,9 +17,9 @@ export function QuizzesListView() {
         <ListView
             getContainer={getContainer}
             setContainer={setContainer}
-            exportFilename="quizzes"
             createEditPathname="/lecturer/quiz"
             listElements="quizów"
+            exportFilename="quizzes"
         />
     );
 }
