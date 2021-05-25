@@ -15,6 +15,7 @@ import { CreateSessionView } from "../createSessionView/CreateSessionView";
 import { PickQuizView } from "../pickQuizView/PickQuizView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
+import { QuizzesListView } from "../quizzesListView/QuizzesListView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
 import { TimestampView } from "../timestampView/TimestampView";
 import TopBar from "../topBar/topBar";
@@ -97,6 +98,10 @@ function App() {
                             <PickQuizView />
                         </Route>
 
+                        <Route path="/lecturer/quizzes">
+                            <QuizzesListView />
+                        </Route>
+
                         <Route path="/lecturer/question">
                             <CreateQuestionView />
                         </Route>
@@ -109,7 +114,7 @@ function App() {
                             <QuizStatsView />
                         </Route>
                         <Route path="/lecturer/timestamp">
-                            <TimestampView/>
+                            <TimestampView />
                         </Route>
                         <Route path="/">
                             {(store.sessionId === "") ?

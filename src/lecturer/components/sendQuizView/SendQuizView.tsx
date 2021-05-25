@@ -1,5 +1,3 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
@@ -17,9 +15,6 @@ import {
     Checkbox,
     FormControlLabel,
     FormControl,
-    MenuItem,
-    Select,
-    InputLabel,
     TextField
 } from "@material-ui/core";
 import { useContext, useState, useEffect, ChangeEvent } from "react";

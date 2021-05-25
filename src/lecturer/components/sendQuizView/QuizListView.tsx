@@ -1,19 +1,16 @@
 import {
-    makeStyles,
-    useTheme,
+    Divider,
     List,
     ListItem,
-    Typography,
     ListItemText,
+    makeStyles,
+    Typography,
+    useTheme
 } from "@material-ui/core";
-import {
-    useContext,
-} from "react";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { useEffect } from "react";
-import { useState } from "react";
+
+
 interface QuizListViewProps {
     selected?: FrontQuiz,
     onChange?: (quiz: FrontQuiz) => void,
@@ -35,13 +32,10 @@ export function QuizListView(props: QuizListViewProps) {
             margin: "15px auto",
             background: theme.palette.secondary.light,
             overflow: "auto",
-            maxHeight: "calc(50vh - 100px)"
+            maxHeight: "calc(50vh - 100px)",
+            padding: 0
         }
     })();
-
-    const deleteQuiz = (quizToBeDeleted: FrontQuiz) => () => {
-        store.quizzes = store.quizzes.filter(storeQuiz => storeQuiz !== quizToBeDeleted);
-    }
 
     useEffect(() => {
         setSelected(props.selected);
@@ -49,24 +43,28 @@ export function QuizListView(props: QuizListViewProps) {
 
     return (
         <List component="nav" aria-label="main mailbox folders" className={classes.wrapper}>
-            {store.quizzes.map((value: FrontQuiz) => {
+            {store.quizzes.map((value: FrontQuiz, i: number) => {
                 return (
-                    <ListItem
-                        key={value.title}
-                        button
-                        selected={selected === value}
-                        onClick={handleQuiz(value)}
-                    >
-                        <ListItemText primary={value.title} />
-                        <IconButton edge="end" aria-label="delete" onClick={deleteQuiz(value)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </ListItem>
+                    <>
+                        <ListItem
+                            key={value.title}
+                            button
+                            selected={selected === value}
+                            onClick={handleQuiz(value)}
+                        >
+                            <ListItemText primary={value.title} />
+                        </ListItem>
+                        {i != store.quizzes.length - 1 && (
+                            <Divider />
+                        )}
+                    </>
                 );
             })}
-            {store.quizzes.length === 0 && (<Typography style={{ paddingLeft: "10px" }}>
-                Nie ma żadnego Quizu
-            </Typography>)}
+            {store.quizzes.length === 0 && (
+                <Typography style={{ paddingLeft: "10px" }}>
+                    Nie ma żadnego Quizu
+                </Typography>
+            )}
         </List>
     );
 }
