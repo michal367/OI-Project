@@ -1,16 +1,23 @@
 import { makeStyles, Paper, Button, Grid, Checkbox, TextField, CardContent, Card } from '@material-ui/core';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { ImageView } from './imageView';
 import { testData } from './testData';
+import Store, { StoreContext } from "../../services/StoreService";
+import { useContext, useEffect } from "react";
+import { useSocket } from '../../services/SocketService';
 
-interface ClosingFunction {
+interface QuestionsListProps {
+    handleBlock: (() => void);
+    handleEnable: (() => void);
     handleClose: (() => void);
 }
 
-export function QuestionsList(props: ClosingFunction) {
+export function QuestionsList(props: QuestionsListProps) {
     let answers = new Map();
-    let quiz = testData();
-
+    const [quiz, setQuiz] = useState(testData());
+    const [quizID, setQuizID] = useState("");
+    const store = useContext(StoreContext);
+    const { socketEmiter, sendJsonMessage } = useSocket();
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
@@ -18,6 +25,20 @@ export function QuestionsList(props: ClosingFunction) {
             overflow: 'auto',
         }
     })();
+
+    const refreshQuiz = useCallback((payload: ServerQuizRequestPayload) => {
+        console.log("refreshQuiz");
+        setQuiz(payload.data.questions);
+        setQuizID(payload.data.quiz_id);
+        props.handleEnable();
+    }, []);
+
+    useEffect(() => {
+        socketEmiter.addListener("send_quiz", refreshQuiz);
+        return () => {
+            socketEmiter.removeListener("send_quiz", refreshQuiz);
+        };
+    }, [refreshQuiz, socketEmiter]);
 
     const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
 
@@ -54,6 +75,16 @@ export function QuestionsList(props: ClosingFunction) {
             console.log("answer for question: ", i, "is:", answer);
         }
         console.log(result);
+        let payload: QuizResponsePayload = {
+            event: "send_quiz_response",
+            data: {
+                quiz_id: quizID,
+                answers: result
+            }
+        };
+        console.log(payload);
+        sendJsonMessage(payload);
+        props.handleBlock();
         props.handleClose();
     }
 
@@ -69,11 +100,10 @@ export function QuestionsList(props: ClosingFunction) {
                                 <div style={{ display: "flex", marginBottom: "10px" }}>
                                     <Checkbox
                                         color="primary"
+                                        defaultChecked={false}
                                         onChange={(e) => handleCheckboxChange(e, i, j)}
                                     />
-                                    <TextField id="outlined-basic" variant="outlined" defaultValue={option.text} InputProps={{
-                                        readOnly: true,
-                                    }} />
+                                    <Button variant="outlined">{option.text}</Button>
                                 </div>
                             ))) : (
                                 <TextField

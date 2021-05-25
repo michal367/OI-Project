@@ -17,12 +17,12 @@ import {
     FormControl,
     TextField
 } from "@material-ui/core";
-import { useContext, useState, useEffect, ChangeEvent } from "react";
+import { useContext, useState, useEffect, ChangeEvent, useCallback } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
 import { getRandomIndexes } from "../../util/random";
-import { useCallback } from "react";
 import { formatTime } from "../../util/time";
+import { useSocket } from "../../services/SocketService";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -41,6 +41,7 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
+    const { socketEmiter, sendJsonMessage } = useSocket();
     const theme = useTheme();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
@@ -55,6 +56,8 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
+
+
 
 
     useEffect(() => {
@@ -293,6 +296,17 @@ export function SendQuizView(props: SendQuizViewProps) {
             store.timeToNextQuiz = timeToWait;
             setClock(timeToWait - Date.now());
             setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
+
+            let payload: QuizRequestPayload = {
+                event: "send_quiz",
+                data:{
+                    student_ids: store.sendQuiz.students,
+                    time_seconds: 60 * (time ?? 0),
+                    questions: store.sendQuiz.quiz
+                }
+            };
+            sendJsonMessage(payload);
+            console.log(payload);
         }
         store.sendQuizStep = store.sendQuizStep + 1;
     }, [refreshClock, steps.length, store, time]);
