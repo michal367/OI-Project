@@ -78,10 +78,12 @@ export function PickQuizView() {
     const [left, setLeft] = useState<number[]>(indexArray);
     const [right, setRight] = useState<number[]>([]);
     const [title, setTitle] = useState("");
+    const [error, setError] = useState("");
     const [filter, setFilter] = useState<string>("");
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
+        setError("");
     };
     const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -160,6 +162,14 @@ export function PickQuizView() {
             right.forEach((i) => {
                 selectedQuestions.push(questions[i]);
             });
+          
+            for (const quiz of store.quizzes) {
+                if(quiz.title === title) {
+                    setError("Istnieje już quiz o takiej nazwie");
+                    return;
+                }
+            }
+
             console.log(selectedQuestions);
             setSuccess(false);
             setLoading(true);
@@ -198,6 +208,7 @@ export function PickQuizView() {
                             checked: checked,
                             questions: questions
                         }}
+                        error={""}
                         isQuiz={() => false}
                         numberOfChecked={numberOfChecked}
                         handleToggleAll={handleToggleAll}
@@ -238,6 +249,7 @@ export function PickQuizView() {
                             checked: checked,
                             questions: questions
                         }}
+                        error={error}
                         titleQuiz={title}
                         isQuiz={() => true}
                         numberOfChecked={numberOfChecked}
