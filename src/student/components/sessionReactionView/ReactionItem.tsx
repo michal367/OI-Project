@@ -1,5 +1,6 @@
 import IconButton from '@material-ui/core/IconButton';
-import { ReactionName, reactionsIcons } from '../../util/reactionsEnum';
+import { ReactionName } from '../../../common/util/reactions/enum';
+import { reactionsIcons } from '../../../common/util/reactions/icons';
 
 
 export interface ReactionItemProps {

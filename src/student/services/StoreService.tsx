@@ -1,23 +1,27 @@
-import { createContext,  ReactNode,  useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export interface StoreProps {
     children: ReactNode
 }
 
 export interface IStore {
+    [key: string]: any;
     invitation: string,
     studentNick: string,
     studentId: string,
-    quizes: FrontQuiz[],
+    quizzes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
+    operation?: {
+        clear: () => void
+    }
 }
 
 type StorageKey =
     "invitation" |
     "studentNick" |
     "studentId" |
-    "quizes";
+    "quizzes";
 
 const stringKey = (key: StorageKey) => {
     return "lazare.student." + key;
@@ -30,7 +34,7 @@ const loadKey = (key: StorageKey) => {
 }
 
 const saveKey = (key: StorageKey, value: any) => {
-    if(value === undefined) return;
+    if (value === undefined) return;
     console.log("saveKey", value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
@@ -39,13 +43,13 @@ const initialValue: IStore = {
     invitation: "",
     studentNick: "",
     studentId: "",
-    quizes: [],
+    quizzes: [],
     isLoading: true,
-    studentQuestion:{
+    studentQuestion: {
         studentNick: "",
-        hours: "",
-        minutes: "",
-        text: ""
+        time: new Date(),
+        text: "",
+        processed: false,
     },
 }
 const loadFromStorage = () => {
@@ -53,7 +57,7 @@ const loadFromStorage = () => {
         ...initialValue,
         invitation: loadKey("invitation") ?? initialValue.invitation,
         studentNick: loadKey("studentNick") ?? initialValue.studentNick,
-        quizes: loadKey("quizes") ?? initialValue.quizes,
+        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
         studentId: loadKey("studentId") ?? initialValue.studentId,
     }
 
@@ -65,17 +69,17 @@ const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
     const [studentNick, setStudentNick] = useState(initialValue.studentNick);
     const [studentId, setStudentId] = useState(initialValue.studentId);
-    const [quizes, setQuizes] = useState(initialValue.quizes);
+    const [quizzes, setQuizzes] = useState(initialValue.quizzes);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestion, setStudentQuestion] = useState<StudentQuestion>(initialValue.studentQuestion);
     useEffect(() => {
         let initial = loadFromStorage();
         setInvitation(initial.invitation);
         setStudentNick(initial.studentNick);
-        setQuizes(initial.quizes);
+        setQuizzes(initial.quizzes);
     }, [])
 
-    const value = {
+    const value : IStore = {
         get invitation() {
             return invitation;
         },
@@ -100,13 +104,13 @@ const Store = (props: StoreProps) => {
             saveKey("studentId", newValue);
         },
 
-        get quizes() {
-            return quizes;
+        get quizzes() {
+            return quizzes;
         },
-        set quizes(newValue: FrontQuiz[]) {
+        set quizzes(newValue: FrontQuiz[]) {
             let array = [...newValue];
-            setQuizes(array);
-            saveKey("quizes", array);
+            setQuizzes(array);
+            saveKey("quizzes", array);
         },
 
         get isLoading() {
@@ -115,12 +119,20 @@ const Store = (props: StoreProps) => {
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
         },
-        get studentQuestion(){
+        get studentQuestion() {
             return studentQuestion
         },
-        set studentQuestion(newQuestion: StudentQuestion){
+        set studentQuestion(newQuestion: StudentQuestion) {
             setStudentQuestion(newQuestion);
         },
+
+        operation: {
+            clear: () => {
+                for (const property in initialValue) {
+                    value[property] = initialValue[property as keyof typeof initialValue];
+                }
+            }
+        }
     };
 
     return (

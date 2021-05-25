@@ -20,7 +20,7 @@ if (typeof src_dir === 'undefined' || (cmd === "build.js" && typeof build_dir ==
 module.exports = {
 	paths: function (paths, env) {
 		paths.appIndexJs = path.resolve(__dirname, src_dir + '/index.tsx');
-		paths.appSrc = path.resolve(__dirname, src_dir);
+		paths.appSrc = path.resolve(__dirname, removeLastFromPath(src_dir));
 		paths.testsSetup = path.resolve(__dirname, src_dir + '/setupTests.ts');
 		paths.proxySetup = path.resolve(__dirname, src_dir + '/setupProxy.js');
 		paths.swSrc = path.resolve(__dirname, src_dir + '/service-worker.ts');
@@ -37,8 +37,6 @@ module.exports = {
 	},
 	jest: function (config) {
 		let src_dir_in = src_dir;
-		if (src_dir.indexOf('/') !== -1)
-			src_dir_in = src_dir.split('/')[1];
 
 		config.roots = ['<rootDir>/' + src_dir_in];
 		config.collectCoverageFrom = [src_dir_in + '/**/*.{js,jsx,ts,tsx}', '!' + src_dir_in + '/**/*.d.ts'];
@@ -54,4 +52,8 @@ module.exports = {
 
 function getFileName(path) {
 	return path.split('\\').pop().split('/').pop();
+}
+
+function removeLastFromPath(path) {
+	return path.split("/").slice(0, -1).join("/");
 }

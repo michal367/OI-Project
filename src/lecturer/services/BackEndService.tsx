@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
 import { API_URL } from "../../common/util/config";
+import { useSocket } from "./SocketService";
 
 export interface IBackEndProps extends IBackEnd {
     children?: ReactNode

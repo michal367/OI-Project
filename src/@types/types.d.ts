@@ -14,6 +14,7 @@ interface Answer {
     text: string;
     isCorrect: boolean;
 }
+
 interface Question {
     index?: number;
     title: string;
@@ -32,9 +33,9 @@ interface MatchParams {
 
 interface StudentQuestion{
     studentNick: string,
-    hours: string,
-    minutes: string,
+    time: Date;
     text: string;
+    processed: boolean;
 }
 interface ScheduledQuiz {
     quiz?: FrontQuiz;
@@ -60,7 +61,7 @@ interface QuizStat{
 }
 
 interface Statistic{
-    quizes: QuizStat[];
+    quizzes: QuizStat[];
 }
 type TimestampType = 
     "QuestionType" |

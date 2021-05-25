@@ -1,9 +1,18 @@
 import { saveAs } from 'file-saver';
 
-
-const exportQuestions = (questionList: Question[], fileName: string = "questions.json") => {  
-    var blob = new Blob([JSON.stringify(questionList, null, "\t")], {type: "text/plain;charset=utf-8"})
-    saveAs(blob, fileName);
+function formatDate(date: Date) {
+    let stringDate = date
+        .toLocaleString()
+        .replaceAll(" ", "")
+        .replaceAll(".", "-")
+        .replaceAll(",", "_")
+        .replaceAll(":", "-");
+    return stringDate;
 }
 
-export { exportQuestions };
+const exportToJsonFile = (object: Object, fileName: string = "object.lazare") => {
+    var blob = new Blob([JSON.stringify(object, null, "\t")], { type: "text/plain;charset=utf-8" })
+    saveAs(blob, `${fileName}_${formatDate(new Date())}.json`);
+}
+
+export { exportToJsonFile };

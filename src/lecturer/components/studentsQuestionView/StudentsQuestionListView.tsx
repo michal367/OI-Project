@@ -1,8 +1,8 @@
-import { makeStyles, Paper } from '@material-ui/core';
-import { useCallback, useEffect, useContext } from 'react';
+import { makeStyles, Paper, TextField } from '@material-ui/core';
+import { useCallback, useEffect, useContext, useRef } from 'react';
 import { useSocket } from '../../services/SocketService';
 import { StoreContext } from "../../services/StoreService";
-
+import ReactScrollableFeed from 'react-scrollable-feed';
 
 
 export function StudentsQuestionListView() {
@@ -11,11 +11,26 @@ export function StudentsQuestionListView() {
     const classes = makeStyles({
         root: {
             width: "100%",
-            padding: 10,
+            height: "100%",
             borderRadius: "0",
+
+        },
+        questionsHeader:{
+            padding: 10,
+            fontSize:"16px",
+            textDecoration:"underline",
+
+        },
+        questionField:{
+            padding: 10,
+            overflow:"auto",
+            height:"98%"   
         },
         tmp: {
             maxHeight: "100%",
+        },
+        field:{
+            margin:"5px 0px"
         },
         messageReplyButton: {
             flexShrink: 0,
@@ -41,18 +56,21 @@ export function StudentsQuestionListView() {
         },
         messageText: {
             flexGrow: 1,
+            width:"100%"
+        },
+        questionText:{
+            width:"100%"
         },
     })();
 
     const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
         console.log("refreshQuestionList");
         console.log(payload);
-        let date: Date = new Date();
         const studentQuestion: StudentQuestion = {
             studentNick: payload.data.studentID,
-            hours: date.getHours().toString(),
-            minutes: date.getMinutes().toString(),
-            text: payload.data.text
+            time: new Date(),
+            text: payload.data.text,
+            processed: false,
         };
         const newStudentQuestions = store.studentQuestions;
         newStudentQuestions.push(studentQuestion);
@@ -66,9 +84,13 @@ export function StudentsQuestionListView() {
         };
     }, [refreshQuestionList, socketEmiter]);
 
-
     return (
         <Paper className={classes.root} variant="outlined" square>
+        <b className={classes.questionsHeader}>
+            Pytania od studentów:
+        </b>
+        <div className={classes.questionField}>
+            <ReactScrollableFeed>
             {store.studentQuestions.map((studentQuestion, index) => {
                 return (
                     <div
@@ -76,18 +98,22 @@ export function StudentsQuestionListView() {
                     >
                         <div className={classes.message}>
                             <div className={classes.messageText}>
-                                <b className={classes.messageHeader}>
-                                    {studentQuestion.hours + ":" + studentQuestion.minutes + " | " + studentQuestion.studentNick}:
-                                </b>
-                                <div className="question-text">
-                                    {studentQuestion.text}
-                                </div>
+                                <TextField className={classes.field} error={!studentQuestion.processed} variant="outlined"
+                                 fullWidth={true} 
+                                 multiline
+                                 label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
+                                 defaultValue={studentQuestion.text} InputProps={{
+                                    className: classes.questionText,
+                                    readOnly: true,
+                                }}/>
                             </div>
 
                         </div>
                     </div>
                 );
             })}
+            </ReactScrollableFeed>
+            </div>
         </Paper>
     );
 }

@@ -30,19 +30,16 @@ import { useHistory } from 'react-router-dom';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import { exportQuestions } from '../../services/FileService';
+import { useContext } from 'react';
 import { StoreContext } from '../../services/StoreService';
+import { ListView, TitleType } from '../listView/ListView';
 
-interface IndexedQuestion {
-    index: number;
-    question: Question;
-}
 
 export interface State extends SnackbarOrigin {
     open: boolean;
 }
 
 export function QuestionsListView() {
-    const theme = useTheme();
     const store = useContext(StoreContext);
     const history = useHistory();
 
@@ -202,6 +199,11 @@ export function QuestionsListView() {
         //store.quizzes.forEach(quiz => {
         //    exportQuestions(quiz.questions, quiz.title+".json")
         //})
+    const getContainer: () => Question[] = () => {
+        return store.questions;
+    }
+    const setContainer = (value: TitleType[]) => {
+        store.questions = value as Question[];
     }
 
     const handleClose = () => {
@@ -288,5 +290,12 @@ export function QuestionsListView() {
             </div>
         </div>
         </>
+        <ListView
+            getContainer={getContainer}
+            setContainer={setContainer}
+            exportFilename="questions"
+            createEditPathname="/lecturer/question"
+            listElements="pytań"
+        />
     );
 }
