@@ -22,12 +22,10 @@ const StyledBadge = withStyles((theme: Theme) =>
     })
 )(Badge);
 export default function NotifiableTab(props: NotifiableTabProps) {
-    const nothing = () =>{}
     const [notifiableNumber, setNotifiableNumber] = useState(0);
     const label = props.label ?? "none";
     const routes = props.routes ?? "";
-    const value = props.value ?? "";
-    const resetFunction = props.resetFunction?? nothing;
+    const resetFunction = props.resetFunction?? (() => {});
     useEffect(() => {
         if (props.observableList) {
             if (props.observableList.length !== 0) {
