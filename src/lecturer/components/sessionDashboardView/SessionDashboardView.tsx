@@ -99,7 +99,7 @@ export function SessionDashboardView() {
         },
         columnWrapper: {
             flexGrow: 1,
-            overflow: "auto",
+
             maxHeight: "calc(80vh)",
         },
         columnFooter: {

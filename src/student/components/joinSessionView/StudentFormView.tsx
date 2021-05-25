@@ -1,4 +1,4 @@
-import React, { useContext, useState, ChangeEvent } from "react";
+import React, { useContext, useState, ChangeEvent, useCallback } from "react";
 import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -15,6 +15,7 @@ import { useSocket } from "../../services/SocketService";
 
 interface StudentFormViewProps {
     session?: string;
+    onFail?: (error: string) => void;
 }
 
 export function StudentFormView(props: StudentFormViewProps) {
@@ -106,7 +107,7 @@ export function StudentFormView(props: StudentFormViewProps) {
             surname.length > 0 && surname.length <= 30;
     };
 
-    const handleButtonClick = () => {
+    const handleButtonClick = useCallback(() => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
@@ -132,7 +133,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                 sendJsonMessage(payload);
             }
         }
-    };
+    }, [history, loading, name, sendJsonMessage, session, socketEmiter, store, surname]);
 
     const handleScan = (data: string | null) => {
         if (!data) return;

@@ -14,6 +14,7 @@ interface Answer {
     text: string;
     isCorrect: boolean;
 }
+
 interface Question {
     index?: number;
     title: string;
@@ -34,6 +35,7 @@ interface StudentQuestion{
     studentNick: string,
     time: Date;
     text: string;
+    processed: boolean;
 }
 interface ScheduledQuiz {
     quiz?: FrontQuiz;

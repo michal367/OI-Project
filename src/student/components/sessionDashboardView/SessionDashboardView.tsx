@@ -5,13 +5,15 @@ import {
     Backdrop,
     Card,
 } from "@material-ui/core";
-import { useState } from "react";
+import React, { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { ReactionName } from "../../util/reactionsEnum";
+import { TimerClock } from "../timerClock/timerClock";
+
 export function SessionDashboardView() {
     const theme = useTheme();
 
@@ -46,14 +48,14 @@ export function SessionDashboardView() {
             minHeight: 100,
             padding: "0 10px",
         },
-        feedBackBody:{
+        feedBackBody: {
             display: "flex",
-            flexDirection:"column",
+            flexDirection: "column",
             flexGrow: 1,
             overflowY: "auto",
             overflowX: "hidden",
         },
-        questionBody:{
+        questionBody: {
             width: "100%",
             flexShrink: 2,
             flexGrow: 1,
@@ -78,15 +80,21 @@ export function SessionDashboardView() {
             display: "flex",
             flexDirection: "column",
         },
-        okButton:{
-            color:"white",
-            backgroundColor:"green",
+        okButton: {
+            color: "white",
+            backgroundColor: "green",
         },
-        wrapper:{
+        wrapper: {
             display: "flex",
-            flexDirection:"column",
+            flexDirection: "column",
             flexGrow: 1,
         },
+        quizButton: {
+            "& span": {
+                flexWrap: "wrap",
+                gap:"10px"
+            }
+        }
     })();
 
     const [open, setOpen] = useState(false);
@@ -105,14 +113,14 @@ export function SessionDashboardView() {
 
     return (
         <div className={classes.root}>
+
             <div className={classes.header}>
-                
                 <SessionDetailsView />
             </div>
             <div className={classes.body}>
                 <div className={classes.wrapper}>
                     <div className={classes.feedBackBody}>
-                        <FeedbackView/>
+                        <FeedbackView />
                     </div>
                     <Button className={classes.okButton}>Ok</Button>
                 </div>
@@ -120,8 +128,14 @@ export function SessionDashboardView() {
                     variant="outlined"
                     color="primary"
                     onClick={handleToggle}
+                    className={classes.quizButton}
                 >
-                Rozwiąż quiz
+                    Rozwiąż quiz
+
+                    {
+                        //TODO: set target time from loaded quiz 
+                    }
+                    <TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} />
                 </Button>
             </div>
             <div className={classes.questionBody}>
@@ -136,7 +150,10 @@ export function SessionDashboardView() {
             >
                 <Card className={classes.overlay}>
                     <div style={{ display: "flex" }}>
-                        <p>00:00</p>
+                        {
+                            //TODO: set target time from loaded quiz 
+                        }
+                        <p><TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} /></p>
                         <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
                     </div>
                     <QuizView />
