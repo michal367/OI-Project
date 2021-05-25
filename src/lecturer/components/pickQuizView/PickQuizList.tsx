@@ -1,4 +1,3 @@
-
 import React, { ChangeEvent } from "react";
 import {
     Card,
@@ -21,6 +20,9 @@ interface QuizListViewProps {
         checked: number[],
         questions: Question[],
     }
+    error: string;
+
+    titleQuiz?: string;
 
     isQuiz: () => boolean;
     numberOfChecked: (items: number[]) => number,
@@ -35,10 +37,14 @@ interface QuizListViewProps {
 export function PickQuizList(props: QuizListViewProps) {
     const theme = useTheme();
     const title = props.title;
+    
+    const error = props.error;
 
     const items = props.data.items;
     const checked = props.data.checked;
     const questions = props.data.questions;
+
+    const titleQuiz = props.titleQuiz;
 
     const isQuiz = props.isQuiz;
     const numberOfChecked = props.numberOfChecked;
@@ -53,7 +59,7 @@ export function PickQuizList(props: QuizListViewProps) {
             position: "relative",
         },
         cardHeader: {
-            padding: theme.spacing(1, 2),
+            padding: theme.spacing(2, 2),
         },
         list: {
             width: 450,
@@ -100,9 +106,11 @@ export function PickQuizList(props: QuizListViewProps) {
             />
             {isQuiz() ? (
                 <TextField
-                    id="standard-basic"
                     className={classes.quizInput}
+                    value={titleQuiz}
                     label="Nazwa Quizu"
+                    error={error !== ""}
+                    helperText={error}
                     onChange={handleChange}
                     inputProps={{ maxLength: 40 }}
                 />

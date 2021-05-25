@@ -5,13 +5,14 @@ import {
     Backdrop,
     Card,
 } from "@material-ui/core";
-import { useState } from "react";
+import React, { useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
 import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { ReactionName } from "../../util/reactionsEnum";
+import { TimerClock } from "../timerClock/timerClock";
 
 export function SessionDashboardView() {
     const theme = useTheme();
@@ -88,6 +89,12 @@ export function SessionDashboardView() {
             flexDirection: "column",
             flexGrow: 1,
         },
+        quizButton: {
+            "& span": {
+                flexWrap: "wrap",
+                gap:"10px"
+            }
+        }
     })();
 
     const [open, setOpen] = useState(false);
@@ -121,8 +128,14 @@ export function SessionDashboardView() {
                     variant="outlined"
                     color="primary"
                     onClick={handleToggle}
+                    className={classes.quizButton}
                 >
                     Rozwiąż quiz
+
+                    {
+                        //TODO: set target time from loaded quiz 
+                    }
+                    <TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} />
                 </Button>
             </div>
             <div className={classes.questionBody}>
@@ -137,7 +150,10 @@ export function SessionDashboardView() {
             >
                 <Card className={classes.overlay}>
                     <div style={{ display: "flex" }}>
-                        <p>00:00</p>
+                        {
+                            //TODO: set target time from loaded quiz 
+                        }
+                        <p><TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} /></p>
                         <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
                     </div>
                     <QuizView />

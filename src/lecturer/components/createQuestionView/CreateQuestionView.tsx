@@ -49,7 +49,7 @@ export function CreateQuestionView() {
 
     let data: any = location.state;
     if (data !== undefined) {
-        let index = data.questionIndex;
+        let index = data.index;
         if (store.questions[index]) {
             titleVal = store.questions[index].title;
             questionVal = store.questions[index].text;
@@ -238,6 +238,7 @@ export function CreateQuestionView() {
         let required: string = "To pole jest wymagane";
         let tooLongTitle: string = "Tytuł może mieć maksymalnie 40 znaków";
         let noAnswers: string = "Trzeba dodać odpowiedzi";
+        let duplicateTitle: string = "Istnieje już pytanie z takim tytułem";
 
         let errorTemp: ValidationErrors = {
             title: title ? noError : required,
@@ -248,6 +249,12 @@ export function CreateQuestionView() {
 
         if (title.length > 40)
             errorTemp.title = tooLongTitle;
+        
+        for (const quest of store.questions) 
+            if (quest.title === title) {
+                errorTemp.title = duplicateTitle;
+                break;
+            }
 
         for (let i = 0; i < answers.length; i++)
             errorTemp.emptyAnswers.push(answers[i] || mode === QuestionType.OPEN ? noError : required);
@@ -270,6 +277,9 @@ export function CreateQuestionView() {
             if (!validate()) {
                 return;
             }
+            
+            
+
             setSuccess(false);
             setLoading(true);
 
@@ -294,7 +304,7 @@ export function CreateQuestionView() {
 
             console.log(obj);
             if (data !== undefined) {
-                store.questions[data.questionIndex] = obj;
+                store.questions[data.index] = obj;
 
                 timer.current = window.setTimeout(() => {
                     setSuccess(true);
@@ -327,7 +337,6 @@ export function CreateQuestionView() {
                 autoComplete="off"
             >
                 <TextField
-                    id="standard-basic"
                     variant="filled"
                     label="Tytuł"
                     value={title}

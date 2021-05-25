@@ -1,17 +1,17 @@
-import "fontsource-roboto";
-
 import {
     Button,
     CircularProgress,
-    Grid,
+    Grid
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import clsx from "clsx";
+import "fontsource-roboto";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { not, union, intersection } from "../../util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
+import { intersection, not, union } from "../../util/boolAlgebra";
 import { PickQuizList } from "./PickQuizList";
+
 
 function createIndexArray(s: number) {
     let array = [];
@@ -78,14 +78,12 @@ export function PickQuizView() {
     const [left, setLeft] = useState<number[]>(indexArray);
     const [right, setRight] = useState<number[]>([]);
     const [title, setTitle] = useState("");
-    const [filterFn, setFilterFn] = useState({
-        fn: (items: number[]) => {
-            return Array.from(Array(items.length).keys());
-        },
-    });
+    const [error, setError] = useState("");
+    const [filter, setFilter] = useState<string>("");
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
+        setError("");
     };
     const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -125,7 +123,6 @@ export function PickQuizView() {
         }
     };
     const [loading, setLoading] = useState(false);
-    const [questionFullFilled, setQuestionFullFilled] = useState(true);
     const [success, setSuccess] = useState(false);
     const buttonClassName = clsx({
         [classes.sessionBtn]: 1,
@@ -137,7 +134,6 @@ export function PickQuizView() {
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
         setSuccess(false);
-        setQuestionFullFilled(false);
     };
 
     const handleCheckedLeft = () => {
@@ -145,24 +141,19 @@ export function PickQuizView() {
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
         setSuccess(false);
-        if (right.length === 1) {
-            setQuestionFullFilled(true);
-        }
     };
 
-    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-        let { value } = e.target;
-        setFilterFn({
-            fn: (items: number[]) => {
-                let result: number[] = [];
-                for (let i = 0; i < items.length; i++) {
-                    if (questions[items[i]].title.toLowerCase().includes(value))
-                        result.push(items[i]);
-                }
-                return result;
-            },
-        });
+    const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setFilter(e.target.value);
     };
+    const filterByTitle = (items: number[]) => {
+        let result: number[] = [];
+        for (let i = 0; i < items.length; i++) {
+            if (questions[items[i]].title.toLowerCase().includes(filter))
+                result.push(items[i]);
+        }
+        return result;
+    }
 
     const timer = useRef<number>();
     const handleSaveQuiz = () => {
@@ -171,6 +162,15 @@ export function PickQuizView() {
             right.forEach((i) => {
                 selectedQuestions.push(questions[i]);
             });
+          
+            for (const quiz of store.quizzes) {
+                if(quiz.title === title) {
+                    setError("Istnieje już quiz o takiej nazwie");
+                    return;
+                }
+            }
+
+            console.log(selectedQuestions);
             setSuccess(false);
             setLoading(true);
 
@@ -184,6 +184,7 @@ export function PickQuizView() {
                 setLeft(indexArray);
                 setRight([]);
                 setChecked(not(checked, rightChecked));
+                setTitle("");
                 setSuccess(true);
                 setLoading(false);
             }, 500);
@@ -203,16 +204,17 @@ export function PickQuizView() {
                     <PickQuizList
                         title="Lista pytań"
                         data={{
-                            items: filterFn.fn(left),
+                            items: filterByTitle(left),
                             checked: checked,
                             questions: questions
                         }}
+                        error={""}
                         isQuiz={() => false}
                         numberOfChecked={numberOfChecked}
                         handleToggleAll={handleToggleAll}
                         handleChange={handleChange}
                         handleToggle={handleToggle}
-                        handleSearch={handleSearch}
+                        handleSearch={handleSearchInput}
                     />
                 </Grid>
                 <Grid item>
@@ -247,12 +249,14 @@ export function PickQuizView() {
                             checked: checked,
                             questions: questions
                         }}
+                        error={error}
+                        titleQuiz={title}
                         isQuiz={() => true}
                         numberOfChecked={numberOfChecked}
                         handleToggleAll={handleToggleAll}
                         handleChange={handleChange}
                         handleToggle={handleToggle}
-                        handleSearch={handleSearch}
+                        handleSearch={handleSearchInput}
                     />
                 </Grid>
             </Grid>
@@ -261,7 +265,7 @@ export function PickQuizView() {
                     variant="contained"
                     color="secondary"
                     className={buttonClassName}
-                    disabled={loading || questionFullFilled || title.length === 0 || title.length > 40}
+                    disabled={loading || right.length == 0 || title.length === 0 || title.length > 40}
                     onClick={handleSaveQuiz}
                 >
                     {success ? `Zapisano Quiz` : `Zapisz Quiz`}
