@@ -21,7 +21,7 @@ interface StudentFormViewProps {
 export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
-    const { sendJsonMessage } = useSocket();
+    const { sendJsonMessage, socketEmiter } = useSocket();
     const theme = useTheme();
     const history = useHistory();
 
@@ -112,43 +112,28 @@ export function StudentFormView(props: StudentFormViewProps) {
             setSuccess(false);
             setLoading(true);
 
-            let student: Student = {
-                id: "",
-                nick: name[0] + surname,
-                name: name,
-                surname: surname,
-            };
-
-            if (session)
-                backEnd?.joinLecture(session, student)
-                    .then((response) => {
-                        console.log("Success: ", response);
-
-                        if (!("student_id" in response))
-                            throw new Error(response.msg);
-
-                        store.studentNick = student.nick;
-                        store.invitation = session;
-                        store.studentId = response.student_id;
-
-                        let event: StudentSubPayload = {
-                            event: "subscribe_student",
-                            data: {
-                                student_id: response.student_id,
-                                lecture_link: session,
-                            },
-                        };
-                        sendJsonMessage(event);
-
-                        history.replace("/student/session");
-                    })
-                    .catch((error) => {
-                        setLoading(false);
-                        console.error(error);
-                        if (props.onFail) props.onFail(error);
-                    });
+            if (session){
+                const handleCreate = (parsed: StudentCreateResponsePayload) =>{
+                    store.studentId = parsed.data.studentID;
+                    history.replace("/student/session");
+                    socketEmiter.off("student_created", handleCreate);
+                    console.log("student created", parsed);
+                };
+                socketEmiter.on("student_created", handleCreate);
+                // there can be negative response - it is not handled yet
+                const payload: StudentCreateRequestPayload = {
+                    event: "create_student",
+                    data: {
+                        lectureLink: session,
+                        name: name,
+                        surname: surname,
+                        nick: name[0] + surname
+                    }
+                }
+                sendJsonMessage(payload);
+            }
         }
-    }, [backEnd, history, loading, name, props, sendJsonMessage, session, store, surname]);
+    }, [history, loading, name, sendJsonMessage, session, socketEmiter, store, surname]);
 
     const handleScan = (data: string | null) => {
         if (!data) return;

@@ -4,6 +4,7 @@ import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Quiz from "./Quiz.ts";
 import Student from "./Student.ts";
 import StudentList from "./StudentList.ts";
+import { lectures } from "./websockets.ts";
 
 export const linkLectureMap = new Map();
 
@@ -13,7 +14,7 @@ class Lecture {
     link: string;
     studentList: StudentList;
     wsc?: WebSocketClient;
-    quizes: Map<string, Quiz>;
+    quizzes: Map<string, Quiz>;
 
     constructor(tutor: string) {
         this.tutor = tutor;
@@ -27,7 +28,7 @@ class Lecture {
         }
 
         this.studentList = new StudentList();
-        this.quizes = new Map();
+        this.quizzes = new Map();
     }
 
     setWebSocketClient(wsc: WebSocketClient): void {
@@ -38,12 +39,22 @@ class Lecture {
                     event: "send_student_reaction",
                     data: {
                         reaction: reaction,
-                        student_id: student.id
+                        studentID: student.id
                     }
                 };
                 this.wsc?.send(JSON.stringify(payload));
             };
             student.on("reaction_added", reactionHandler);
+            const payload: StudentAddedPayload = {
+                event: "student_added",
+                data: {
+                    id: student.id,
+                    nick: student.nick,
+                    name: student.name,
+                    surname: student.surname
+                }
+            };
+            this.wsc?.send(JSON.stringify(payload));
 
             const questionHandler = (text: string) => {
                 const payload: SendQuestionResponsePayload = {
@@ -57,10 +68,15 @@ class Lecture {
             };
             student.on("question_added", questionHandler);
 
-            this.wsc?.send("studentAdded");
         });
-        this.studentList.on("studentDeleted", () => {
-            this.wsc?.send("studentDeleted");
+        this.studentList.on("studentDeleted", (student: Student) => {
+            const payload: StudentDeletedPayload = {
+                event: "student_deleted",
+                data: {
+                    studentID: student.id,
+                }
+            };
+            this.wsc?.send(JSON.stringify(payload));
         });
 
 
@@ -70,6 +86,12 @@ class Lecture {
             switch (parsed.event) {
                 case "send_quiz":
                     this.handlerSendQuiz(parsed);
+                    break;
+                case "delete_lecture":
+                    this.handlerDeleteLecture();
+                    break;
+                case "get_student_list":
+                    this.handlerGetStudentList();
                     break;
                 case "show_answers":
                     this.handlerShowAnswers(parsed);
@@ -82,16 +104,16 @@ class Lecture {
             }
         });
 
-        this.wsc.on("close", () => {
-            console.log("Lecture Websockets closed");
+        this.wsc.on("close", (reason: string) => {
+            console.log(`Lecture Websockets closed \n\t reason: ${reason}`);
             this.wsc = undefined;
             //TODO: cleanup after closing websocket connection
         });
     }
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
-        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data));
-        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data));
+        const wholeQuiz: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions));
+        const quizWithoutAnswers: FrontQuiz = JSON.parse(JSON.stringify(parsed.data.questions));
         const questionsWithoutAnswers: Question[] = quizWithoutAnswers.questions;
         questionsWithoutAnswers.forEach((q: Question) => {
             const answers: Answer[] | undefined = q.options;
@@ -101,9 +123,9 @@ class Lecture {
                 });
             }
         });
-        const quiz: Quiz = new Quiz(parsed.data.time_seconds, quizWithoutAnswers, wholeQuiz, parsed.data.student_ids);
-        this.quizes.set(quiz.IDFromServer, quiz);
-        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.student_ids.includes(student.id));
+        const quiz: Quiz = new Quiz(parsed.data.timeSeconds, quizWithoutAnswers, wholeQuiz, parsed.data.studentIDs);
+        this.quizzes.set(quiz.IDFromServer, quiz);
+        const selectedStudents: Student[] = this.studentList.asArray().filter((student: Student) => parsed.data.studentIDs.includes(student.id));
 
         const response: ShowAnswersPayload = {
             event: "quiz_in_progress",
@@ -117,8 +139,8 @@ class Lecture {
             const serverResponse: ServerQuizResponsePayload = {
                 event: "quiz_answers_added",
                 data: {
-                    quiz_id: quiz.IDFromServer,
-                    student_id: student.id,
+                    quizID: quiz.IDFromServer,
+                    studentID: student.id,
                     answers: answers
                 }
             };
@@ -130,13 +152,13 @@ class Lecture {
             const serverResponse: QuizEndedPayload = {
                 event: "quiz_ended",
                 data: {
-                    quiz_id: quiz.IDFromServer,
+                    quizID: quiz.IDFromServer,
                     reason: reason
                 }
             };
             this.wsc?.send(JSON.stringify(serverResponse));
             if (reason === "quiz_timeout") {
-                serverResponse.data.quiz_id = quiz.IDFromServer;
+                serverResponse.data.quizID = quiz.IDFromServer;
                 const remainingStudents: Student[] = selectedStudents.filter((student: Student) => !quiz.answeredStudents().includes(student.id));
                 remainingStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverResponse)));
             }
@@ -148,7 +170,7 @@ class Lecture {
         const serverRequest: ServerQuizRequestPayload = {
             event: parsed.event,
             data: {
-                quiz_id: quiz.IDFromServer,
+                quizID: quiz.IDFromServer,
                 timeSeconds: quiz.timeSeconds,
                 questions: quiz.questions
             }
@@ -157,9 +179,52 @@ class Lecture {
         quiz.start();
     }
 
+    handlerDeleteLecture() {
+        const payload: Payload = {
+            event: "lecture_ended"
+        };
+        this.wsc?.send(JSON.stringify(payload));
+
+        if (!this.wsc?.isClosed) {
+            this.wsc?.close(1000, "Lecturer requested shutdown");
+        }
+
+        this.studentList.asArray().forEach((student: Student) => {
+            student.handleGDPR();
+            student.wsc?.send(JSON.stringify(payload));
+            if (!student.wsc?.isClosed) {
+                student.wsc?.close(1000, "Lecturer requested shutdown");
+            }
+        });
+
+        this.tutor = "";
+        lectures.delete(this.id);
+        console.log("Lecture has been deleted");
+    }
+
+    handlerGetStudentList() {
+        const studentDataList: StudentData[] = this.studentList.asArray().map((s: Student) => {
+            const studentData: StudentData = {
+                id: s.id,
+                nick: s.nick,
+                name: s.name,
+                surname: s.surname
+            };
+            return studentData;
+        });
+
+        const payload: GetStudentListResponsePayload = {
+            event: "student_list",
+            data: {
+                studentList: studentDataList
+            }
+        };
+        this.wsc?.send(JSON.stringify(payload));
+    }
+
     handlerShowAnswers(parsed: ShowAnswersPayload): void {
         const quizID: string = parsed.data.quizID;
-        const quiz: Quiz | undefined = this.quizes.get(quizID);
+        const quiz: Quiz | undefined = this.quizzes.get(quizID);
         if (quiz) {
             quiz.answeredStudents().forEach((studentID: string) => {
                 const serverToStudent: ShowAnswersToStudentPayload = {

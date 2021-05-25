@@ -17,7 +17,7 @@ export function CreateSessionView() {
     const history = useHistory();
     const theme = useTheme();
     const backEnd = useBackEnd();
-    const { sendJsonMessage } = useSocket();
+    const { sendJsonMessage, socketEmiter } = useSocket();
 
     const classes = makeStyles({
         root: {
@@ -69,29 +69,35 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
+    
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            backEnd.createLecture().then((lecture) => {
+            const handleCreate = (parsed: LectureCreateResponsePayload) =>{
                 setSuccess(true);
                 setLoading(false);
-                console.log(lecture);
-
-                store.sessionId = lecture.id;
+        
+                store.sessionId = parsed.data.lectureID;
                 store.sendQuizStep = 0;
                 store.timeToNextQuiz = 0;
-                backEnd.getLectureLink(lecture.id)
-                    .then((link) => {
-                        store.link = link;
-                        history.push({
-                            pathname: "lecturer/session",
-                            state: { isOpen: true }
-                        });
-                    })
-
-                sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
-            })
+                store.link = parsed.data.lectureLink;
+                history.push({
+                    pathname: "lecturer/session",
+                    state: { isOpen: true }
+                });
+                socketEmiter.off("lecture_created", handleCreate);
+                console.log("lecture created", parsed);
+            };
+            socketEmiter.on("lecture_created", handleCreate);
+            // there can be negative response - it is not handled yet
+            const payload: LectureCreateRequestPayload = {
+                event: "create_lecture",
+                data: {
+                    tutor: "Apple I-Dzik"
+                }
+            }
+            sendJsonMessage(payload);
         }
     };
 
