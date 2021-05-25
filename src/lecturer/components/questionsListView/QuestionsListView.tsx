@@ -218,6 +218,7 @@ export function QuestionsListView() {
             message={message}
             key={vertical + horizontal}
             autoHideDuration={1000}
+            style={{top: "60px"}}
         />
         <div className={classes.root}>
             <Card className={classes.cardWrapper}>
