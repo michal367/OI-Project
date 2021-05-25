@@ -98,17 +98,7 @@ export function StudentsQuestionListView() {
                     >
                         <div className={classes.message}>
                             <div className={classes.messageText}>
-                            {studentQuestion.processed ? (
-                                    <TextField className={classes.field} variant="outlined" fullWidth={true}
-                                    multiline
-                                    label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
-                                    defaultValue={studentQuestion.text} 
-                                    InputProps={{
-                                        className: classes.questionText,
-                                        readOnly: true,
-                                    }} />                            
-                            ):(
-                                <TextField className={classes.field} error variant="outlined"
+                                <TextField className={classes.field} error={!studentQuestion.processed} variant="outlined"
                                  fullWidth={true} 
                                  multiline
                                  label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
@@ -116,7 +106,6 @@ export function StudentsQuestionListView() {
                                     className: classes.questionText,
                                     readOnly: true,
                                 }}/>
-                            )}
                             </div>
 
                         </div>
