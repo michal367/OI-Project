@@ -154,7 +154,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 1:
                 return (
                     <FormControl className={classes.container}>
-                        <InputLabel id="time-select">
+                        <InputLabel>
                             Czas na wypełnienie
                         </InputLabel>
                         <Select

@@ -14,6 +14,7 @@ interface Answer {
     text: string;
     isCorrect: boolean;
 }
+
 interface Question {
     index?: number;
     title: string;
