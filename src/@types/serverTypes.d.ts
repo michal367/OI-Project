@@ -180,18 +180,3 @@ interface SendQuestionResponsePayload extends Payload{
         studentID: string
     }
 }
-
-
-
-interface LectureSubPayload extends Payload {
-    data: {
-        lecture_id: string
-    }
-}
-
-interface StudentSubPayload extends Payload {
-    data: {
-        student_id: string,
-        lecture_link: string
-    }
-}
