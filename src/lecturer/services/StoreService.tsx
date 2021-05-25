@@ -56,6 +56,7 @@ export interface IStore {
     timeToNextQuiz: number
     reactionValues: number[],
     lastReactionTime: number,
+    reactionModes: boolean[],
 }
 
 
@@ -73,6 +74,8 @@ const Store = (props: StoreProps) => {
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
     const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
+    const [reactionModes, setReactionModes] = useState<boolean[]>(initialValue.reactionModes)
+
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
@@ -81,7 +84,7 @@ const Store = (props: StoreProps) => {
         setQuizzes(initial.quizzes);
         setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
-    
+
 
     const value = {
         get link() {
@@ -169,17 +172,24 @@ const Store = (props: StoreProps) => {
             setTimeToNextQuiz(newValue);
             saveKey("timeToNextQuiz", newValue);
         },
-        get reactionValues(){
+        get reactionValues() {
             return reactionValues;
         },
-        set reactionValues(newValue: number[]){
+        set reactionValues(newValue: number[]) {
             setReactionValues([...newValue]);
         },
-        get lastReactionTime(){
+        get lastReactionTime() {
             return lastReactionTime;
         },
-        set lastReactionTime(newValue: number){
+        set lastReactionTime(newValue: number) {
             setLastReactionTime(newValue);
+        },
+        get reactionModes() {
+            return reactionModes;
+        },
+
+        set reactionModes(newValue: boolean[]) {
+            setReactionModes([...newValue]);
         },
     };
 
@@ -205,7 +215,8 @@ const initialValue: IStore = {
     isLoading: true,
     studentQuestions: [],
     timeToNextQuiz: 0,
-    reactionValues: [0,0,0,0,0],
+    reactionValues: [0, 0, 0, 0, 0],
+    reactionModes: [false, false, false, false, false],
     lastReactionTime: 30,
 }
 

@@ -28,10 +28,10 @@ export function ReactionReceiveView() {
     const store = useContext(StoreContext);
     const refreshReactions = (payload?: ReactionResponsePayload) => {
         let index: number;
-        if(payload){
-            let indexString: string= payload.data.reaction;
+        if (payload) {
+            let indexString: string = payload.data.reaction;
             index = reactionsString.indexOf(indexString);
-        }else{
+        } else {
             index = Math.round(Math.random() * reactionsString.length);
         }
         let tmpValues = store.reactionValues;
@@ -39,12 +39,29 @@ export function ReactionReceiveView() {
         store.reactionValues = tmpValues;
         store.lastReactionTime = Date.now() + 15000;
     };
+
+    const resetReactions = () => {
+        let newReactions: number[] = [];
+        store.reactionModes.forEach((mode, i) => {
+            if (mode)
+                newReactions.push(store.reactionValues[i]);
+            else
+                newReactions.push(0);
+        })
+        return newReactions;
+    }
+
+    const updateModes = (index: number) => {
+        let modes = store.reactionModes;
+        modes[index] = !modes[index];
+        store.reactionModes = modes;
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
             if (store.lastReactionTime !== 0 && Date.now() - store.lastReactionTime >= 0) {
-                store.reactionValues = [0, 0, 0, 0, 0];
+                store.reactionValues = resetReactions();
                 store.lastReactionTime = 0;
-                console.log(store.lastReactionTime - store.lastReactionTime)
             }
         }, 1000);
         return () => clearInterval(interval);
@@ -73,8 +90,10 @@ export function ReactionReceiveView() {
                 return (<ReactionCounter
                     icon={reactionsIcons[reaction]}
                     value={store.reactionValues[i]}
+                    currentMode={store.reactionModes[i]}
+                    onMode={() => updateModes(i)}
                 />);
-            })}<button onClick={()=> refreshReactions()}>react</button>
+            })}<button onClick={() => refreshReactions()}>react</button>
         </Paper>
     );
 }
