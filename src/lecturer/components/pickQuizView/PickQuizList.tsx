@@ -1,4 +1,3 @@
-
 import React, { ChangeEvent } from "react";
 import {
     Card,
@@ -23,6 +22,8 @@ interface QuizListViewProps {
     }
     error: string;
 
+    titleQuiz?: string;
+
     isQuiz: () => boolean;
     numberOfChecked: (items: number[]) => number,
 
@@ -42,6 +43,8 @@ export function PickQuizList(props: QuizListViewProps) {
     const items = props.data.items;
     const checked = props.data.checked;
     const questions = props.data.questions;
+
+    const titleQuiz = props.titleQuiz;
 
     const isQuiz = props.isQuiz;
     const numberOfChecked = props.numberOfChecked;
@@ -103,8 +106,8 @@ export function PickQuizList(props: QuizListViewProps) {
             />
             {isQuiz() ? (
                 <TextField
-                    id="standard-basic"
                     className={classes.quizInput}
+                    value={titleQuiz}
                     label="Nazwa Quizu"
                     error={error !== ""}
                     helperText={error}
