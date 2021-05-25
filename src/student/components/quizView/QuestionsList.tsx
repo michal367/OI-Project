@@ -6,7 +6,12 @@ import Store, { StoreContext } from "../../services/StoreService";
 import { useContext, useEffect } from "react";
 import { useSocket } from '../../services/SocketService';
 
-export function QuestionsList() {
+interface BlockFunction {
+    handleBlock: (() => void);
+    handleEnable: (() => void);
+}
+
+export function QuestionsList(props: BlockFunction) {
     let answers = new Map();
     const [quiz, setQuiz] = useState(testData());
     const [quizID, setQuizID] = useState("");
@@ -24,6 +29,7 @@ export function QuestionsList() {
         console.log("refreshQuiz");
         setQuiz(payload.data.questions);
         setQuizID(payload.data.quiz_id);
+        props.handleEnable();
     }, []);
 
     useEffect(() => {
@@ -77,6 +83,7 @@ export function QuestionsList() {
         };
         console.log(payload);
         sendJsonMessage(payload);
+        props.handleBlock();
     }
 
     return (
