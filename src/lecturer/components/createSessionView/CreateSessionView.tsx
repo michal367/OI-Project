@@ -19,17 +19,22 @@ export function CreateSessionView() {
     const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
     const [sessionName, setSessionName] = useState(""); 
-
+    const [name, setName] = useState(""); 
+    const [surname, setSurname] = useState(""); 
     const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setSessionName(event.target.value);
     }
-
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setName(event.target.value);
+    }
+    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setSurname(event.target.value);
+    }
     const classes = makeStyles({
         rootOfRoots:{
             background: theme.palette.secondary.light,
             gap: "50px",
             minHeight: "100vh",
-            display: "flex",
             alignItems: "center",
             position: "absolute",
             width: "100%",
@@ -39,10 +44,10 @@ export function CreateSessionView() {
             paddingBottom: "10px",
         },
         sessionNameField:{
+            top:100,
             left:312,
-            top:-80,
             position:"relative",
-            width:"40%",
+            width:"20%",
             fontWeight:"bold",
             backgroundColor:"white",
         },
@@ -120,7 +125,7 @@ export function CreateSessionView() {
             const payload: LectureCreateRequestPayload = {
                 event: "create_lecture",
                 data: {
-                    tutor: "Apple I-Dzik",
+                    tutor: name + " " + surname,
                     sessionName: sessionName,
                 }
             }
@@ -132,7 +137,14 @@ export function CreateSessionView() {
 
     return (
         <div className={classes.rootOfRoots}>
-            
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Imię"} value={name} 
+                   onChange={handleNameChange}
+                   />
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Nazwisko"} value={surname} 
+                   onChange={handleSurnameChange}
+                   />
         <TextField className={classes.sessionNameField} variant="outlined" 
                    fullWidth={true} label={"Nazwa sesji"} value={sessionName} 
                    onChange={handleSessionNameChange}
@@ -146,7 +158,7 @@ export function CreateSessionView() {
                     color="primary"
                     className={buttonClassName}
                     onClick={handleButtonClick}
-                    disabled={sessionName.length === 0}
+                    disabled={sessionName.length === 0 || name.length === 0 || surname.length === 0 }
                 >
                     {success ? (
                         <CheckIcon
