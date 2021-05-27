@@ -36,11 +36,11 @@ export default function TopBar() {
                 value={selectedTab}
                 centered
             >
-                <NotifiableTab label="Sesja" observableList={store.studentQuestions} routes={(store.sessionId === "") ? routes.index : routes.session}/>
+                <NotifiableTab label="Sesja" observableList={store.studentQuestions} routes={(store.lectureID === "") ? routes.index : routes.session}/>
                 <NotifiableTab label="Quizy" routes={routes.quiz}/>
                 <NotifiableTab label="Pytania" routes={routes.questions}/>
                 <NotifiableTab label="Zdarzenia" routes={routes.timestamp}/>
-                {(store.sessionId != "") && (
+                {(store.lectureID != "") && (
                     <NotifiableTab label="Statystyki" routes={routes.stats}/>
                 )}
             </Tabs>

@@ -40,7 +40,7 @@ const theme = createMuiTheme({
 function App() {
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket(); //for keeping socket open
-
+    console.log('ID SESJI:      "',store.lectureID,'"');
     // heroku 55s timeout fix
     useEffect(() => {
         if (window.location.hostname.includes("heroku")) {
@@ -117,7 +117,7 @@ function App() {
                             <TimestampView />
                         </Route>
                         <Route path="/">
-                            {(store.sessionId === "") ?
+                            {(store.lectureID === "") ?
                                 <Redirect to="/lecturer" />
                                 :
                                 <Redirect to="/lecturer/session" />

@@ -20,7 +20,7 @@ export function SessionDashboardView() {
     if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
     const history = useHistory();
     const store = useContext(StoreContext);
-    if (!store.sessionId || store.sessionId.length === 0) {
+    if (!store.lectureID || store.lectureID.length === 0) {
         history.goBack();
     }
     const backEnd = useBackEnd();
@@ -171,7 +171,7 @@ export function SessionDashboardView() {
     const refreshListWithWholeListWithRest = useCallback(() => {
         console.log("refreshList");
         backEnd
-            .getStudentsForLecture(store.sessionId ?? "")
+            .getStudentsForLecture(store.lectureID ?? "")
             .then((list) =>
                 list.map((item, index) => {
                     return { orderIndex: index + 1, ...item };
@@ -179,7 +179,7 @@ export function SessionDashboardView() {
             )
             .then(setStudentList)
             .catch((error) => console.log);
-    }, [backEnd, store.sessionId]);
+    }, [backEnd, store.lectureID]);
 
     useEffect(() => {
         refreshListWithWholeListWithRest();
