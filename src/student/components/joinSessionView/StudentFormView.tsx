@@ -78,27 +78,16 @@ export function StudentFormView(props: StudentFormViewProps) {
         if (sessionInvNumber.length <= 7) setSession(sessionInvNumber);
     };
 
-    const changeToCapitalCase = (value: string) => {
-        let input = "";
-        value
-            .toLowerCase()
-            .replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
-            .split(" ")
-            .forEach((word) => {
-                if (input.length !== 0) input += " ";
-                if (word.length > 0)
-                    input += word[0].toUpperCase() + word.substring(1);
-                else input += word;
-            });
-        return input;
+    const changeToLettersOnly = (value: string) => {            
+        return value.replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
     };
 
     const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(changeToCapitalCase(event.target.value));
+        setName(changeToLettersOnly(event.target.value));
     };
 
     const handleChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
-        setSurname(changeToCapitalCase(event.target.value));
+        setSurname(changeToLettersOnly(event.target.value));
     };
 
     const isFormCompleted = () => {

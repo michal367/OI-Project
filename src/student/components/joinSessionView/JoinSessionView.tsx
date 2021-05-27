@@ -13,7 +13,7 @@ interface JoinSessionLocationState {
 
 const text = {
     sessionEnded: "Sesja została zakończona",
-    failedToJoin: "Nie udało się połaczyć",
+    failedToJoin: "Nie udało się połączyć",
 }
 
 export function JoinSessionView() {
@@ -21,6 +21,16 @@ export function JoinSessionView() {
     const location = useLocation<JoinSessionLocationState>();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogText, setDialogText] = useState(text.sessionEnded);
+
+    const getSessionID = () => {
+        let sessionId = "";
+        if (match)
+            sessionId = match.params.session.replace(/[^0-9]/, "");
+        else
+            sessionId = location.search.substring(1).replace(/[^0-9]/, "");
+        return sessionId;
+    };
+    const [sessionID, setSessionID] = useState(getSessionID());
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -33,11 +43,7 @@ export function JoinSessionView() {
         }
     }, [location.state]);
 
-    let sessionId;
-    if (match)
-        sessionId = match.params.session;
-    else
-        sessionId = location.search.substring(1);
+
 
     const theme = useTheme();
     const classes = makeStyles({
@@ -77,7 +83,7 @@ export function JoinSessionView() {
 
 
             <Paper variant="outlined" square className={classes.card}>
-                <StudentFormView session={sessionId.length === 7 ? sessionId : undefined} onFail={handleJoinFailed} />
+                <StudentFormView session={sessionID.length === 7 ? sessionID : undefined} onFail={handleJoinFailed} />
             </Paper>
         </div>
     );
