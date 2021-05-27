@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { endedQuizzes } from "../../common/util/mockData";
+import { includeMockData } from "../../common/util/mockData";
 export interface StoreProps {
     children: ReactNode
 }
@@ -28,14 +28,24 @@ const saveKey = (key: StorageKey, value: any) => {
     console.log("saveKey", key, value);
     return localStorage.setItem(stringKey(key), JSON.stringify(value));
 }
+const loadKeyForArray = (key: StorageKey, initialValue: any[]) => {
+    let obj : any[] = loadKey(key);
+    if(obj && obj.length > 0)
+        initialValue.forEach((el) => {
+            // TODO add el to array if its ID is not present there. 
+        });
+    else
+        obj = initialValue;
+    return obj
+}
 
 const loadFromStorage = () => {
     let obj: IStore = {
         ...initialValue,
         link: loadKey("link") ?? initialValue.link,
         sessionId: loadKey("sessionId") ?? initialValue.sessionId,
-        questions: loadKey("questions") ?? initialValue.questions,
-        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
+        questions: loadKeyForArray("questions", initialValue.questions),
+        quizzes: loadKeyForArray("quizzes", initialValue.quizzes),
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
         timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
     }
@@ -200,13 +210,13 @@ const Store = (props: StoreProps) => {
     )
 };
 
-const initialValue: IStore = {
+const initialValue: IStore = includeMockData(true,{
     link: "",
     sessionId: "",
     quizzes: [],
     questions: [],
     sendQuizStep: 0,
-    endedQuizzes: endedQuizzes,
+    endedQuizzes: [],
     sendQuiz: {
         students: [],
         questionStats: [],
@@ -218,7 +228,7 @@ const initialValue: IStore = {
     reactionValues: [0, 0, 0, 0, 0],
     reactionModes: [false, false, false, false, false],
     lastReactionTime: 30,
-}
+});
 
 
 export const StoreContext = createContext<IStore>(initialValue);
