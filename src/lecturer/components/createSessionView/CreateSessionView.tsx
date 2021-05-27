@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Fab, CircularProgress } from "@material-ui/core";
+import { Fab, CircularProgress, TextField } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
@@ -18,8 +18,34 @@ export function CreateSessionView() {
     const theme = useTheme();
     const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
+    const [sessionName, setSessionName] = useState(""); 
+
+    const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setSessionName(event.target.value);
+    }
 
     const classes = makeStyles({
+        rootOfRoots:{
+            background: theme.palette.secondary.light,
+            gap: "50px",
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            paddingTop: 75,
+            paddingBottom: "10px",
+        },
+        sessionNameField:{
+            left:312,
+            top:-80,
+            position:"relative",
+            width:"40%",
+            fontWeight:"bold",
+            backgroundColor:"white",
+        },
         root: {
             background: theme.palette.secondary.light,
             gap: "50px",
@@ -94,15 +120,24 @@ export function CreateSessionView() {
             const payload: LectureCreateRequestPayload = {
                 event: "create_lecture",
                 data: {
-                    tutor: "Apple I-Dzik"
+                    tutor: "Apple I-Dzik",
+                    sessionName: sessionName,
                 }
             }
             sendJsonMessage(payload);
+            setSessionName("");
         }
     };
 
 
     return (
+        <div className={classes.rootOfRoots}>
+            
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Nazwa sesji"} value={sessionName} 
+                   onChange={handleSessionNameChange}
+                   />
+        
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
             <div className={classes.wrapper}>
@@ -111,6 +146,7 @@ export function CreateSessionView() {
                     color="primary"
                     className={buttonClassName}
                     onClick={handleButtonClick}
+                    disabled={sessionName.length === 0}
                 >
                     {success ? (
                         <CheckIcon
@@ -133,5 +169,6 @@ export function CreateSessionView() {
 
             </div>
         </div>
+    </div>
     );
 }

@@ -51,6 +51,8 @@ const initialValue: IStore = {
         text: "",
         processed: false,
     },
+    sessionName: "",
+    tutorName: "",
 }
 const loadFromStorage = () => {
     let obj: IStore = {
@@ -72,6 +74,8 @@ const Store = (props: StoreProps) => {
     const [quizzes, setQuizzes] = useState(initialValue.quizzes);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestion, setStudentQuestion] = useState<StudentQuestion>(initialValue.studentQuestion);
+    const [sessionName, setSessionName] = useState(initialValue.sessionName);
+    const [tutorName, setTutorName] = useState(initialValue.tutorName);
     useEffect(() => {
         let initial = loadFromStorage();
         setInvitation(initial.invitation);
@@ -124,6 +128,18 @@ const Store = (props: StoreProps) => {
         },
         set studentQuestion(newQuestion: StudentQuestion) {
             setStudentQuestion(newQuestion);
+        },
+        get sessionName(){
+            return sessionName
+        },
+        set sessionName(newValue: string){
+            setSessionName(newValue);
+        },
+        get tutorName(){
+            return tutorName
+        },
+        set tutorName(newValue: string){
+            setTutorName(newValue);
         },
 
         operation: {

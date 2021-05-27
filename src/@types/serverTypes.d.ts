@@ -34,7 +34,8 @@ interface Payload {
 
 interface LectureCreateRequestPayload extends Payload {
     data: {
-        tutor: string
+        tutor: string,
+        sessionName: string
     }
 }
 interface LectureCreateResponsePayload extends Payload {
@@ -56,6 +57,8 @@ interface StudentCreateRequestPayload extends Payload {
 interface StudentCreateResponsePayload extends Payload {
     data: {
         studentID: string,
+        sessionName: string,
+        tutor: string,
     }
 }
 interface QuizRequestPayload extends Payload {
