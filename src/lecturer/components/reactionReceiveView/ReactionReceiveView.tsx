@@ -1,10 +1,11 @@
 import { makeStyles, Paper } from "@material-ui/core";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { reactionsIcons } from "../../../common/util/reactions/icons";
 import { useSocket } from "../../services/SocketService";
 import { ReactionName } from "../../../common/util/reactions/enum";
+import { ReactionProgress } from "./ReactionProgress";
 
 export function ReactionReceiveView() {
     const reactions = [
@@ -24,6 +25,7 @@ export function ReactionReceiveView() {
         "UP",
         "DOWN"
     ];
+    const TIME_WAITING = 15000;
     const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     const refreshReactions = (payload?: ReactionResponsePayload) => {
@@ -37,7 +39,7 @@ export function ReactionReceiveView() {
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
-        store.lastReactionTime = Date.now() + 15000;
+        store.lastReactionTime = Date.now() + TIME_WAITING;
     };
 
     const resetReactions = () => {
@@ -53,8 +55,11 @@ export function ReactionReceiveView() {
 
     const updateModes = (index: number) => {
         let modes = store.reactionModes;
+        let values = store.reactionValues;
+        if(modes[index]) values[index] = 0;
         modes[index] = !modes[index];
         store.reactionModes = modes;
+        if(modes[index]) store.reactionValues = values;
     }
 
     useEffect(() => {
@@ -75,7 +80,7 @@ export function ReactionReceiveView() {
     }, [refreshReactions, socketEmiter]);
 
     const classes = makeStyles({
-        root: {
+        reactionWrapper: {
             padding: 10,
             display: "flex",
             justifyContent: "center",
@@ -85,7 +90,9 @@ export function ReactionReceiveView() {
     })();
 
     return (
-        <Paper className={classes.root} variant="outlined" square>
+        <Paper variant="outlined" square>
+            <ReactionProgress time={TIME_WAITING}/>
+            <div className={classes.reactionWrapper}>
             {reactions.map((reaction, i) => {
                 return (<ReactionCounter
                     icon={reactionsIcons[reaction]}
@@ -94,6 +101,7 @@ export function ReactionReceiveView() {
                     onMode={() => updateModes(i)}
                 />);
             })}
+            </div>
         </Paper>
     );
 }

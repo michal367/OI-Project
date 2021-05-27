@@ -40,7 +40,7 @@ const theme = createMuiTheme({
 function App() {
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket(); //for keeping socket open
-
+    console.log()
     // heroku 55s timeout fix
     useEffect(() => {
         if (window.location.hostname.includes("heroku")) {
@@ -86,43 +86,59 @@ function App() {
                     <TopBar />
 
                     <Switch>
-                        <Route exact path="/lecturer">
-                            <CreateSessionView />
-                        </Route>
 
-                        <Route path="/lecturer/quiz">
-                            <PickQuizView />
-                        </Route>
+                        <Route exact path="/lecturer" render={() => {
+                            return <CreateSessionView />
+                        }}/>
 
-                        <Route path="/lecturer/quizzes">
-                            <QuizzesListView />
-                        </Route>
+                        <Route path="/lecturer/quiz" render={() => {
+                            return <PickQuizView />
+                        }}/>
 
-                        <Route path="/lecturer/question">
-                            <CreateQuestionView />
-                        </Route>
+                        <Route path="/lecturer/quizzes" render={() => {
+                            return <QuizzesListView />
+                        }}/>
 
-                        <Route path="/lecturer/questions">
-                            <QuestionsListView />
-                        </Route>
+                        <Route path="/lecturer/question" render={() => {
+                            return <CreateQuestionView />
+                        }}/>
 
-                        {store.lectureID && (<>
-                            <Route path="/lecturer/stats">
-                                <QuizStatsView />
-                            </Route>
+                        <Route path="/lecturer/questions" render={() => {
+                            return <QuestionsListView />
+                        }}/>
 
-                            <Route path="/lecturer/timestamp">
-                                <TimestampView />
-                            </Route>
+                        <Route path="/lecturer/stats" render={() => {
+                            return (
+                                store.lectureID ?
+                                    <QuizStatsView /> :
+                                    <Redirect to="/lecturer" />
+                            )
+                        }}/>
 
-                            <Route path="/lecturer/session">
-                                <SessionDashboardView />
-                            </Route>
-                        </>)}
+                        <Route path="/lecturer/timestamp" render={() => {
+                            return (
+                                store.lectureID ?
+                                    <TimestampView /> :
+                                    <Redirect to="/lecturer" />
+                            )
+                        }}/>
 
-                        <Route path="/">
-                            <Redirect to={store.lectureID ? "/lecturer/session" : "/lecturer"} />
-                        </Route>
+                        <Route path="/lecturer/session" render={() => {
+                            return (
+                                store.lectureID ?
+                                    <SessionDashboardView /> :
+                                    <Redirect to="/lecturer" />
+                            )
+                        }}/>
+
+                        <Route exact path="/" render={() => {
+                            return (
+                                store.lectureID ?
+                                    <Redirect to="/lecturer/session" /> :
+                                    <Redirect to="/lecturer" />
+                            )
+                        }}/>
+
                     </Switch>
                 </ThemeProvider>
             </Router>

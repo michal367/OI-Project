@@ -697,7 +697,7 @@ const timestampMock: Timestamp[] = [
     }
 ];
 
-const endedQuizzesMock: ScheduledQuiz[] = [
+const scheduledQuizzesMock: ScheduledQuiz[] = [
     {
         "quiz": {
             "title": "Linwood",
@@ -4037,11 +4037,11 @@ const includeMockData = (enabled: boolean, store: IStore) => {
 
     if(enabled){
         storeWithMock.questions = questionListMock;
-        storeWithMock.endedQuizzed = endedQuizzesMock;
+        storeWithMock.scheduledQuizzes = scheduledQuizzesMock;
     }
 
     return storeWithMock;
 }
 
-export { includeMockData, studentListMock, questionListMock, timestampMock, endedQuizzesMock };
+export { includeMockData, studentListMock, timestampMock };
 

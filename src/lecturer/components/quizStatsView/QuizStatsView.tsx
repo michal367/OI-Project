@@ -22,14 +22,14 @@ import { ImportExport } from "../importExport/ImportExport";
 export function QuizStatsView() {
     const store = useContext(StoreContext);
     const [selectedQuizStats, setQuizStats] = React.useState<ScheduledQuiz | undefined>(
-        store.endedQuizzes.length > 0 ? store.endedQuizzes[0] : undefined
+        store.scheduledQuizzes.length > 0 ? store.scheduledQuizzes[0] : undefined
     );
 
     const theme = useTheme();
 
     useEffect(() => {
-        setQuizStats((prev) => prev && store.endedQuizzes.indexOf(prev) !== -1 ? prev : undefined);
-    }, [store.endedQuizzes]);
+        setQuizStats((prev) => prev && store.scheduledQuizzes.indexOf(prev) !== -1 ? prev : undefined);
+    }, [store.scheduledQuizzes]);
 
     const classes = makeStyles({
         root: {
@@ -122,26 +122,26 @@ export function QuizStatsView() {
     })();
 
     const handleQuiz = (quizIndex: number) => {
-        setQuizStats(store.endedQuizzes[quizIndex]);
+        setQuizStats(store.scheduledQuizzes[quizIndex]);
     };
 
     const handleDeleteStats = (quizIndex: number) => {
-        let statsToBeDeleted = store.endedQuizzes[quizIndex];
-        store.endedQuizzes = store.endedQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+        let statsToBeDeleted = store.scheduledQuizzes[quizIndex];
+        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
     }
 
     const handleShowResults = () => {
-        let tmpQuizzes = store.endedQuizzes;
+        let tmpQuizzes = store.scheduledQuizzes;
         tmpQuizzes.forEach(
             (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
         )
-        store.endedQuizzes = tmpQuizzes;
+        store.scheduledQuizzes = tmpQuizzes;
     }
 
     const onImport = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
             let jsonString = e.target.result as string;
-            store.endedQuizzes = [...store.endedQuizzes, ...JSON.parse(jsonString)];
+            store.scheduledQuizzes = [...store.scheduledQuizzes, ...JSON.parse(jsonString)];
         }
     }
 
@@ -150,7 +150,7 @@ export function QuizStatsView() {
             <div className={classes.root}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
-                        {store.endedQuizzes.map((quizStats, i) => (
+                        {store.scheduledQuizzes.map((quizStats, i) => (
                             <ListItem
                                 button
                                 selected={quizStats === selectedQuizStats}
@@ -190,7 +190,7 @@ export function QuizStatsView() {
                 </Paper>
                 <div className={classes.action}>
 
-                    <ImportExport onImport={onImport} objectToExport={store.endedQuizzes} fileName="endedQuizzes" />
+                    <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
 
                     <Fab
                         variant="extended"

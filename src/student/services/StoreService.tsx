@@ -52,6 +52,7 @@ const initialValue: IStore = {
         processed: false,
     },
 }
+
 const loadFromStorage = () => {
     let obj: IStore = {
         ...initialValue,
@@ -63,7 +64,6 @@ const loadFromStorage = () => {
 
     return obj;
 }
-
 
 const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
@@ -141,8 +141,6 @@ const Store = (props: StoreProps) => {
         </StoreContext.Provider>
     )
 };
-
-
 
 export const StoreContext = createContext<IStore>(initialValue);
 

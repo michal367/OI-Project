@@ -83,13 +83,12 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const handleClickEnd = () => {
         console.log("end lecture");
         store.link = "";
-        store.lectureID = null;
-        store.timeToNextQuiz = 0;
-        store.sendQuizStep = 0;
+        store.operation?.clearOnSessionEnd();
 
         let event: Payload = {
             event: "delete_lecture"
         }
+        
         sendJsonMessage(event);
         history.push({
             pathname: "/lecturer"
