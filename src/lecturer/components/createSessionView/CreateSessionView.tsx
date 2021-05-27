@@ -77,11 +77,12 @@ export function CreateSessionView() {
             const handleCreate = (parsed: LectureCreateResponsePayload) =>{
                 setSuccess(true);
                 setLoading(false);
-        
-                store.sessionId = parsed.data.lectureID;
+                console.log(parsed.data);
+                store.lectureID = parsed.data.lectureID;
                 store.sendQuizStep = 0;
                 store.timeToNextQuiz = 0;
                 store.link = parsed.data.lectureLink;
+
                 history.push({
                     pathname: "lecturer/session",
                     state: { isOpen: true }

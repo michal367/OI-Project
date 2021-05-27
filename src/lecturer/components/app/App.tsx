@@ -90,10 +90,6 @@ function App() {
                             <CreateSessionView />
                         </Route>
 
-                        <Route path="/lecturer/session">
-                            <SessionDashboardView />
-                        </Route>
-
                         <Route path="/lecturer/quiz">
                             <PickQuizView />
                         </Route>
@@ -110,18 +106,22 @@ function App() {
                             <QuestionsListView />
                         </Route>
 
-                        <Route path="/lecturer/stats">
-                            <QuizStatsView />
-                        </Route>
-                        <Route path="/lecturer/timestamp">
-                            <TimestampView />
-                        </Route>
+                        {store.lectureID && (<>
+                            <Route path="/lecturer/stats">
+                                <QuizStatsView />
+                            </Route>
+
+                            <Route path="/lecturer/timestamp">
+                                <TimestampView />
+                            </Route>
+
+                            <Route path="/lecturer/session">
+                                <SessionDashboardView />
+                            </Route>
+                        </>)}
+
                         <Route path="/">
-                            {(store.sessionId === "") ?
-                                <Redirect to="/lecturer" />
-                                :
-                                <Redirect to="/lecturer/session" />
-                            }
+                            <Redirect to={store.lectureID ? "/lecturer/session" : "/lecturer"} />
                         </Route>
                     </Switch>
                 </ThemeProvider>

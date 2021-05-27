@@ -6,11 +6,10 @@ export interface StoreProps {
 
 type StorageKey =
     "link" |
-    "sessionId" |
+    "lectureID" |
     "questions" |
     "quizzes" |
     "sendQuizStep" |
-    "selectedQuiz" |
     "timeToNextQuiz";
 
 const stringKey = (key: StorageKey) => {
@@ -43,7 +42,7 @@ const loadFromStorage = () => {
     let obj: IStore = {
         ...initialValue,
         link: loadKey("link") ?? initialValue.link,
-        sessionId: loadKey("sessionId") ?? initialValue.sessionId,
+        lectureID: loadKey("lectureID") ?? initialValue.lectureID,
         questions: loadKeyForArray("questions", initialValue.questions),
         quizzes: loadKeyForArray("quizzes", initialValue.quizzes),
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
@@ -55,7 +54,7 @@ const loadFromStorage = () => {
 
 export interface IStore {
     link: string,
-    sessionId: string,
+    lectureID: string|null,
     questions: Question[],
     quizzes: FrontQuiz[],
     sendQuizStep: number,
@@ -74,7 +73,7 @@ const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
     const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
     const [link, setLink] = useState(initialValue.link);
-    const [sessionId, setSessionId] = useState(initialValue.sessionId);
+    const [lectureID, setLectureID] = useState(initialValue.lectureID);
     const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
     const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
     const [selectedQuiz, setSelectedQuiz] = useState(-1);
@@ -89,9 +88,10 @@ const Store = (props: StoreProps) => {
     useEffect(() => {
         let initial = loadFromStorage();
         setLink(initial.link);
-        setSessionId(initial.sessionId);
+        setLectureID(initial.lectureID);
         setQuestions(initial.questions);
         setQuizzes(initial.quizzes);
+        setSendQuizStep(initial.sendQuizStep)
         setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
 
@@ -105,12 +105,12 @@ const Store = (props: StoreProps) => {
             saveKey("link", newValue);
         },
 
-        get sessionId() {
-            return sessionId;
+        get lectureID() {
+            return lectureID;
         },
-        set sessionId(newValue: string) {
-            setSessionId(newValue);
-            saveKey("sessionId", newValue);
+        set lectureID(newValue: string | null) {
+            setLectureID(newValue);
+            saveKey("lectureID", newValue);
         },
 
         get questions() {
@@ -150,7 +150,6 @@ const Store = (props: StoreProps) => {
         },
         set selectedQuiz(newValue: number) {
             setSelectedQuiz(newValue);
-            saveKey("selectedQuiz", newValue);
         },
 
         get sendQuizStep() {
@@ -212,7 +211,7 @@ const Store = (props: StoreProps) => {
 
 const initialValue: IStore = includeMockData(true,{
     link: "",
-    sessionId: "",
+    lectureID: "",
     quizzes: [],
     questions: [],
     sendQuizStep: 0,
@@ -231,6 +230,6 @@ const initialValue: IStore = includeMockData(true,{
 });
 
 
-export const StoreContext = createContext<IStore>(initialValue);
+export const StoreContext = createContext<IStore>(loadFromStorage());
 
 export default Store;

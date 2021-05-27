@@ -78,7 +78,7 @@ export function ReactionReceiveView() {
         root: {
             padding: 10,
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "center",
             gap: 30,
             overflow: "hidden",
         },
@@ -93,7 +93,7 @@ export function ReactionReceiveView() {
                     currentMode={store.reactionModes[i]}
                     onMode={() => updateModes(i)}
                 />);
-            })}<button onClick={() => refreshReactions()}>react</button>
+            })}
         </Paper>
     );
 }

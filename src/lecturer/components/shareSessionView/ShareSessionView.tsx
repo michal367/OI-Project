@@ -83,7 +83,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
     const handleClickEnd = () => {
         console.log("end lecture");
         store.link = "";
-        store.sessionId = "";
+        store.lectureID = null;
         store.timeToNextQuiz = 0;
         store.sendQuizStep = 0;
 
@@ -92,7 +92,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         }
         sendJsonMessage(event);
         history.push({
-            pathname: "/"
+            pathname: "/lecturer"
         });
     };
 
