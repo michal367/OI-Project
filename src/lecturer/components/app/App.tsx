@@ -12,7 +12,7 @@ import { useSocket } from "../../services/SocketService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
-import { PickQuizView } from "../pickQuizView/PickQuizView";
+import { CreateQuizView } from "../createQuizView/CreateQuizView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
 import { QuizzesListView } from "../quizzesListView/QuizzesListView";
@@ -95,7 +95,7 @@ function App() {
                         </Route>
 
                         <Route path="/lecturer/quiz">
-                            <PickQuizView />
+                            <CreateQuizView />
                         </Route>
 
                         <Route path="/lecturer/quizzes">
