@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { lazareLocalStorage } from "../../common/util/LazareLocalStorage";
 import { endedQuizzes } from "../../common/util/mockData";
 export interface StoreProps {
     children: ReactNode
@@ -13,21 +14,11 @@ type StorageKey =
     "selectedQuiz" |
     "timeToNextQuiz";
 
-const stringKey = (key: StorageKey) => {
-    return "lazare.lecturer." + key;
-}
+// REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
+const STORAGE_VERSION = "0.2";
+const KEY_PREFIX = "lecturer.";
 
-const loadKey = (key: StorageKey) => {
-    let obj = JSON.parse(localStorage.getItem(stringKey(key)) ?? "null");
-    console.log("loadKey", key, obj);
-    return obj;
-}
-
-const saveKey = (key: StorageKey, value: any) => {
-    if (value === undefined) return;
-    console.log("saveKey", key, value);
-    return localStorage.setItem(stringKey(key), JSON.stringify(value));
-}
+const { loadKey, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
 
 const loadFromStorage = () => {
     let obj: IStore = {
@@ -59,7 +50,6 @@ export interface IStore {
     reactionModes: boolean[],
 }
 
-
 const Store = (props: StoreProps) => {
     const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
     const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
@@ -77,6 +67,8 @@ const Store = (props: StoreProps) => {
     const [reactionModes, setReactionModes] = useState<boolean[]>(initialValue.reactionModes)
 
     useEffect(() => {
+        if (upgradeStorage()) return;
+
         let initial = loadFromStorage();
         setLink(initial.link);
         setSessionId(initial.sessionId);
@@ -84,7 +76,6 @@ const Store = (props: StoreProps) => {
         setQuizzes(initial.quizzes);
         setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
-
 
     const value = {
         get link() {
@@ -172,22 +163,24 @@ const Store = (props: StoreProps) => {
             setTimeToNextQuiz(newValue);
             saveKey("timeToNextQuiz", newValue);
         },
+
         get reactionValues() {
             return reactionValues;
         },
         set reactionValues(newValue: number[]) {
             setReactionValues([...newValue]);
         },
+
         get lastReactionTime() {
             return lastReactionTime;
         },
         set lastReactionTime(newValue: number) {
             setLastReactionTime(newValue);
         },
+
         get reactionModes() {
             return reactionModes;
         },
-
         set reactionModes(newValue: boolean[]) {
             setReactionModes([...newValue]);
         },
@@ -219,7 +212,6 @@ const initialValue: IStore = {
     reactionModes: [false, false, false, false, false],
     lastReactionTime: 30,
 }
-
 
 export const StoreContext = createContext<IStore>(initialValue);
 
