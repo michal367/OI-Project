@@ -136,7 +136,9 @@ export function CreateQuestionView() {
         deleteBtn: {
             color: red[700],
             flexShrink: 0,
-            width: 55.4,
+            width: 55,
+            height: 55,
+            margin:"5px 0"
         },
         buttonSuccess: {
             backgroundColor: green[500],
