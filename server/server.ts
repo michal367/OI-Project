@@ -29,7 +29,8 @@ app.use(async (ctx) => {
     catch (error) {
         if (error instanceof HttpError) {
             // console.log(ctx.request.url.pathname + " - " + error.message);
-            if (ctx.request.url.pathname.startsWith("/student/"))
+            if(ctx.request.url.pathname.startsWith("/favicon.ico")){
+            }else if (ctx.request.url.pathname.startsWith("/student/"))
                 ctx.response.redirect("/student");
             else
                 ctx.response.redirect("/lecturer");

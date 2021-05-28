@@ -82,7 +82,6 @@ export function ShareSessionView(props: ShareSessionViewProps) {
 
     const handleClickEnd = () => {
         console.log("end lecture");
-        store.link = "";
         store.operation?.clearOnSessionEnd();
 
         let event: Payload = {
@@ -100,9 +99,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
             <Dialog
                 open={open}
                 onClose={handleClickClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                fullWidth={true}
+                fullWidth
                 maxWidth="sm"
             >
                 <DialogTitle id="alert-dialog-title">

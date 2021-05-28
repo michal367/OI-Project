@@ -240,7 +240,7 @@ const Store = (props: StoreProps) => {
         operation: {
             clearOnSessionEnd: () => {
                 for (const property in initialValue) {
-                    if(independentStorageKeys.indexOf(property) == -1)
+                    if(independentStorageKeys.indexOf(property) === -1)
                         value[property] = initialValue[property as keyof typeof initialValue];
                 }
             }

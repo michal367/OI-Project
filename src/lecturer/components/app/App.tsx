@@ -2,10 +2,10 @@ import { CssBaseline } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     BrowserRouter as Router,
-    Redirect, Route, Switch
+    Redirect, Route, Switch, useLocation
 } from "react-router-dom";
 import { GridLoader } from "react-spinners";
 import { useSocket } from "../../services/SocketService";
@@ -40,7 +40,7 @@ const theme = createMuiTheme({
 function App() {
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket(); //for keeping socket open
-    console.log()
+    const [isLectureStarted, setIsLectureStarted] = useState<boolean>(!!store.lectureID);
     // heroku 55s timeout fix
     useEffect(() => {
         if (window.location.hostname.includes("heroku")) {
@@ -65,6 +65,8 @@ function App() {
             socketEmiter.off("onOpen", onOpen);
         };
     }, [socketEmiter, store]);
+    
+    useEffect(() => setIsLectureStarted(!!store.lectureID),[store.lectureID]);
 
     return (
         <Store>
@@ -82,64 +84,70 @@ function App() {
                             size={50}
                         />
                     </Backdrop>
+                    <Route path="/" render={({location}) => {
+                        console.log("currentLocation:   " + location.pathname);
+                        return (
+                            <>
+                            <TopBar currentLocation={location.pathname}/>
 
-                    <TopBar />
+                            <Switch>
 
-                    <Switch>
+                                <Route exact path="/lecturer" render={() => {
+                                    return <CreateSessionView />
+                                }} />
 
-                        <Route exact path="/lecturer" render={() => {
-                            return <CreateSessionView />
-                        }}/>
+                                <Route exact path="/lecturer/quiz" render={() => {
+                                    return <PickQuizView />
+                                }}/>
 
-                        <Route path="/lecturer/quiz" render={() => {
-                            return <PickQuizView />
-                        }}/>
+                                <Route exact path="/lecturer/quizzes" render={() => {
+                                    return <QuizzesListView />
+                                }}/>
 
-                        <Route path="/lecturer/quizzes" render={() => {
-                            return <QuizzesListView />
-                        }}/>
+                                <Route exact path="/lecturer/question" render={() => {
+                                    return <CreateQuestionView />
+                                }}/>
 
-                        <Route path="/lecturer/question" render={() => {
-                            return <CreateQuestionView />
-                        }}/>
+                                <Route exact path="/lecturer/questions" render={() => {
+                                    return <QuestionsListView />
+                                }}/>
 
-                        <Route path="/lecturer/questions" render={() => {
-                            return <QuestionsListView />
-                        }}/>
+                                <Route exact path="/lecturer/stats" render={() => {
+                                    return (
+                                        isLectureStarted ?
+                                            <QuizStatsView /> :
+                                            <Redirect to="/lecturer" />
+                                    )
+                                }}/>
 
-                        <Route path="/lecturer/stats" render={() => {
-                            return (
-                                store.lectureID ?
-                                    <QuizStatsView /> :
-                                    <Redirect to="/lecturer" />
-                            )
-                        }}/>
+                                <Route exact path="/lecturer/timestamp" render={() => {
+                                    return (
+                                        isLectureStarted ?
+                                            <TimestampView /> :
+                                            <Redirect to="/lecturer" />
+                                    )
+                                }}/>
 
-                        <Route path="/lecturer/timestamp" render={() => {
-                            return (
-                                store.lectureID ?
-                                    <TimestampView /> :
-                                    <Redirect to="/lecturer" />
-                            )
-                        }}/>
+                                <Route exact path="/lecturer/session" render={() => {
+                                    return (
+                                        isLectureStarted ?
+                                            <SessionDashboardView /> :
+                                            <Redirect to="/lecturer" />
+                                    )
+                                }}/>
 
-                        <Route path="/lecturer/session" render={() => {
-                            return (
-                                store.lectureID ?
-                                    <SessionDashboardView /> :
-                                    <Redirect to="/lecturer" />
-                            )
-                        }}/>
+                                <Route path="/" render={() => {
+                                    return (
+                                        isLectureStarted ?
+                                            <Redirect to="/lecturer/session" /> :
+                                            <Redirect to="/lecturer" />
+                                    )
+                                }}/>
 
-                        <Route exact path="/" render={() => {
-                            return (
-                                store.lectureID ?
-                                    <Redirect to="/lecturer/session" /> :
-                                    <Redirect to="/lecturer" />
-                            )
-                        }}/>
-
-                    </Switch>
+                            </Switch>
+                            </>
+                        )
+                    }}/>
                 </ThemeProvider>
             </Router>
         </Store>

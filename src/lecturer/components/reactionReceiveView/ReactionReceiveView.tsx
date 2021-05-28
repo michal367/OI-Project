@@ -1,5 +1,5 @@
 import { makeStyles, Paper } from "@material-ui/core";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { reactionsIcons } from "../../../common/util/reactions/icons";
@@ -25,7 +25,7 @@ export function ReactionReceiveView() {
         "UP",
         "DOWN"
     ];
-    const TIME_WAITING = 15000;
+    const TIME_WAITING = 20000;
     const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     const refreshReactions = (payload?: ReactionResponsePayload) => {
@@ -39,8 +39,12 @@ export function ReactionReceiveView() {
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
-        store.lastReactionTime = Date.now() + TIME_WAITING;
+        if(!store.reactionModes[index] || store.lastReactionTime > 0)
+            store.lastReactionTime = Date.now() + TIME_WAITING;
     };
+    const [progressEnabled, setProgressEnabled] = useState<boolean>(!store.reactionModes.reduce((acc, mode) =>{
+        return acc && mode;
+    }))
 
     const resetReactions = () => {
         let newReactions: number[] = [];
@@ -56,10 +60,13 @@ export function ReactionReceiveView() {
     const updateModes = (index: number) => {
         let modes = store.reactionModes;
         let values = store.reactionValues;
-        if(modes[index]) values[index] = 0;
+        if(modes[index] && store.lastReactionTime === 0) values[index] = 0;
         modes[index] = !modes[index];
         store.reactionModes = modes;
         if(modes[index]) store.reactionValues = values;
+        setProgressEnabled(!modes.reduce((acc, mode) =>{
+            return acc && mode;
+        }))
     }
 
     useEffect(() => {
@@ -68,7 +75,7 @@ export function ReactionReceiveView() {
                 store.reactionValues = resetReactions();
                 store.lastReactionTime = 0;
             }
-        }, 1000);
+        }, 500);
         return () => clearInterval(interval);
     }, [store, store.lastReactionTime]);
 
@@ -91,7 +98,7 @@ export function ReactionReceiveView() {
 
     return (
         <Paper variant="outlined" square>
-            <ReactionProgress time={TIME_WAITING}/>
+            {progressEnabled && <ReactionProgress time={TIME_WAITING}/>}
             <div className={classes.reactionWrapper}>
             {reactions.map((reaction, i) => {
                 return (<ReactionCounter

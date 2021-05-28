@@ -18,11 +18,7 @@ export function SessionDashboardView() {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
     if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
-    const history = useHistory();
     const store = useContext(StoreContext);
-    if (!store.lectureID || store.lectureID.length === 0) {
-        history.goBack();
-    }
     const backEnd = useBackEnd();
     const { socketEmiter, sendJsonMessage } = useSocket();
 
@@ -134,11 +130,40 @@ export function SessionDashboardView() {
         };
     }, [refreshList, socketEmiter]);
     
-    // I do not know what is happenning here
-    // I use similiar format to refresh whole list for ws ap as for rest api
+    // I do not know what is happening here
+    // I use similar format to refresh whole list for ws ap as for rest api
     // useEffect() makes it go into infinite loop of refreshing
     // I guess something in depts array is being changed during callback invocation
     // I do not know how to fix it, so I leave it be as for now and I let rest manage list refreshing
+    //
+    // const handleGetStudentList = useCallback((parsed: GetStudentListResponsePayload) =>{
+    //     const mapped: StudentListRow[] = parsed.data.studentList.map((item, index) => {return { orderIndex: index + 1, ...item };});
+    //     setStudentList(mapped);
+    //     // socketEmiter.off("student_list", handleGetStudentList);
+    //     console.log("list refreshed with whole new list")
+    // }, []); 
+    //
+    // const refreshListWithWholeList = useCallback(() => {
+    //     console.log("refresh whole list");
+    //     socketEmiter.on("student_list", handleGetStudentList);
+    //     const payload: Payload = {
+    //         event: "get_student_list"
+    //     };
+    //     sendJsonMessage(payload); 
+
+    // }, [handleGetStudentList, sendJsonMessage, socketEmiter]);
+
+    // useEffect(() => {
+    //     socketEmiter.once("student_list", handleGetStudentList);
+    //     console.log("refresh whole list");
+    //     const payload: Payload = {
+    //         event: "get_student_list"
+    //     };
+    //     sendJsonMessage(payload); 
+    //     // return () => {
+    //     //     socketEmiter.removeListener("student_list", handleGetStudentList);
+    //     // };
+    // }, [handleGetStudentList, sendJsonMessage, socketEmiter]);
 
     const refreshListWithWholeListWithRest = useCallback(() => {
         console.log("refreshList");

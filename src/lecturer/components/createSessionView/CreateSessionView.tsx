@@ -16,7 +16,6 @@ export function CreateSessionView() {
     const store = useContext(StoreContext);
     const history = useHistory();
     const theme = useTheme();
-    const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
 
     const classes = makeStyles({
@@ -68,8 +67,7 @@ export function CreateSessionView() {
         [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
     });
-
-    
+ 
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);

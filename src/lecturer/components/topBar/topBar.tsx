@@ -1,17 +1,19 @@
 import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
-import { useLocation } from 'react-router-dom';
 import { StoreContext } from '../../services/StoreService';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import routeToTabsValue from '../../../common/util/routeToTabsValue';
 import NotifiableTab from './NotifiableTab';
-export default function TopBar() {
-    const store = useContext(StoreContext);
-    const location = useLocation();
 
-    const [selectedTab, setSelectedTab] = useState(routeToTabsValue(location.pathname));
+interface TopBarProps{
+    currentLocation: string;
+}
+
+export default function TopBar(props: TopBarProps) {
+    const store = useContext(StoreContext);
+    const [selectedTab, setSelectedTab] = useState(routeToTabsValue(props.currentLocation));
 
     const routes = {
         index: "/lecturer",
@@ -23,8 +25,8 @@ export default function TopBar() {
     }
   
     useEffect(() => {
-        setSelectedTab(routeToTabsValue(location.pathname));
-    }, [location.pathname, routeToTabsValue]);
+        setSelectedTab(routeToTabsValue(props.currentLocation));
+    }, [props.currentLocation, routeToTabsValue]);
 
     const processQuestions = () =>{
         store.studentQuestions.forEach(question => question.processed = true)

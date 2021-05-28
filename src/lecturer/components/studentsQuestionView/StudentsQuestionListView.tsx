@@ -99,7 +99,7 @@ export function StudentsQuestionListView() {
                         <div className={classes.message}>
                             <div className={classes.messageText}>
                                 <TextField className={classes.field} error={!studentQuestion.processed} variant="outlined"
-                                 fullWidth={true} 
+                                 fullWidth
                                  multiline
                                  label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
                                  defaultValue={studentQuestion.text} InputProps={{

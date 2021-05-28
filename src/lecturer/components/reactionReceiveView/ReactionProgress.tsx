@@ -14,8 +14,8 @@ export function ReactionProgress(props: ReactionProgressProps) {
             100,
             Math.max(
                 0,
-                (store.lastReactionTime - Date.now()) * 100 / (props.time-1000)
-            )
+                (store.lastReactionTime - Date.now())
+            ) * 101 / props.time
         );
     }
     const [progress, setProgress] = useState(getProgress());
@@ -23,7 +23,7 @@ export function ReactionProgress(props: ReactionProgressProps) {
         const interval = setInterval(() => {
             if (store.lastReactionTime - Date.now() >= 0 || progress > 0)
                 setProgress(getProgress())
-        }, 800);
+        }, 200);
         return () => clearInterval(interval);
     }, [store, store.lastReactionTime]);
     return <LinearProgress color="secondary" variant="determinate" value={progress} />;

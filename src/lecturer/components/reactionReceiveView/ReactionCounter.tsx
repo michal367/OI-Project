@@ -27,7 +27,7 @@ export function ReactionCounter(props: ReactionCounterProps) {
     const animate = useThrottle((async () => {
         setChanged(false);
 
-        await delay(150);
+        await delay(300);
 
         setChanged(true);
     }), 2000, { leading: true })
