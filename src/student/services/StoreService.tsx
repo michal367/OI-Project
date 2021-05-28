@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { lazareLocalStorage } from "../../common/util/LazareLocalStorage";
 
 export interface StoreProps {
     children: ReactNode
@@ -23,21 +24,11 @@ type StorageKey =
     "studentId" |
     "quizzes";
 
-const stringKey = (key: StorageKey) => {
-    return "lazare.student." + key;
-}
+// REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
+const STORAGE_VERSION = "0.2";
+const KEY_PREFIX = "student.";
 
-const loadKey = (key: StorageKey) => {
-    let obj = JSON.parse(localStorage.getItem(stringKey(key)) ?? "null");
-    console.log("loadKey", obj);
-    return obj;
-}
-
-const saveKey = (key: StorageKey, value: any) => {
-    if (value === undefined) return;
-    console.log("saveKey", value);
-    return localStorage.setItem(stringKey(key), JSON.stringify(value));
-}
+const { loadKey, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
 
 const initialValue: IStore = {
     invitation: "",
@@ -52,6 +43,7 @@ const initialValue: IStore = {
         processed: false,
     },
 }
+
 const loadFromStorage = () => {
     let obj: IStore = {
         ...initialValue,
@@ -64,7 +56,6 @@ const loadFromStorage = () => {
     return obj;
 }
 
-
 const Store = (props: StoreProps) => {
     const [invitation, setInvitation] = useState(initialValue.invitation);
     const [studentNick, setStudentNick] = useState(initialValue.studentNick);
@@ -73,13 +64,15 @@ const Store = (props: StoreProps) => {
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
     const [studentQuestion, setStudentQuestion] = useState<StudentQuestion>(initialValue.studentQuestion);
     useEffect(() => {
+        if (upgradeStorage()) return;
+
         let initial = loadFromStorage();
         setInvitation(initial.invitation);
         setStudentNick(initial.studentNick);
         setQuizzes(initial.quizzes);
     }, [])
 
-    const value : IStore = {
+    const value: IStore = {
         get invitation() {
             return invitation;
         },
@@ -119,6 +112,7 @@ const Store = (props: StoreProps) => {
         set isLoading(newValue: boolean) {
             setIsLoading(newValue);
         },
+
         get studentQuestion() {
             return studentQuestion
         },
@@ -141,8 +135,6 @@ const Store = (props: StoreProps) => {
         </StoreContext.Provider>
     )
 };
-
-
 
 export const StoreContext = createContext<IStore>(initialValue);
 
