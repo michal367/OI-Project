@@ -30,7 +30,7 @@ export function ReactionCounter(props: ReactionCounterProps) {
         await delay(300);
 
         setChanged(true);
-    }), 2000, { leading: true })
+    }), 1000, { leading: true })
 
     const classes = makeStyles({
         reaction: {

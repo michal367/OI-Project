@@ -21,6 +21,7 @@ import { useSocket } from "../../services/SocketService";
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
+    update: () => void;
 }
 
 export function ShareSessionView(props: ShareSessionViewProps) {
@@ -87,8 +88,9 @@ export function ShareSessionView(props: ShareSessionViewProps) {
         let event: Payload = {
             event: "delete_lecture"
         }
-        
+
         sendJsonMessage(event);
+        props.update();
         history.push({
             pathname: "/lecturer"
         });

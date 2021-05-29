@@ -7,7 +7,7 @@ export interface StoreProps {
 export interface IStore {
     [key: string]: any;
     link: string,
-    lectureID: string|null,
+    lectureID: string | null,
     questions: Question[],
     quizzes: FrontQuiz[],
     sendQuizStep: number,
@@ -57,8 +57,8 @@ const saveKey = (key: StorageKey, value: any) => {
 }
 
 const loadKeyForArray = (key: StorageKey, initialValue: any[]) => {
-    let obj : any[] = loadKey(key);
-    if(obj && obj.length > 0)
+    let obj: any[] = loadKey(key);
+    if (obj && obj.length > 0)
         initialValue.forEach((el) => {
             // TODO add el to array if its ID is not present there. 
         });
@@ -67,7 +67,7 @@ const loadKeyForArray = (key: StorageKey, initialValue: any[]) => {
     return obj
 }
 
-const initialValue: IStore = includeMockData(true,{
+const initialValue: IStore = includeMockData(true, {
     link: "",
     lectureID: null,
     quizzes: [],
@@ -132,7 +132,7 @@ const Store = (props: StoreProps) => {
     }, []);
 
 
-    const value : IStore = {
+    const value: IStore = {
         get link() {
             return link;
         },
@@ -240,8 +240,9 @@ const Store = (props: StoreProps) => {
         operation: {
             clearOnSessionEnd: () => {
                 for (const property in initialValue) {
-                    if(independentStorageKeys.indexOf(property) === -1)
+                    if (independentStorageKeys.indexOf(property) === -1) {
                         value[property] = initialValue[property as keyof typeof initialValue];
+                    }
                 }
             }
         }
