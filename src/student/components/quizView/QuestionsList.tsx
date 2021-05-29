@@ -1,34 +1,21 @@
-import { makeStyles, Paper, Button, Grid, Checkbox, TextField, CardContent, Card } from '@material-ui/core';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import { makeStyles, Paper, Button, Grid, TextField } from '@material-ui/core';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { ImageView } from './imageView';
 import { testData } from './testData';
-import Store, { StoreContext } from "../../services/StoreService";
+import { StoreContext } from "../../services/StoreService";
 import { useContext, useEffect } from "react";
 import { useSocket } from '../../services/SocketService';
+import { Option } from './Option';
 
 export function QuestionsList() {
     let answers = new Map();
     const [quiz, setQuiz] = useState(testData());
     const [quizID, setQuizID] = useState("");
+    const [checked, setChecked] = useState<Record<string, boolean | undefined>>({});
 
-    const fillcheckboxValues = () => {
-        let values : boolean[][] = [];
-        for(let i = 0; i < quiz.questions.length; i++) {
-            values[i] = []
-            let len;
-            if(quiz.questions[i].options === undefined) continue;
-            else{  len = quiz.questions[i].options!.length;}
-            for(let j = 0; j < len; j++)
-                values[i].push(false);
-            
-        }
-        return values
-    }
-
-    const [checkboxValues, setCheckboxValues] = useState<boolean[][]>(fillcheckboxValues());
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket();
-    
+
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
@@ -41,17 +28,7 @@ export function QuestionsList() {
         console.log("refreshQuiz");
         setQuiz(payload.data.questions);
         setQuizID(payload.data.quiz_id);
-        let values : boolean[][] = [];
-        for(let i = 0; i < payload.data.questions.questions.length; i++) {
-            values[i] = []
-            let len;
-            if(payload.data.questions.questions[i].options === undefined) continue;
-            else{  len = payload.data.questions.questions[i].options!.length;}
-            for(let j = 0; j < len; j++)
-                values[i].push(false);
-            
-        }
-        setCheckboxValues(values);
+        setChecked({});
     }, []);
 
     useEffect(() => {
@@ -61,11 +38,18 @@ export function QuestionsList() {
         };
     }, [refreshQuiz, socketEmiter]);
 
-    const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
+    const handleCheckboxChange = (checked: boolean, questionNumber: number, answerNumber: number) => {
 
-        let values = [...checkboxValues];
-        values[questionNumber][answerNumber] = e.target.checked;
-        setCheckboxValues(values);
+        // let values = [...checkboxValues];
+        // values[questionNumber][answerNumber] = checked;
+        // setCheckboxValues(values);
+        let key = questionNumber + ":" + answerNumber;
+        // props.updateChecked(key);
+        setChecked((prev) => {
+            prev[key] = !prev[key];
+            console.log(prev);
+            return prev;
+        })
 
         if (!answers.has(questionNumber)) {
             const len = quiz.questions[questionNumber].options?.length;
@@ -76,15 +60,15 @@ export function QuestionsList() {
                 array.push(false);
             }
 
-            array[answerNumber] = e.target.checked;
+            array[answerNumber] = checked;
             answers.set(questionNumber, array);
         }
         else {
             let array = answers.get(questionNumber);
-            array[answerNumber] = e.target.checked;
+            array[answerNumber] = checked;
             answers.set(questionNumber, array);
         }
-        
+
     }
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, questionNumber: number) => {
@@ -110,19 +94,18 @@ export function QuestionsList() {
         };
         console.log(payload);
         sendJsonMessage(payload);
-        let values : boolean[][] = [];
-        for(let i = 0; i < quiz.questions.length; i++) {
-            values[i] = []
-            let len;
-            if(quiz.questions[i].options === undefined) continue;
-            else{  len = quiz.questions[i].options!.length;}
-            for(let j = 0; j < len; j++)
-                values[i].push(false);
-            
-        }
-        setCheckboxValues(values);
+        // let values : boolean[][] = [];
+        // for(let i = 0; i < quiz.questions.length; i++) {
+        //     values[i] = []
+        //     let len;
+        //     if(quiz.questions[i].options === undefined) continue;
+        //     else{  len = quiz.questions[i].options!.length;}
+        //     for(let j = 0; j < len; j++)
+        //         values[i].push(false);
+        // }
+        // setCheckboxValues(values);
+        setChecked({});
     }
-
     return (
         <>
             {quiz.questions.map((question, i) => (
@@ -131,16 +114,14 @@ export function QuestionsList() {
                     {question.imageSrc && <ImageView imageSrc={question.imageSrc} />}
                     <div className='answer-section'>
                         <Grid container spacing={1}>
-                            {question.options ? (question.options.map((option, j) => (
-                                <div style={{ display: "flex", marginBottom: "10px" }}>
-                                    <Checkbox
-                                        color="primary"
-                                        checked={checkboxValues[i][j]}
-                                        onChange={(e) => handleCheckboxChange(e, i, j)}
-                                    />
-                                    <Button variant="outlined">{option.text}</Button>
-                                </div>
-                            ))) : (
+                            {question.options ? (question.options.map((option, j) => {
+                                console.log(checked[i + ":" + j]);
+                                return (
+                                    <Option checked={!!checked[i + ":" + j]} onChange={(checked) => {
+                                        handleCheckboxChange(checked, i, j)
+                                    }} text={option.text} />
+                                )
+                            })) : (
                                 <TextField
                                     multiline={true}
                                     id="standard-basic"

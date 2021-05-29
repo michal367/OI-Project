@@ -1,4 +1,5 @@
 import { makeStyles, Paper } from '@material-ui/core';
+import { useState } from 'react';
 import { QuestionsList } from './QuestionsList';
 
 
@@ -11,10 +12,15 @@ export default function QuizView() {
             overflow: "auto",
         },
     })();
-    
+    // const updateCheckedValues = (key:string) => {
+    //     setCheckedValues((prev) => {
+    //         prev[key] = !prev[key];
+    //         return prev;
+    //     })
+    // }
     return (
         <Paper className={classes.overlay}>
-            <QuestionsList></QuestionsList>
+            <QuestionsList />
         </Paper>
     );
 }
