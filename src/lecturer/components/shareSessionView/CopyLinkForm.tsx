@@ -52,7 +52,6 @@ const Fade = React.forwardRef<HTMLDivElement, FadeProps>(function Fade(
 
 export function CopyLinkForm(props: CopyLinkFromProps) {
     const store = useContext(StoreContext);
-    console.log(props.prefix);
     const prefix = props.prefix ?? "";
     const theme = useTheme();
 

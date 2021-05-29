@@ -19,7 +19,6 @@ app.use(oakCors());
 app.use(router.routes());
 app.use(router.allowedMethods());
 app.use(async (ctx) => {
-    // console.log(ctx.request.url.pathname);
     const filePath = path.join(Deno.cwd(), "build");
     try {
         await send(ctx, ctx.request.url.pathname, {
@@ -28,11 +27,9 @@ app.use(async (ctx) => {
     }
     catch (error) {
         if (error instanceof HttpError) {
-            // console.log(ctx.request.url.pathname + " - " + error.message);
-            if(ctx.request.url.pathname.startsWith("/favicon.ico")){
-            }else if (ctx.request.url.pathname.startsWith("/student/"))
+            if (ctx.request.url.pathname.startsWith("/student/"))
                 ctx.response.redirect("/student");
-            else
+            else if(!ctx.request.url.pathname.startsWith("/favicon.ico"))
                 ctx.response.redirect("/lecturer");
         }
     }

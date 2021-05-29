@@ -1,10 +1,8 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import { useContext, useEffect } from "react";
-import { StoreContext } from "../../services/StoreService";
-import {TimestampTable} from "./TimestampTable";
+import { useEffect } from "react";
+import { TimestampTable } from "./TimestampTable";
 
 export function TimestampView() {
-    const store = useContext(StoreContext);
 
     const theme = useTheme();
 

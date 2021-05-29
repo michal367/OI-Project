@@ -4,7 +4,7 @@ import "fontsource-roboto";
 import { StudentFormView } from "../joinSessionView/StudentFormView";
 import { useRouteMatch } from "react-router";
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface JoinSessionLocationState {
     dialogOpen?: boolean;
@@ -22,15 +22,15 @@ export function JoinSessionView() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogText, setDialogText] = useState(text.sessionEnded);
 
-    const getSessionID = () => {
-        let sessionId = "";
+    const getSessionCodeFromURL = () => {
+        let codeFromURL = "";
         if (match)
-            sessionId = match.params.session.replace(/[^0-9]/, "");
+            codeFromURL = match.params.session.replace(/[^0-9]/, "");
         else
-            sessionId = location.search.substring(1).replace(/[^0-9]/, "");
-        return sessionId;
+            codeFromURL = location.search.substring(1).replace(/[^0-9]/, "");
+        return codeFromURL;
     };
-    const [sessionID, setSessionID] = useState(getSessionID());
+    const [sessionCode] = useState(getSessionCodeFromURL());
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -65,6 +65,7 @@ export function JoinSessionView() {
     const handleJoinFailed = (error?: string) => {
         setDialogOpen(true);
         setDialogText(text.failedToJoin)
+        console.log(error);
     }
 
     return (
@@ -83,7 +84,7 @@ export function JoinSessionView() {
 
 
             <Paper variant="outlined" square className={classes.card}>
-                <StudentFormView session={sessionID.length === 7 ? sessionID : undefined} onFail={handleJoinFailed} />
+                <StudentFormView session={sessionCode.length === 7 ? sessionCode : undefined} onFail={handleJoinFailed} />
             </Paper>
         </div>
     );

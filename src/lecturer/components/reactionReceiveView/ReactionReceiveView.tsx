@@ -8,6 +8,7 @@ import { ReactionName } from "../../../common/util/reactions/enum";
 import { ReactionProgress } from "./ReactionProgress";
 
 export function ReactionReceiveView() {
+    const store = useContext(StoreContext);
     const reactions = [
         ReactionName.HEART,
         ReactionName.HAPPY,
@@ -27,7 +28,6 @@ export function ReactionReceiveView() {
     ];
     const TIME_WAITING = 20000;
     const { socketEmiter } = useSocket();
-    const store = useContext(StoreContext);
     const refreshReactions = (payload?: ReactionResponsePayload) => {
         let index: number;
         if (payload) {
@@ -39,18 +39,28 @@ export function ReactionReceiveView() {
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
-        if(!store.reactionModes[index] || store.lastReactionTime > 0)
+        if (!store.reactionModes[index] || store.lastReactionTime > 0)
             store.lastReactionTime = Date.now() + TIME_WAITING;
     };
-    const [progressEnabled, setProgressEnabled] = useState<boolean>(!store.reactionModes.reduce((acc, mode) =>{
+    const [progressEnabled, setProgressEnabled] = useState<boolean>(!store.reactionModes.reduce((acc, mode) => {
         return acc && mode;
     }))
 
+    const [reactionModes, setReactionModes] = useState<boolean[]>(store.reactionModes);
+    const [reactionValues, setReactionValues] = useState<number[]>(store.reactionValues);
+    useEffect(() => {
+        setReactionModes(store.reactionModes);
+        setProgressEnabled(!store.reactionModes.reduce((acc, mode) => {
+            return acc && mode;
+        }));
+    }, [store.reactionModes, store]);
+    useEffect(() => setReactionValues(store.reactionValues), [store.reactionValues, store]);
+
     const resetReactions = () => {
         let newReactions: number[] = [];
-        store.reactionModes.forEach((mode, i) => {
+        reactionModes.forEach((mode, i) => {
             if (mode)
-                newReactions.push(store.reactionValues[i]);
+                newReactions.push(reactionValues[i]);
             else
                 newReactions.push(0);
         })
@@ -60,13 +70,12 @@ export function ReactionReceiveView() {
     const updateModes = (index: number) => {
         let modes = store.reactionModes;
         let values = store.reactionValues;
-        if(modes[index] && store.lastReactionTime === 0) values[index] = 0;
+        if (modes[index] && store.lastReactionTime === 0) {
+            values[index] = 0;
+            store.reactionValues = values;
+        };
         modes[index] = !modes[index];
         store.reactionModes = modes;
-        if(modes[index]) store.reactionValues = values;
-        setProgressEnabled(!modes.reduce((acc, mode) =>{
-            return acc && mode;
-        }))
     }
 
     useEffect(() => {
@@ -98,16 +107,16 @@ export function ReactionReceiveView() {
 
     return (
         <Paper variant="outlined" square>
-            {progressEnabled && <ReactionProgress time={TIME_WAITING}/>}
+            {progressEnabled && <ReactionProgress time={TIME_WAITING} />}
             <div className={classes.reactionWrapper}>
-            {reactions.map((reaction, i) => {
-                return (<ReactionCounter
-                    icon={reactionsIcons[reaction]}
-                    value={store.reactionValues[i]}
-                    currentMode={store.reactionModes[i]}
-                    onMode={() => updateModes(i)}
-                />);
-            })}
+                {reactions.map((reaction, i) => {
+                    return (<ReactionCounter
+                        icon={reactionsIcons[reaction]}
+                        value={reactionValues[i]}
+                        currentMode={reactionModes[i]}
+                        onMode={() => updateModes(i)}
+                    />);
+                })}
             </div>
         </Paper>
     );
