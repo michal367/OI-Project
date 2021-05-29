@@ -44,7 +44,8 @@ const initialValue: IStore = {
     studentQuestion:{
         studentNick: "",
         time: new Date(),
-        text: ""
+        text: "",
+        processed: false,
     },
 }
 const loadFromStorage = () => {
