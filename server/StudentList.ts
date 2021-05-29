@@ -23,8 +23,9 @@ class StudentList extends EventEmitter {
     }
 
     deleteStudent(id: string): void {
+        const student = this.students.get(id)
         this.students.delete(id);
-        this.emit("studentDeleted");
+        this.emit("studentDeleted", student);
     }
 
     asArray() {
@@ -35,5 +36,13 @@ class StudentList extends EventEmitter {
         return (student1.name === student2.name && student1.surname === student2.surname && student1.nick === student2.nick)
     }
 
+    includes(student: Student): boolean {
+        const present: Student | undefined = this.asArray().find((other: Student) => {
+            return this.compareTwoStudents(student, other);
+        });
+        return present != undefined;
+    }
+
 }
+
 export default StudentList;

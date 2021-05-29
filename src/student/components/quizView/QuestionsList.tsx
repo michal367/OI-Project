@@ -1,12 +1,10 @@
-import { makeStyles, Paper, Button, Grid, TextField } from '@material-ui/core';
-import { ChangeEvent, useCallback, useState } from 'react';
-import { ImageView } from './imageView';
-import { testData } from './testData';
-import { StoreContext } from "../../services/StoreService";
-import { useContext, useEffect } from "react";
+import { Button, Grid, makeStyles, Paper } from '@material-ui/core';
+import { useCallback, useEffect, useState } from 'react';
 import { useSocket } from '../../services/SocketService';
-import { Option } from './Option';
 import { Answer } from './Answer';
+import { ImageView } from './imageView';
+import { Option } from './Option';
+import { testData } from './testData';
 
 interface QuestionsListProps {
     handleBlock: (() => void);
@@ -19,7 +17,6 @@ export function QuestionsList(props: QuestionsListProps) {
     const [quizID, setQuizID] = useState("");
     const [answersRecord, setAnswersRecord] = useState<Record<string, boolean | string | undefined>>({});
 
-    const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket();
 
     const classes = makeStyles({
@@ -33,7 +30,7 @@ export function QuestionsList(props: QuestionsListProps) {
     const refreshQuiz = useCallback((payload: ServerQuizRequestPayload) => {
         console.log("refreshQuiz");
         setQuiz(payload.data.questions);
-        setQuizID(payload.data.quiz_id);
+        setQuizID(payload.data.quizID);
         setAnswersRecord({});
         props.handleEnable();
     }, []);
@@ -83,7 +80,7 @@ export function QuestionsList(props: QuestionsListProps) {
         let payload: QuizResponsePayload = {
             event: "send_quiz_response",
             data: {
-                quiz_id: quizID,
+                quizID: quizID,
                 answers: generateAnswersData(),
             }
         };

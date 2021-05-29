@@ -24,39 +24,39 @@ export function SessionDashboardView() {
         history.goBack();
     }
     const backEnd = useBackEnd();
-    const { socketEmiter } = useSocket();
+    const { socketEmiter, sendJsonMessage } = useSocket();
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<string[]>(
-        store.sendQuiz.students
+        store.sendQuiz.studentIDs
     );
 
     const toggleAllSelectedStudents = (checked: boolean) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let mapById = (student: Student) => student.id;
         if (checked) {
-            tmpQuiz.students = [];
+            tmpQuiz.studentIDs = [];
         } else {
-            tmpQuiz.students = [...studentList.map(mapById)];
+            tmpQuiz.studentIDs = [...studentList.map(mapById)];
         }
 
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
 
     const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let selectedStudents = randomNumbers.map((i) => studentList[i]);
         let mapById = (student: Student) => student.id;
-        tmpQuiz.students = [...selectedStudents.map(mapById)];
+        tmpQuiz.studentIDs = [...selectedStudents.map(mapById)];
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
 
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        let currentIndex = store.sendQuiz.students.indexOf(id);
-        let newSelected = [...store.sendQuiz.students];
+        let currentIndex = store.sendQuiz.studentIDs.indexOf(id);
+        let newSelected = [...store.sendQuiz.studentIDs];
 
         if (currentIndex === -1) {
             newSelected.push(id);
@@ -64,9 +64,9 @@ export function SessionDashboardView() {
             newSelected.splice(currentIndex, 1);
         }
 
-        tmpQuiz.students = newSelected;
+        tmpQuiz.studentIDs = newSelected;
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
     const theme = useTheme();
 
@@ -112,7 +112,63 @@ export function SessionDashboardView() {
         }
     })();
 
-    const refreshList = useCallback(() => {
+    const refreshList = useCallback((parsed: StudentAddedPayload) => {
+        console.log("refresh part of list");
+        const newStudentList: StudentListRow[] = studentList;
+        const studentRow: StudentListRow = {
+            orderIndex: newStudentList.length+1,
+            id: parsed.data.id,
+            name: parsed.data.name,
+            surname: parsed.data.surname,
+            nick: parsed.data.nick
+        }
+        newStudentList.push(studentRow);
+        setStudentList(newStudentList);
+        console.log("list refreshed with one student")
+    }, [studentList]);
+
+    useEffect(() => {
+        socketEmiter.addListener("student_added", refreshList);
+        return () => {
+            socketEmiter.removeListener("student_added", refreshList);
+        };
+    }, [refreshList, socketEmiter]);
+    
+    // I do not know what is happenning here
+    // I use similiar format to refresh whole list for ws ap as for rest api
+    // useEffect() makes it go into infinite loop of refreshing
+    // I guess something in depts array is being changed during callback invocation
+    // I do not know how to fix it, so I leave it be as for now and I let rest manage list refreshing
+    // const handleGetStudentList = useCallback((parsed: GetStudentListResponsePayload) =>{
+    //     const mapped: StudentListRow[] = parsed.data.studentList.map((item, index) => {return { orderIndex: index + 1, ...item };});
+    //     setStudentList(mapped);
+    //     // socketEmiter.off("student_list", handleGetStudentList);
+    //     console.log("list refreshed with whole new list")
+    // }, []); 
+
+    // const refreshListWithWholeList = useCallback(() => {
+    //     console.log("refresh whole list");
+    //     socketEmiter.on("student_list", handleGetStudentList);
+    //     const payload: Payload = {
+    //         event: "get_student_list"
+    //     };
+    //     sendJsonMessage(payload); 
+
+    // }, [handleGetStudentList, sendJsonMessage, socketEmiter]);
+
+    // useEffect(() => {
+    //     socketEmiter.once("student_list", handleGetStudentList);
+    //     console.log("refresh whole list");
+    //     const payload: Payload = {
+    //         event: "get_student_list"
+    //     };
+    //     sendJsonMessage(payload); 
+    //     // return () => {
+    //     //     socketEmiter.removeListener("student_list", handleGetStudentList);
+    //     // };
+    // }, [handleGetStudentList, sendJsonMessage, socketEmiter]);
+
+    const refreshListWithWholeListWithRest = useCallback(() => {
         console.log("refreshList");
         backEnd
             .getStudentsForLecture(store.sessionId ?? "")
@@ -126,15 +182,9 @@ export function SessionDashboardView() {
     }, [backEnd, store.sessionId]);
 
     useEffect(() => {
-        socketEmiter.addListener("studentAdded", refreshList);
-        return () => {
-            socketEmiter.removeListener("studentAdded", refreshList);
-        };
-    }, [refreshList, socketEmiter]);
+        refreshListWithWholeListWithRest();
+    }, [refreshListWithWholeListWithRest]);
 
-    useEffect(() => {
-        refreshList();
-    }, [refreshList]);
 
     return (
         <>

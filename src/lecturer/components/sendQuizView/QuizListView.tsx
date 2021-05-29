@@ -54,7 +54,7 @@ export function QuizListView(props: QuizListViewProps) {
                         >
                             <ListItemText primary={value.title} />
                         </ListItem>
-                        {i != store.quizzes.length - 1 && (
+                        {i !== store.quizzes.length - 1 && (
                             <Divider />
                         )}
                     </>

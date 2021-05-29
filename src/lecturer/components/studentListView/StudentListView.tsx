@@ -10,8 +10,8 @@ import {
     TableRow,
 } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
+import { Order, stableSort, getComparator } from "../../../common/util/comparators";
 import { StoreContext } from "../../services/StoreService";
-import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
 interface StudentListViewProps {
@@ -119,7 +119,6 @@ export function StudentListView(props: StudentListViewProps) {
                                             />
                                         )}
                                     </TableCell>
-                                    {/*<TableCell>{row.nick}</TableCell>*/}
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>

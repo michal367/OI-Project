@@ -1,9 +1,10 @@
 import { makeStyles, Paper } from "@material-ui/core";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
-import { ReactionName, reactionsIcons } from "../../util/reactionsEnum";
+import { reactionsIcons } from "../../../common/util/reactions/icons";
 import { useSocket } from "../../services/SocketService";
+import { ReactionName } from "../../../common/util/reactions/enum";
 
 export function ReactionReceiveView() {
     const reactions = [
@@ -25,24 +26,46 @@ export function ReactionReceiveView() {
     ];
     const { socketEmiter } = useSocket();
     const store = useContext(StoreContext);
-    const refreshReactions = (payload: ReactionResponsePayload) => {
-        let indexString: string = payload.data.reaction;
-        let index = reactionsString.indexOf(indexString);
+    const refreshReactions = useCallback((payload?: ReactionResponsePayload) => {
+        let index: number;
+        if (payload) {
+            let indexString: string = payload.data.reaction;
+            index = reactionsString.indexOf(indexString);
+        } else {
+            index = Math.round(Math.random() * reactionsString.length);
+        }
         let tmpValues = store.reactionValues;
         tmpValues[index]++;
         store.reactionValues = tmpValues;
         store.lastReactionTime = Date.now() + 15000;
-    };
+    },[]);
+
+    const resetReactions = () => {
+        let newReactions: number[] = [];
+        store.reactionModes.forEach((mode, i) => {
+            if (mode)
+                newReactions.push(store.reactionValues[i]);
+            else
+                newReactions.push(0);
+        })
+        return newReactions;
+    }
+
+    const updateModes = (index: number) => {
+        let modes = store.reactionModes;
+        modes[index] = !modes[index];
+        store.reactionModes = modes;
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
             if (store.lastReactionTime !== 0 && Date.now() - store.lastReactionTime >= 0) {
-                store.reactionValues = [0, 0, 0, 0, 0];
+                store.reactionValues = resetReactions();
                 store.lastReactionTime = 0;
-                console.log(store.lastReactionTime - store.lastReactionTime)
             }
         }, 1000);
         return () => clearInterval(interval);
-    }, [store, store.lastReactionTime]);
+    }, [store, store.lastReactionTime, resetReactions]);
 
     useEffect(() => {
         socketEmiter.on("send_student_reaction", refreshReactions);
@@ -67,8 +90,10 @@ export function ReactionReceiveView() {
                 return (<ReactionCounter
                     icon={reactionsIcons[reaction]}
                     value={store.reactionValues[i]}
+                    currentMode={store.reactionModes[i]}
+                    onMode={() => updateModes(i)}
                 />);
-            })}
+            })}<button onClick={() => refreshReactions()}>react</button>
         </Paper>
     );
 }

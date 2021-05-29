@@ -50,6 +50,9 @@ class Student extends EventEmitter {
                 case "send_reaction":
                     this.handlerSendReaction(parsed);
                     break;
+                case "delete_student":
+                    this.handleDelete();
+                    break;
                 case "send_question":
                     this.handlerSendQuestion(parsed);
                     break;
@@ -57,21 +60,21 @@ class Student extends EventEmitter {
                     break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
-
             }
         });
 
-        this.wsc.on("close", () => {
-            console.log("Student Websockets closed");
+        this.wsc.on("close", (reason: string) => {
+            console.log(`Student Websockets closed \n\t reason: ${reason}`);
             this.wsc = undefined;
             //TODO: cleanup after closing websocket connection
         });
     }
 
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
-        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quiz_id);
+        const quiz: Quiz | undefined = this.lecture.quizzes.get(parsed.data.quizID);
         if (quiz?.isActive()) {
             quiz.addStudentAnswers(this, parsed.data.answers);
+
             const response: Payload = {
                 event: "student_answers_added"
             }
@@ -87,12 +90,14 @@ class Student extends EventEmitter {
     handlerSendReaction(parsed: ReactionRequestPayload) {
         if (this.canSendReaction) {
             this.canSendReaction = false;
+
             this.reactions.set(new Date(), parsed.data.reaction);
             this.emit("reaction_added", parsed.data.reaction);
             const response: Payload = {
                 event: "student_reaction_sent"
             };
             this.wsc?.send(JSON.stringify(response));
+
             setTimeout(() => this.canSendReaction = true, this.REACTION_TIMEOUT);
         } else {
             const response: Payload = {
@@ -102,6 +107,27 @@ class Student extends EventEmitter {
         }
     }
 
+    handleDelete() {
+        const response: Payload = {
+            event: "student_deleted"
+        };
+        this.wsc?.send(JSON.stringify(response));
+
+        if (!this.wsc?.isClosed) {
+            this.wsc?.close(1000, "Student requested shutdown");
+        }
+
+        this.handleGDPR();
+        this.lecture.studentList.deleteStudent(this.id);
+        console.log("Student has been deleted");
+    }
+
+    handleGDPR() {
+        this.name = "";
+        this.surname = "";
+        this.nick = "";
+    }
+    
     handlerSendQuestion(parsed: SendQuestionRequestPayload) {
         if (this.canSendQuestion) {
             this.canSendQuestion = false;

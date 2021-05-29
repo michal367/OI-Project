@@ -965,7 +965,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -1441,7 +1441,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -1917,7 +1917,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -2393,7 +2393,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -2869,7 +2869,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -3345,7 +3345,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -3821,7 +3821,7 @@ const endedQuizzes: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,

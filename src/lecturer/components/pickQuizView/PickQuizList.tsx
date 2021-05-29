@@ -20,6 +20,7 @@ interface QuizListViewProps {
         checked: number[],
         questions: Question[],
     }
+    error: string;
 
     titleQuiz?: string;
 
@@ -36,6 +37,8 @@ interface QuizListViewProps {
 export function PickQuizList(props: QuizListViewProps) {
     const theme = useTheme();
     const title = props.title;
+    
+    const error = props.error;
 
     const items = props.data.items;
     const checked = props.data.checked;
@@ -56,7 +59,7 @@ export function PickQuizList(props: QuizListViewProps) {
             position: "relative",
         },
         cardHeader: {
-            padding: theme.spacing(1, 2),
+            padding: theme.spacing(2, 2),
         },
         list: {
             width: 450,
@@ -106,6 +109,8 @@ export function PickQuizList(props: QuizListViewProps) {
                     className={classes.quizInput}
                     value={titleQuiz}
                     label="Nazwa Quizu"
+                    error={error !== ""}
+                    helperText={error}
                     onChange={handleChange}
                     inputProps={{ maxLength: 40 }}
                 />

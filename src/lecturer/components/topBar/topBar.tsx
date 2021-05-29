@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { StoreContext } from '../../services/StoreService';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import NotifiableTab from "./NotifiableTab"
-import Button from '@material-ui/core/Button';
 export default function TopBar() {
     const store = useContext(StoreContext);
     const location = useLocation();
@@ -37,18 +36,13 @@ export default function TopBar() {
                 value={selectedTab}
                 centered
             >
-                {(store.sessionId === "") ?
-                    <NotifiableTab value={routes.index} label="Rozpocznij sesję" routes={routes.index}/>
-                    :
-                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session} resetFunction={processQuestions}/>
-                }
-                <NotifiableTab value={routes.quiz} label="Quizy" routes={routes.quiz}/>
-                <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
-                <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
-                {(store.sessionId != "") && (<NotifiableTab
-                    label="Statystyki"
-                    routes={routes.stats}
-                />)}
+                <NotifiableTab label="Sesja" observableList={store.studentQuestions} routes={(store.sessionId === "") ? routes.index : routes.session}  resetFunction={processQuestions}/>
+                <NotifiableTab label="Quizy" routes={routes.quiz}/>
+                <NotifiableTab label="Pytania" routes={routes.questions}/>
+                <NotifiableTab label="Zdarzenia" routes={routes.timestamp}/>
+                {(store.sessionId !== "") && (
+                    <NotifiableTab label="Statystyki" routes={routes.stats}/>
+                )}
             </Tabs>
         </AppBar>
     );

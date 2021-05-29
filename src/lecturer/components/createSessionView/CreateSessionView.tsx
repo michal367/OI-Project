@@ -1,23 +1,21 @@
-import { useContext, useState } from "react";
-import { Fab, CircularProgress } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { CircularProgress, Fab } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/BackEndService";
+import { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { StoreContext } from "../../services/StoreService";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
 
 
 export function CreateSessionView() {
     const store = useContext(StoreContext);
     const history = useHistory();
     const theme = useTheme();
-    const backEnd = useBackEnd();
-    const { sendJsonMessage } = useSocket();
+    const { sendJsonMessage, socketEmiter } = useSocket();
 
     const classes = makeStyles({
         root: {
@@ -69,29 +67,35 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
+    
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            backEnd.createLecture().then((lecture) => {
+            const handleCreate = (parsed: LectureCreateResponsePayload) =>{
                 setSuccess(true);
                 setLoading(false);
-                console.log(lecture);
-
-                store.sessionId = lecture.id;
+        
+                store.sessionId = parsed.data.lectureID;
                 store.sendQuizStep = 0;
                 store.timeToNextQuiz = 0;
-                backEnd.getLectureLink(lecture.id)
-                    .then((link) => {
-                        store.link = link;
-                        history.push({
-                            pathname: "lecturer/session",
-                            state: { isOpen: true }
-                        });
-                    })
-
-                sendJsonMessage({ event: "subscribe_lecture", data: { lecture_id: lecture.id } });
-            })
+                store.link = parsed.data.lectureLink;
+                history.push({
+                    pathname: "lecturer/session",
+                    state: { isOpen: true }
+                });
+                socketEmiter.off("lecture_created", handleCreate);
+                console.log("lecture created", parsed);
+            };
+            socketEmiter.on("lecture_created", handleCreate);
+            // there can be negative response - it is not handled yet
+            const payload: LectureCreateRequestPayload = {
+                event: "create_lecture",
+                data: {
+                    tutor: "Apple I-Dzik"
+                }
+            }
+            sendJsonMessage(payload);
         }
     };
 

@@ -29,9 +29,10 @@ export type TitleType = Pick<Question | FrontQuiz, "title">;
 interface ListViewProps {
     getContainer: (() => TitleType[]);
     setContainer: ((container: TitleType[]) => void);
-    exportFilename: string;
     createEditPathname: string;
     listElements: string;
+    onImport?: (e: ProgressEvent<FileReader>) => void;
+    exportFilename: string;
 }
 
 export function ListView(props: ListViewProps) {
@@ -43,12 +44,19 @@ export function ListView(props: ListViewProps) {
         index: number;
         element: TitleType;
     }
+    const onImportBasic = (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result != null) {
+            let jsonString = e.target.result as string;
+            setContainer([...getContainer(), ...JSON.parse(jsonString)]);
+        }
+    }
 
     let getContainer = props.getContainer;
     let setContainer = props.setContainer;
     const exportFilename = props.exportFilename;
     const createEditPathname = props.createEditPathname;
     const listElements = props.listElements;
+    const onImport = props.onImport ?? onImportBasic;
 
     const theme = useTheme();
     const history = useHistory();
@@ -123,13 +131,6 @@ export function ListView(props: ListViewProps) {
     const addIndexes = (item: TitleType, i: number) => {
         let q: IndexedElement = { index: i, element: item };
         return q;
-    }
-
-    const onImport = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result != null) {
-            let jsonString = e.target.result as string;
-            setContainer([...getContainer(), ...JSON.parse(jsonString)]);
-        }
     }
 
     return (

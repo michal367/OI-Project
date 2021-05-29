@@ -29,7 +29,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     useEffect(() => {
         if (props.observableList) {
             if (props.observableList.length !== 0) {
-                setNotifiableNumber(notifiableNumber + 1);
+                setNotifiableNumber(prev => prev + 1);
             }
         }
     }, [props.observableList]);

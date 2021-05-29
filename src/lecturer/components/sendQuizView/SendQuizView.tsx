@@ -20,8 +20,8 @@ import {
 import { useContext, useState, useEffect, ChangeEvent, useCallback } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
-import { getRandomIndexes } from "../../util/random";
-import { formatTime } from "../../util/time";
+import { getRandomIndexes } from "../../../common/util/random";
+import { formatTime } from "../../../common/util/time";
 import { useSocket } from "../../services/SocketService";
 
 interface SendQuizViewProps {
@@ -41,16 +41,16 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
-    const { socketEmiter, sendJsonMessage } = useSocket();
+    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeInSec !== undefined ? Math.floor(store.sendQuiz.timeInSec / 60) : 1);
-    const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeInSec ? Math.floor(store.sendQuiz.timeInSec) % 60 : 0);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeInSec ?? 0);
+    const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeSeconds !== undefined ? Math.floor(store.sendQuiz.timeSeconds / 60) : 1);
+    const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeSeconds ? Math.floor(store.sendQuiz.timeSeconds) % 60 : 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 0);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(time === 0);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
@@ -61,9 +61,10 @@ export function SendQuizView(props: SendQuizViewProps) {
 
 
     useEffect(() => {
-        if (props.students)
-            [selectedStudents, toggleAllSelectedStudents] = props.students;
-        setStudents(selectedStudents);
+        if (props.students){
+            let [sStudents] = props.students;
+            setStudents(sStudents);
+        }
     }, [props.students]);
 
     useEffect(() => {
@@ -87,9 +88,9 @@ export function SendQuizView(props: SendQuizViewProps) {
         setSeconds(secondsNumber);
         let timeInSeconds = 60 * minutesNumber + secondsNumber;
         let sendQuiz = store.sendQuiz;
-        sendQuiz.timeInSec = timeInSeconds;
+        sendQuiz.timeSeconds = timeInSeconds;
         store.sendQuiz = sendQuiz;
-        setTime(store.sendQuiz.timeInSec ?? 0);
+        setTime(store.sendQuiz.timeSeconds ?? 0);
     }
     const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>) => {
         let numberStr = e.target.value.replace(/[^0-9]/g, '');
@@ -267,9 +268,9 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
-        if (event.target.checked == true) {
+        if (event.target.checked === true) {
             let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-            delete tmpQuiz.timeInSec;
+            delete tmpQuiz.timeSeconds;
             store.sendQuiz = tmpQuiz;
             setTime(0);
         }
@@ -300,8 +301,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             let payload: QuizRequestPayload = {
                 event: "send_quiz",
                 data:{
-                    student_ids: store.sendQuiz.students,
-                    time_seconds: 60 * (time ?? 0),
+                    quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
+                    studentIDs: store.sendQuiz.studentIDs,
+                    timeSeconds: 60 * (time ?? 0),
                     questions: store.sendQuiz.quiz
                 }
             };
@@ -309,7 +311,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             console.log(payload);
         }
         store.sendQuizStep = store.sendQuizStep + 1;
-    }, [refreshClock, steps.length, store, time]);
+    }, [refreshClock, steps.length, store, time, sendJsonMessage]);
 
     useEffect(() => {
         return () => {
