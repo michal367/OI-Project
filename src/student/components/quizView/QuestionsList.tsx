@@ -40,11 +40,7 @@ export function QuestionsList() {
 
     const handleCheckboxChange = (checked: boolean, questionNumber: number, answerNumber: number) => {
 
-        // let values = [...checkboxValues];
-        // values[questionNumber][answerNumber] = checked;
-        // setCheckboxValues(values);
         let key = questionNumber + ":" + answerNumber;
-        // props.updateChecked(key);
         setChecked((prev) => {
             prev[key] = !prev[key];
             console.log(prev);
@@ -94,16 +90,6 @@ export function QuestionsList() {
         };
         console.log(payload);
         sendJsonMessage(payload);
-        // let values : boolean[][] = [];
-        // for(let i = 0; i < quiz.questions.length; i++) {
-        //     values[i] = []
-        //     let len;
-        //     if(quiz.questions[i].options === undefined) continue;
-        //     else{  len = quiz.questions[i].options!.length;}
-        //     for(let j = 0; j < len; j++)
-        //         values[i].push(false);
-        // }
-        // setCheckboxValues(values);
         setChecked({});
     }
     return (
