@@ -1,4 +1,3 @@
-
 import { Button, ButtonGroup, makeStyles, TextField } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import { useContext, useState } from "react";
@@ -69,6 +68,7 @@ export function SendQuestion() {
                     value={value}
                     disabled={waitTime}
                     onChange={handleChange}
+                    inputProps={{ maxLength: 300 }}
                 />
                 <Button
                     size="small"

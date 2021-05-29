@@ -1,11 +1,10 @@
 import { makeStyles, useTheme } from "@material-ui/core";
 import { useContext, useEffect } from "react";
 import { StoreContext } from "../../services/StoreService";
-import {TimestampTable} from "./TimestampTable";
+import { TimestampTable } from "./TimestampTable";
 
 export function TimestampView() {
     const store = useContext(StoreContext);
-
     const theme = useTheme();
 
     const classes = makeStyles({
@@ -21,7 +20,7 @@ export function TimestampView() {
             paddingTop: 85,
             paddingBottom: 30,
         },
-        wrapper:{
+        wrapper: {
             width: "745px",
             overflow: "auto",
             height: "100%",
@@ -33,12 +32,10 @@ export function TimestampView() {
     }, []);
 
     return (
-        <>
-            <div className={classes.root}>
-                <div className={classes.wrapper}>
-                        <TimestampTable/>
-                </div>
+        <div className={classes.root}>
+            <div className={classes.wrapper}>
+                <TimestampTable />
             </div>
-        </>
+        </div>
     );
 }

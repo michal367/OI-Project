@@ -65,6 +65,12 @@ export function ImportExport(props: ImportExportProps) {
         if (props.objectToExport) exportToJsonFile(props.objectToExport, props.fileName);
     }, [props]);
 
+    const canBeExported = () => {
+        return props.objectToExport !== undefined &&
+            !(Array.isArray(props.objectToExport) &&
+                props.objectToExport.length === 0)
+    }
+
     const inputRef = useRef<HTMLInputElement>() as RefObject<HTMLInputElement>;
 
     return (
@@ -76,9 +82,19 @@ export function ImportExport(props: ImportExportProps) {
             >
 
                 <Input ref={inputRef} accept=".json" type="file" onChange={(e) => onChangeImport(e)} />
-                <Button className={classes.importExportButton} onClick={handleImportButtonClick} > <PublishIcon /> Wczytaj </Button>
+                <Button className={classes.importExportButton} onClick={handleImportButtonClick} >
+                    <PublishIcon />
+                    Wczytaj
+                </Button>
 
-                <Button className={classes.importExportButton} onClick={handleExportButtonClick}> Zapisz <GetAppIcon />   </Button>
+                <Button
+                    className={classes.importExportButton}
+                    onClick={handleExportButtonClick}
+                    disabled={!canBeExported()}
+                >
+                    Zapisz
+                    <GetAppIcon />
+                </Button>
             </ButtonGroup>
         </Fab>
     );
