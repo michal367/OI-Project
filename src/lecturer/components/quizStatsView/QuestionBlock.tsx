@@ -1,8 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Paper, Typography } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useContext } from "react";
-import { StoreContext } from "../../services/StoreService";
+import { makeStyles } from "@material-ui/core";
 import { AnswerBar } from "./AnswerBar";
 
 interface QuestionBlockProps {
@@ -12,8 +10,6 @@ interface QuestionBlockProps {
 }
 
 export function QuestionBlock(props: QuestionBlockProps) {
-    const store = useContext(StoreContext);
-    const theme = useTheme();
     const classes = makeStyles({
         question: {
             height: "100%",

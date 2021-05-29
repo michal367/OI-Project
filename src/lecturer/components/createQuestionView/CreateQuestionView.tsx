@@ -49,7 +49,7 @@ export function CreateQuestionView() {
 
     let data: any = location.state;
     if (data !== undefined) {
-        let index = data.questionIndex;
+        let index = data.index;
         if (store.questions[index]) {
             titleVal = store.questions[index].title;
             questionVal = store.questions[index].text;
@@ -294,7 +294,7 @@ export function CreateQuestionView() {
 
             console.log(obj);
             if (data !== undefined) {
-                store.questions[data.questionIndex] = obj;
+                store.questions[data.index] = obj;
 
                 timer.current = window.setTimeout(() => {
                     setSuccess(true);
@@ -327,7 +327,6 @@ export function CreateQuestionView() {
                 autoComplete="off"
             >
                 <TextField
-                    id="standard-basic"
                     variant="filled"
                     label="Tytuł"
                     value={title}

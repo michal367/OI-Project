@@ -7,7 +7,13 @@ import { useContext, useEffect } from "react";
 import { useSocket } from '../../services/SocketService';
 import { Option } from './Option';
 
-export function QuestionsList() {
+interface QuestionsListProps {
+    handleBlock: (() => void);
+    handleEnable: (() => void);
+    handleClose: (() => void);
+}
+
+export function QuestionsList(props: QuestionsListProps) {
     let answers = new Map();
     const [quiz, setQuiz] = useState(testData());
     const [quizID, setQuizID] = useState("");
@@ -29,6 +35,7 @@ export function QuestionsList() {
         setQuiz(payload.data.questions);
         setQuizID(payload.data.quiz_id);
         setChecked({});
+        props.handleEnable();
     }, []);
 
     useEffect(() => {
@@ -43,7 +50,7 @@ export function QuestionsList() {
         let key = questionNumber + ":" + answerNumber;
         setChecked((prev) => {
             prev[key] = !prev[key];
-            console.log(prev);
+            // console.log(prev);
             return prev;
         })
 
@@ -58,11 +65,13 @@ export function QuestionsList() {
 
             array[answerNumber] = checked;
             answers.set(questionNumber, array);
+            console.log(array);
         }
         else {
             let array = answers.get(questionNumber);
             array[answerNumber] = checked;
             answers.set(questionNumber, array);
+            console.log(array);
         }
 
     }
@@ -91,6 +100,8 @@ export function QuestionsList() {
         console.log(payload);
         sendJsonMessage(payload);
         setChecked({});
+        props.handleBlock();
+        props.handleClose();
     }
     return (
         <>
@@ -100,14 +111,11 @@ export function QuestionsList() {
                     {question.imageSrc && <ImageView imageSrc={question.imageSrc} />}
                     <div className='answer-section'>
                         <Grid container spacing={1}>
-                            {question.options ? (question.options.map((option, j) => {
-                                console.log(checked[i + ":" + j]);
-                                return (
-                                    <Option checked={!!checked[i + ":" + j]} onChange={(checked) => {
-                                        handleCheckboxChange(checked, i, j)
-                                    }} text={option.text} />
-                                )
-                            })) : (
+                            {question.options ? (question.options.map((option, j) => (
+                                <Option checked={!!checked[i + ":" + j]} onChange={(checked) => {
+                                    handleCheckboxChange(checked, i, j)
+                                }} text={option.text} />
+                            ))) : (
                                 <TextField
                                     multiline={true}
                                     id="standard-basic"

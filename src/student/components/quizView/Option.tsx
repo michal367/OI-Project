@@ -18,12 +18,12 @@ export function Option(props: OptionProps) {
                 checked={checked}
                 onChange={() => {
                     setChecked(prev => !prev);
-                    props.onChange(checked);
+                    props.onChange(!checked);
                 }}
             />
             <Button variant="outlined" onClick={() => {
                 setChecked(prev => !prev)
-                props.onChange(checked);
+                props.onChange(!checked);
             }}>{props.text} </Button>
         </div>
     )

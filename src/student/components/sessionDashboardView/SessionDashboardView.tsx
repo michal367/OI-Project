@@ -90,6 +90,15 @@ export function SessionDashboardView() {
     })();
 
     const [open, setOpen] = useState(false);
+    const [disable, setDisable] = useState(false);
+
+    const handleBlock = () => {
+        setDisable(true);
+    }
+
+    const handleEnable = () => {
+        setDisable(false);
+    }
 
     const handleClose = () => {
         setOpen(false);
@@ -120,6 +129,7 @@ export function SessionDashboardView() {
                     variant="outlined"
                     color="primary"
                     onClick={handleToggle}
+                    disabled={disable}
                 >
                 Rozwiąż quiz
                 </Button>
@@ -139,7 +149,7 @@ export function SessionDashboardView() {
                         <p>00:00</p>
                         <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
                     </div>
-                    <QuizView />
+                    <QuizView handleBlock={handleBlock} handleEnable={handleEnable} handleClose={handleClose} />
                 </Card>
             </Backdrop>
         </div>
