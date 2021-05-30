@@ -48,7 +48,7 @@ const KEY_PREFIX = "lecturer.";
 
 const { loadKey, loadKeyForArray, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
 
-const initialValue: IStore = includeMockData(true,{
+const initialValue: IStore = includeMockData(true, {
     link: "",
     lectureID: null,
     timestamps: [],
@@ -118,7 +118,7 @@ const Store = (props: StoreProps) => {
     }, []);
 
 
-    const value : IStore = {
+    const value: IStore = {
         get link() {
             return link;
         },
@@ -235,9 +235,8 @@ const Store = (props: StoreProps) => {
         operation: {
             clearOnSessionEnd: () => {
                 for (const property in initialValue) {
-                    if(independentStorageKeys.indexOf(property) === -1){
+                    if (independentStorageKeys.indexOf(property) === -1) {
                         value[property] = initialValue[property as keyof typeof initialValue];
-                        console.log(value[property], property);
                     }
                 }
             }

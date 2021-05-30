@@ -5,8 +5,8 @@ const includeMockData = (enabled: boolean, store: IStore) => {
     let storeWithMock = JSON.parse(JSON.stringify(store));
 
     if(enabled){
-        storeWithMock.questions = questionListMock;
         storeWithMock.scheduledQuizzes = scheduledQuizzesMock;
+        storeWithMock.timestamps = timestampMock;
     }
 
     return storeWithMock;
