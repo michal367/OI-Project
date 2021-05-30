@@ -32,7 +32,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     useEffect(() => {
         if (props.observableList) {
             if (props.observableList.length !== 0) {
-                setNotifiableNumber(notifiableNumber + 1);
+                setNotifiableNumber(prev => ++prev);
             }
         }
     }, [props.observableList]);
@@ -42,7 +42,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     }
     useEffect(() => {
         resetNewQuestionsValue();
-    }, [store.lectureID]);
+    }, [store.lectureID, resetNewQuestionsValue]);
 
     return (
         <div>

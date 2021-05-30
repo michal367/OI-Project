@@ -1,23 +1,23 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd } from "../../services/BackEndService";
-import { StoreContext } from "../../services/StoreService";
-import { SendQuizView } from "../sendQuizView/SendQuizView";
-import { useHistory } from "react-router-dom";
-import {
-    StudentListView,
-    StudentListRow,
-} from "../studentListView/StudentListView";
-import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
-import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { useBackEnd } from "../../services/BackEndService";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
+import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { SendQuizView } from "../sendQuizView/SendQuizView";
+import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import {
+    StudentListRow, StudentListView
+} from "../studentListView/StudentListView";
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 
 export function SessionDashboardView(props: { update: () => void }) {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
+    
     if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
+
     const store = useContext(StoreContext);
     const backEnd = useBackEnd();
     const { socketEmiter, sendJsonMessage } = useSocket();

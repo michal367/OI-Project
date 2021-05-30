@@ -1,16 +1,15 @@
-import React, { useContext, useState, ChangeEvent, useCallback } from "react";
-import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { Backdrop, Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useHistory } from "react-router-dom";
-import { useBackEnd } from "../../services/BackEndService";
-import { StoreContext } from "../../services/StoreService";
-import IconButton from '@material-ui/core/IconButton';
-import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
+import { ChangeEvent, useCallback, useContext, useState } from "react";
 import QrReader from "react-qr-reader";
+import { useHistory } from "react-router-dom";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
 
 
 interface StudentFormViewProps {
@@ -20,7 +19,6 @@ interface StudentFormViewProps {
 
 export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
-    const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
     const theme = useTheme();
     const history = useHistory();

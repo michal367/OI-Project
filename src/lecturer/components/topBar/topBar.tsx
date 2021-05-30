@@ -1,10 +1,8 @@
-import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
+import { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../services/StoreService';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import routeToTabsValue from '../../../common/util/routeToTabsValue';
+import routeToTabsValue from '../../util/route/routeToTabsValue';
 import NotifiableTab from './NotifiableTab';
 
 interface TopBarProps {
@@ -26,7 +24,7 @@ export default function TopBar(props: TopBarProps) {
 
     useEffect(() => {
         setSelectedTab(routeToTabsValue(props.currentLocation));
-    }, [props.currentLocation, routeToTabsValue]);
+    }, [props.currentLocation]);
 
     const processQuestions = () => {
         store.studentQuestions.forEach(question => question.processed = true)
@@ -42,7 +40,7 @@ export default function TopBar(props: TopBarProps) {
                 value={selectedTab}
                 centered
             >
-                <NotifiableTab label="Sesja" observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
+                <NotifiableTab label="Sesja" observableList={store.studentQuestions} resetFunction={processQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
                 <NotifiableTab label="Quizy" {...tabProps(routes.quiz)} />
                 <NotifiableTab label="Pytania" {...tabProps(routes.questions)} />
                 {store.lectureID && (
