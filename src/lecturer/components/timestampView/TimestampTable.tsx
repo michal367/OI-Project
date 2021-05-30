@@ -1,10 +1,12 @@
-import { Paper, makeStyles, Button, useTheme } from "@material-ui/core";
-import {TimestampRow} from "./TimestampRow";
-import { useState } from "react";
+import { Button, makeStyles, Paper, useTheme } from "@material-ui/core";
 import Timeline from '@material-ui/lab/Timeline';
+import { useState } from "react";
 import { timestampMock } from "../../../common/util/mockData";
+import { TimestampRow } from "./TimestampRow";
+
+
 export function TimestampTable() {
-    const [filterType, setFilterType] = useState("QuestionType");
+    const [filterType, setFilterType] = useState("");
     const theme = useTheme();
     const changeFilterType = (type: string) =>{
         setFilterType(type);

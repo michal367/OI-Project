@@ -1,20 +1,24 @@
 import {
-    makeStyles,
     Button,
     ButtonGroup,
-    PopperPlacementType,
-    Popper,
+    InputLabel,
+    makeStyles,
     Paper,
+    Popper,
+    PopperPlacementType,
     useTheme
 } from "@material-ui/core";
-import copy from "copy-to-clipboard";
-import { StoreContext } from "../../services/StoreService";
-import React, { useContext } from "react";
 import { green } from "@material-ui/core/colors";
-import { useSpring, animated } from "react-spring";
 import FileCopyRoundedIcon from "@material-ui/icons/FileCopyRounded";
+import copy from "copy-to-clipboard";
+import React, { useContext } from "react";
+import { animated, useSpring } from "react-spring";
+import { StoreContext } from "../../services/StoreService";
+
+
 interface CopyLinkFromProps {
     prefix?: string;
+    label?: string;
 }
 interface FadeProps {
     children?: React.ReactElement;
@@ -52,13 +56,11 @@ const Fade = React.forwardRef<HTMLDivElement, FadeProps>(function Fade(
 
 export function CopyLinkForm(props: CopyLinkFromProps) {
     const store = useContext(StoreContext);
-    console.log(props.prefix);
-    const prefix = props.prefix ?? "";
     const theme = useTheme();
+    const prefix = props.prefix ?? "";
+    const label = props.label ?? "";
 
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-        null
-    );
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [placement, setPlacement] = React.useState<PopperPlacementType>();
     const classes = makeStyles({
         buttonDiv: {
@@ -156,6 +158,7 @@ export function CopyLinkForm(props: CopyLinkFromProps) {
                     </Fade>
                 )}
             </Popper>
+            <InputLabel style={{marginBottom: "5px"}}>{label}</InputLabel>
             <ButtonGroup
                 className={classes.formRow}
                 variant="contained"
