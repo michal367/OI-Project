@@ -1,17 +1,21 @@
-import { Paper, makeStyles, Button, useTheme } from "@material-ui/core";
-import {TimestampRow} from "./TimestampRow";
-import { useState } from "react";
+import { Button, makeStyles, Paper, useTheme } from "@material-ui/core";
 import Timeline from '@material-ui/lab/Timeline';
-import { timestampMock } from "../../../common/util/mockData";
+import { useContext, useEffect, useState } from "react";
+import { StoreContext } from "../../services/StoreService";
+import { TimestampRow } from "./TimestampRow";
 export function TimestampTable() {
+    const store = useContext(StoreContext);
     const [filterType, setFilterType] = useState("QuestionType");
+    const [timestamps, setTimestamps] = useState(store.timestamps);
+    useEffect(() => setTimestamps(store.timestamps),[store.timestamps]);
+
     const theme = useTheme();
     const changeFilterType = (type: string) =>{
         setFilterType(type);
     }
 
     const classes = makeStyles({
-        logsWraper: {
+        logsWrapper: {
             width: "100%",
             borderRadius: "0",
             height: "600px",
@@ -29,7 +33,7 @@ export function TimestampTable() {
         },
         timelineWrapper:{
             width:"100%",
-            boxSizin: "border-box",
+            boxSizing: "border-box",
             padding: 10,
             overflow:"auto",
             height: "100%",
@@ -50,7 +54,7 @@ export function TimestampTable() {
 
 
     return (
-        <Paper className={classes.logsWraper} variant="outlined" square>
+        <Paper className={classes.logsWrapper} variant="outlined" square>
             <div className={classes.buttonBar}>
                 <Button variant={filterType === "LogType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("LogType")}>Dołączanie i opuszczanie</Button>
                 <Button variant={filterType === "QuestionType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("QuestionType")}>Pytania</Button>
@@ -60,7 +64,7 @@ export function TimestampTable() {
             </div>
             <div className={classes.timelineWrapper}>
                 <Timeline  className={classes.timeline}>
-                    {timestampMock.filter(timestamp => timestamp.type === filterType || filterType === "").map((timestamp) => {
+                    {timestamps.filter(timestamp => timestamp.type === filterType || filterType === "").map((timestamp) => {
                         return(
                                 <TimestampRow owner={timestamp.owner} message={timestamp.message} hours={timestamp.hours} minutes={timestamp.minutes}/>
                         )

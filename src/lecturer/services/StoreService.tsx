@@ -1,13 +1,14 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { includeMockData } from "../../common/util/mockData";
+import { lazareLocalStorage } from "../../common/util/LazareLocalStorage";
+import { includeMockData } from "../util/mock/includeMockData";
 export interface StoreProps {
     children: ReactNode
 }
-
 export interface IStore {
     [key: string]: any;
     link: string,
     lectureID: string|null,
+    timestamps: Timestamp[],
     questions: Question[],
     quizzes: FrontQuiz[],
     sendQuizStep: number,
@@ -27,6 +28,7 @@ export interface IStore {
 type StorageKey =
     "link" |
     "lectureID" |
+    "timestamps" |
     "questions" |
     "quizzes" |
     "sendQuizStep" |
@@ -40,36 +42,16 @@ type StorageKey =
 const independentStorageKeys = ["questions", "quizzes"];
 
 
-const stringKey = (key: StorageKey) => {
-    return "lazare.lecturer." + key;
-}
+// REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
+const STORAGE_VERSION = "0.3";
+const KEY_PREFIX = "lecturer.";
 
-const loadKey = (key: StorageKey) => {
-    let obj = JSON.parse(localStorage.getItem(stringKey(key)) ?? "null");
-    console.log("loadKey", key, obj);
-    return obj;
-}
-
-const saveKey = (key: StorageKey, value: any) => {
-    if (value === undefined) return;
-    console.log("saveKey", key, value);
-    return localStorage.setItem(stringKey(key), JSON.stringify(value));
-}
-
-const loadKeyForArray = (key: StorageKey, initialValue: any[]) => {
-    let obj : any[] = loadKey(key);
-    if(obj && obj.length > 0)
-        initialValue.forEach((el) => {
-            // TODO add el to array if its ID is not present there. 
-        });
-    else
-        obj = initialValue;
-    return obj
-}
+const { loadKey, loadKeyForArray, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
 
 const initialValue: IStore = includeMockData(true,{
     link: "",
     lectureID: null,
+    timestamps: [],
     quizzes: [],
     questions: [],
     sendQuizStep: 0,
@@ -92,6 +74,7 @@ const loadFromStorage = () => {
         ...initialValue,
         link: loadKey("link") ?? initialValue.link,
         lectureID: loadKey("lectureID") ?? initialValue.lectureID,
+        timestamps: loadKey("timestamps") ?? initialValue.timestamps,
         questions: loadKeyForArray("questions", initialValue.questions),
         quizzes: loadKeyForArray("quizzes", initialValue.quizzes),
         sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
@@ -107,21 +90,24 @@ const loadFromStorage = () => {
 }
 
 const Store = (props: StoreProps) => {
-    const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
-    const [scheduledQuizzes, setScheduledQuizzes] = useState<ScheduledQuiz[]>(initialValue.scheduledQuizzes);
+    const [sendQuiz, setSendQuiz] = useState(initialValue.sendQuiz);
+    const [scheduledQuizzes, setScheduledQuizzes] = useState(initialValue.scheduledQuizzes);
     const [link, setLink] = useState(initialValue.link);
     const [lectureID, setLectureID] = useState(initialValue.lectureID);
-    const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
-    const [sendQuizStep, setSendQuizStep] = useState(0);
+    const [timestamps, setTimestamps] = useState(initialValue.timestamps);
+    const [questions, setQuestions] = useState(initialValue.questions);
+    const [quizzes, setQuizzes] = useState(initialValue.quizzes);
+    const [sendQuizStep, setSendQuizStep] = useState(initialValue.sendQuizStep);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
-    const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
+    const [studentQuestions, setStudentQuestions] = useState(initialValue.studentQuestions);
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
-    const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
-    const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
-    const [reactionModes, setReactionModes] = useState<boolean[]>(initialValue.reactionModes)
+    const [reactionValues, setReactionValues] = useState(initialValue.reactionValues);
+    const [lastReactionTime, setLastReactionTime] = useState(initialValue.lastReactionTime);
+    const [reactionModes, setReactionModes] = useState(initialValue.reactionModes)
 
     useEffect(() => {
+        if (upgradeStorage()) return;
+
         let initial = loadFromStorage();
         setLink(initial.link);
         setLectureID(initial.lectureID);
@@ -147,6 +133,15 @@ const Store = (props: StoreProps) => {
         set lectureID(newValue: string | null) {
             setLectureID(newValue);
             saveKey("lectureID", newValue);
+        },
+
+        get timestamps() {
+            return timestamps;
+        },
+        set timestamps(newValue: Timestamp[]) {
+            let array = [...newValue];
+            setTimestamps(array);
+            saveKey("timestamps", array);
         },
 
         get questions() {

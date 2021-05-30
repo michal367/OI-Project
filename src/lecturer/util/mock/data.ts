@@ -1,5 +1,3 @@
-import { IStore } from "../../lecturer/services/StoreService";
-
 const studentListMock: Student[] = [
     {
         id: "1c8541f6-4151-48d7-854f-d562b1e0e7eb",
@@ -4032,16 +4030,4 @@ const scheduledQuizzesMock: ScheduledQuiz[] = [
     }
 ]
 
-const includeMockData = (enabled: boolean, store: IStore) => {
-    let storeWithMock = JSON.parse(JSON.stringify(store));
-
-    if(enabled){
-        storeWithMock.questions = questionListMock;
-        storeWithMock.scheduledQuizzes = scheduledQuizzesMock;
-    }
-
-    return storeWithMock;
-}
-
-export { includeMockData, studentListMock, timestampMock };
-
+export { scheduledQuizzesMock, questionListMock, studentListMock, timestampMock };
