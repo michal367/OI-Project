@@ -27,7 +27,7 @@ export default function TopBar(props: TopBarProps) {
     }, [props.currentLocation]);
 
     const processQuestions = () => {
-        store.studentQuestions.forEach(question => question.processed = true)
+        store.studentQuestions.forEach(question => question.processed = true);
     }
 
     const tabProps = (route: string) => {
@@ -40,7 +40,7 @@ export default function TopBar(props: TopBarProps) {
                 value={selectedTab}
                 centered
             >
-                <NotifiableTab label="Sesja" observableList={store.studentQuestions} resetFunction={processQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
+                <NotifiableTab label="Sesja" observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
                 <NotifiableTab label="Quizy" {...tabProps(routes.quiz)} />
                 <NotifiableTab label="Pytania" {...tabProps(routes.questions)} />
                 {store.lectureID && (

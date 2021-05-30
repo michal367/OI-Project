@@ -1,6 +1,6 @@
 import Tab from '@material-ui/core/Tab';
 import { Link as RouterLink } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { Badge } from "@material-ui/core";
 import { StoreContext } from '../../services/StoreService';
@@ -36,10 +36,12 @@ export default function NotifiableTab(props: NotifiableTabProps) {
             }
         }
     }, [props.observableList]);
-    const resetNewQuestionsValue = () => {
+
+    const resetNewQuestionsValue = useCallback(() => {
         setNotifiableNumber(0);
         resetFunction();
-    }
+    },[resetFunction]);
+
     useEffect(() => {
         resetNewQuestionsValue();
     }, [store.lectureID, resetNewQuestionsValue]);
