@@ -56,7 +56,9 @@ function handlerCreateStudent(parsed: StudentCreateRequestPayload, ws: WebSocket
             const payload: StudentCreateResponsePayload = {
                 event: "student_created",
                 data: {
-                    studentID: student.id
+                    studentID: student.id,
+                    sessionName: selectedLecture.lectureName,
+                    tutor: selectedLecture.tutor
                 }
             };
             ws.send(JSON.stringify(payload));
@@ -99,7 +101,7 @@ function handlerReconnectStudent(parsed: StudentReconnectRequestPayload, ws: Web
 }
 
 function handlerCreateLecture(parsed: LectureCreateRequestPayload, ws: WebSocketClient): boolean {
-    const lecture: Lecture = new Lecture(parsed.data.tutor);
+    const lecture: Lecture = new Lecture(parsed.data.tutor, parsed.data.sessionName);
     lectures.set(lecture.id, lecture);
     if (lecture) {
         lecture.setWebSocketClient(ws);
