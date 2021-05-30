@@ -1,28 +1,24 @@
 import { makeStyles, useTheme } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useBackEnd } from "../../services/BackEndService";
-import { StoreContext } from "../../services/StoreService";
-import { SendQuizView } from "../sendQuizView/SendQuizView";
-import { useHistory } from "react-router-dom";
-import {
-    StudentListView,
-    StudentListRow,
-} from "../studentListView/StudentListView";
-import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
-import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { useBackEnd } from "../../services/BackEndService";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
+import { ReactionReceiveView } from "../reactionReceiveView/ReactionReceiveView";
+import { SendQuizView } from "../sendQuizView/SendQuizView";
+import { ShareSessionView } from "../shareSessionView/ShareSessionView";
+import {
+    StudentListRow, StudentListView
+} from "../studentListView/StudentListView";
+import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 
-export function SessionDashboardView() {
+export function SessionDashboardView(props: { update: () => void }) {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
+    
     if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
-    const history = useHistory();
+
     const store = useContext(StoreContext);
-    if (!store.sessionId || store.sessionId.length === 0) {
-        history.goBack();
-    }
     const backEnd = useBackEnd();
     const { socketEmiter, sendJsonMessage } = useSocket();
 
@@ -113,10 +109,9 @@ export function SessionDashboardView() {
     })();
 
     const refreshList = useCallback((parsed: StudentAddedPayload) => {
-        console.log("refresh part of list");
         const newStudentList: StudentListRow[] = studentList;
         const studentRow: StudentListRow = {
-            orderIndex: newStudentList.length+1,
+            orderIndex: newStudentList.length + 1,
             id: parsed.data.id,
             name: parsed.data.name,
             surname: parsed.data.surname,
@@ -133,21 +128,20 @@ export function SessionDashboardView() {
             socketEmiter.removeListener("student_added", refreshList);
         };
     }, [refreshList, socketEmiter]);
-    
-    // I do not know what is happenning here
-    // I use similiar format to refresh whole list for ws ap as for rest api
+
+    // I do not know what is happening here
+    // I use similar format to refresh whole list for ws ap as for rest api
     // useEffect() makes it go into infinite loop of refreshing
     // I guess something in depts array is being changed during callback invocation
     // I do not know how to fix it, so I leave it be as for now and I let rest manage list refreshing
+    //
     // const handleGetStudentList = useCallback((parsed: GetStudentListResponsePayload) =>{
     //     const mapped: StudentListRow[] = parsed.data.studentList.map((item, index) => {return { orderIndex: index + 1, ...item };});
     //     setStudentList(mapped);
     //     // socketEmiter.off("student_list", handleGetStudentList);
-    //     console.log("list refreshed with whole new list")
     // }, []); 
-
+    //
     // const refreshListWithWholeList = useCallback(() => {
-    //     console.log("refresh whole list");
     //     socketEmiter.on("student_list", handleGetStudentList);
     //     const payload: Payload = {
     //         event: "get_student_list"
@@ -158,20 +152,19 @@ export function SessionDashboardView() {
 
     // useEffect(() => {
     //     socketEmiter.once("student_list", handleGetStudentList);
-    //     console.log("refresh whole list");
     //     const payload: Payload = {
     //         event: "get_student_list"
     //     };
     //     sendJsonMessage(payload); 
-    //     // return () => {
-    //     //     socketEmiter.removeListener("student_list", handleGetStudentList);
-    //     // };
+    //     return () => {
+    //         socketEmiter.removeListener("student_list", handleGetStudentList);
+    //     };
     // }, [handleGetStudentList, sendJsonMessage, socketEmiter]);
 
     const refreshListWithWholeListWithRest = useCallback(() => {
         console.log("refreshList");
         backEnd
-            .getStudentsForLecture(store.sessionId ?? "")
+            .getStudentsForLecture(store.lectureID ?? "")
             .then((list) =>
                 list.map((item, index) => {
                     return { orderIndex: index + 1, ...item };
@@ -179,7 +172,7 @@ export function SessionDashboardView() {
             )
             .then(setStudentList)
             .catch((error) => console.log);
-    }, [backEnd, store.sessionId]);
+    }, [backEnd, store.lectureID]);
 
     useEffect(() => {
         refreshListWithWholeListWithRest();
@@ -214,7 +207,7 @@ export function SessionDashboardView() {
                     />
                 </div>
             </div>
-            <ShareSessionView isOpen={isOpen} />
+            <ShareSessionView isOpen={isOpen} update={props.update} />
         </>
     );
 }

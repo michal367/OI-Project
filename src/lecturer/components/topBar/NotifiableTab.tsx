@@ -1,14 +1,16 @@
 import Tab from '@material-ui/core/Tab';
 import { Link as RouterLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { Badge } from "@material-ui/core";
+import { StoreContext } from '../../services/StoreService';
 import { Theme, withStyles, createStyles } from "@material-ui/core/styles";
 
 interface NotifiableTabProps {
     observableList?: any[];
     label?: string;
     routes?: string;
+    value?: number;
     resetFunction?: () => void;
 }
 
@@ -21,6 +23,8 @@ const StyledBadge = withStyles((theme: Theme) =>
     })
 )(Badge);
 export default function NotifiableTab(props: NotifiableTabProps) {
+    const store = useContext(StoreContext);
+
     const [notifiableNumber, setNotifiableNumber] = useState(0);
     const label = props.label ?? "none";
     const routes = props.routes ?? "";
@@ -28,14 +32,19 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     useEffect(() => {
         if (props.observableList) {
             if (props.observableList.length !== 0) {
-                setNotifiableNumber(notifiableNumber + 1);
+                setNotifiableNumber(prev => ++prev);
             }
         }
     }, [props.observableList]);
-    const resetNewQuestionsValue = () => {
+
+    const resetNewQuestionsValue = useCallback(() => {
         setNotifiableNumber(0);
         resetFunction();
-    }
+    },[resetFunction]);
+
+    useEffect(() => {
+        resetNewQuestionsValue();
+    }, [store.lectureID, resetNewQuestionsValue]);
 
     return (
         <div>
