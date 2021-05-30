@@ -5,14 +5,14 @@ import "fontsource-roboto";
 import React, { useContext, useEffect, useState } from "react";
 import {
     BrowserRouter as Router,
-    Redirect, Route, Switch, useLocation
+    Redirect, Route, Switch
 } from "react-router-dom";
 import { GridLoader } from "react-spinners";
 import { useSocket } from "../../services/SocketService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
+import { CreateQuizView } from "../createQuizView/CreateQuizView";
 import { CreateSessionView } from "../createSessionView/CreateSessionView";
-import { PickQuizView } from "../pickQuizView/PickQuizView";
 import { QuestionsListView } from "../questionsListView/QuestionsListView";
 import { QuizStatsView } from "../quizStatsView/QuizStatsView";
 import { QuizzesListView } from "../quizzesListView/QuizzesListView";
@@ -105,7 +105,7 @@ function App() {
                                     }} />
 
                                     <Route exact path="/lecturer/quiz" render={() => {
-                                        return <PickQuizView />
+                                        return <CreateQuizView />
                                     }} />
 
                                     <Route exact path="/lecturer/quizzes" render={() => {

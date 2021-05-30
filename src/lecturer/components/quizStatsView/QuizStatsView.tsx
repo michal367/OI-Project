@@ -196,13 +196,14 @@ export function QuizStatsView() {
                         variant="extended"
                         color="secondary"
                         className={classes.shareFab + " " + classes.showButton}
-                        onClick={(event) => handleShowResults()}
+                        onClick={() => handleShowResults()}
+                        disabled={!selectedQuizStats}
                     >
-                        {
-                            selectedQuizStats?.alreadyShowedResults ?
-                                (<><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>)
-                                : (<><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>)
-                        }
+                        {selectedQuizStats?.alreadyShowedResults ? (
+                            <><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>
+                        ) : (
+                            <><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>
+                        )}
                     </Fab>
                 </div>
             </div>

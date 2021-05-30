@@ -102,6 +102,8 @@ export function StudentFormView(props: StudentFormViewProps) {
             if (session){
                 const handleCreate = (parsed: StudentCreateResponsePayload) =>{
                     store.studentId = parsed.data.studentID;
+                    store.sessionName = parsed.data.sessionName;
+                    store.tutorName = parsed.data.tutor;
                     history.replace("/student/session");
                     socketEmiter.off("student_created", handleCreate);
                     console.log("student created", parsed);
@@ -117,6 +119,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                         nick: name[0] + surname
                     }
                 }
+                store.studentNick = name[0] + surname;
                 sendJsonMessage(payload);
             }
         }

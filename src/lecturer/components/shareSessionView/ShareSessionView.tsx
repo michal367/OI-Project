@@ -5,17 +5,19 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
+    InputLabel,
     makeStyles,
+    Divider
 } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
+import ShareIcon from "@material-ui/icons/Share";
+import StopIcon from '@material-ui/icons/Stop';
+import QRCode from "qrcode.react";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import QRCode from "qrcode.react";
-import ShareIcon from "@material-ui/icons/Share";
-import { red } from "@material-ui/core/colors";
-import StopIcon from '@material-ui/icons/Stop';
-import { CopyLinkForm } from "./CopyLinkForm";
-import { StoreContext } from "../../services/StoreService";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
+import { CopyLinkForm } from "./CopyLinkForm";
 
 
 
@@ -65,12 +67,10 @@ export function ShareSessionView(props: ShareSessionViewProps) {
             padding: 0,
             margin: "0 auto",
         },
-        qr: {
-            width: "100%",
-            margin: "0 auto",
-            display: "block",
-            border: "2px solid black",
-        },
+        qrWrapper: {
+            display:"flex",
+            flexDirection: "column"
+        }
     })();
     const [open, setOpen] = React.useState(props.isOpen ?? false);
 
@@ -110,14 +110,18 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                 <DialogContent className={classes.content}>
 
                     <div>
-                        <CopyLinkForm prefix={`${link}/student/code/`} />
-                        <CopyLinkForm />
+                        <CopyLinkForm label="Link" prefix={`${link}/student/code/`} />
+                        <CopyLinkForm label="Kod" />
                     </div>
-                    <QRCode
-                        style={{ alignSelf: "center" }}
-                        size={256}
-                        value={`${link}/student/code/${store.link}`}
-                    />
+                    <div className={classes.qrWrapper}>
+                        <InputLabel style={{marginBottom: "5px"}}>Kod QR</InputLabel>
+                        <Divider style={{marginBottom: "15px"}}/>
+                        <QRCode
+                            style={{ alignSelf: "center" }}
+                            size={256}
+                            value={`${link}/student/code/${store.link}`}
+                        />
+                    </div>
 
                 </DialogContent>
                 <DialogActions>

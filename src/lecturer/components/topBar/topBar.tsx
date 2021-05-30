@@ -26,12 +26,12 @@ export default function TopBar(props: TopBarProps) {
         setSelectedTab(routeToTabsValue(props.currentLocation));
     }, [props.currentLocation]);
 
-    const processQuestions = () => {
-        store.studentQuestions.forEach(question => question.processed = true);
-    }
-
     const tabProps = (route: string) => {
         return { routes: route, value: routeToTabsValue(route) };
+    }
+
+    const processQuestions = () =>{
+        store.studentQuestions.forEach(question => question.processed = true)
     }
 
     return (
@@ -40,13 +40,13 @@ export default function TopBar(props: TopBarProps) {
                 value={selectedTab}
                 centered
             >
-                <NotifiableTab label="Sesja" observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
+                <NotifiableTab label="Sesja" resetFunction={processQuestions} observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
                 <NotifiableTab label="Quizy" {...tabProps(routes.quiz)} />
                 <NotifiableTab label="Pytania" {...tabProps(routes.questions)} />
                 {store.lectureID && (
                     <NotifiableTab label="Zdarzenia" {...tabProps(routes.timestamp)} />
                 )}
-                {store.lectureID && ( //Can't be one condition because <Tabs> doesn't accept wrapped children
+                {store.lectureID && ( //Can't be in one condition because <Tabs> doesn't accept wrapped children
                     <NotifiableTab label="Statystyki" {...tabProps(routes.stats)} />
                 )}
             </Tabs>

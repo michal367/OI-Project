@@ -169,6 +169,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     type="number"
                                     value={minutes.toString()}
                                     onChange={handleMinutesChange}
+                                    inputProps={{ min: 0 }}
                                     disabled={checked}
                                     autoFocus={!checked}
                                 />
@@ -179,6 +180,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     type="number"
                                     value={seconds.toString()}
                                     onChange={handleSecondsChange}
+                                    inputProps={{ min: 0 }}
                                     disabled={checked}
                                     autoFocus={!checked}
                                 />
