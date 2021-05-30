@@ -17,7 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
 import { Location } from 'history';
 import { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { StoreContext } from '../../services/StoreService';
 import { UploadImageField } from '../uploadImageField/uploadImageField';
@@ -25,6 +25,7 @@ import { UploadImageField } from '../uploadImageField/uploadImageField';
 
 export function CreateQuestionView() {
     const theme = useTheme();
+    const history = useHistory();
     const store = useContext(StoreContext);
     const location: Location<Object> = useLocation();
 
@@ -136,7 +137,9 @@ export function CreateQuestionView() {
         deleteBtn: {
             color: red[700],
             flexShrink: 0,
-            width: 55.4,
+            width: 55,
+            height: 55,
+            margin: "5px 0"
         },
         buttonSuccess: {
             backgroundColor: green[500],
@@ -153,7 +156,7 @@ export function CreateQuestionView() {
         },
         sessionBtn: {
             width: 200,
-            marginLeft: "auto",
+            marginLeft: "30px",
             padding: "15px",
             color: theme.palette.grey[50],
         },
@@ -249,8 +252,8 @@ export function CreateQuestionView() {
 
         if (title.length > 40)
             errorTemp.title = tooLongTitle;
-        
-        for (const quest of store.questions) 
+
+        for (const quest of store.questions)
             if (quest.title === title) {
                 errorTemp.title = duplicateTitle;
                 break;
@@ -277,8 +280,8 @@ export function CreateQuestionView() {
             if (!validate()) {
                 return;
             }
-            
-            
+
+
 
             setSuccess(false);
             setLoading(true);
@@ -451,6 +454,14 @@ export function CreateQuestionView() {
 
 
                 <div className={classes.right}>
+                    <Button
+                        color="inherit"
+                        size="large"
+                        onClick={() => history.goBack()}
+                        style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                    >
+                        Anuluj
+                    </Button>
                     <Button
                         variant="contained"
                         color="secondary"
