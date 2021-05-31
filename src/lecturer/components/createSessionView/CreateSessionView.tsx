@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Fab, CircularProgress, TextField } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -6,7 +6,6 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/BackEndService";
 import { useHistory } from "react-router-dom";
 import { StoreContext } from "../../services/StoreService";
 import { useSocket } from "../../services/SocketService";
@@ -99,7 +98,7 @@ export function CreateSessionView(props: { update: () => void }) {
         [classes.buttonSuccess]: success,
     });
 
-    const handleButtonClick = () => {
+    const handleButtonClick = useCallback(() => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
@@ -127,8 +126,22 @@ export function CreateSessionView(props: { update: () => void }) {
             sendJsonMessage(payload);
             setSessionName("");
         }
-    };
+    }, [loading, name, props, sendJsonMessage, sessionName, socketEmiter, store, surname]);
 
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(sessionName.length === 0 || name.length === 0 || surname.length === 0 )){
+                handleButtonClick();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [sessionName, name, surname, handleButtonClick]);
 
     return (
         <div className={classes.rootOfRoots}>
