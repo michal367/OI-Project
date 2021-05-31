@@ -1,102 +1,117 @@
-import { useContext, useState } from "react";
-import { Fab, CircularProgress, TextField } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useBackEnd } from "../../services/BackEndService";
-import { useHistory } from "react-router-dom";
-import { StoreContext } from "../../services/StoreService";
+import React, { useContext, useState } from "react";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
+import { lazareTheme } from "../../util/theme/customTheme";
 
 
 export function CreateSessionView(props: { update: () => void }) {
     const store = useContext(StoreContext);
-    const history = useHistory();
     const theme = useTheme();
     const { sendJsonMessage, socketEmiter } = useSocket();
-    const [sessionName, setSessionName] = useState(""); 
-    const [name, setName] = useState(""); 
-    const [surname, setSurname] = useState(""); 
-    const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    const [sessionName, setSessionName] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
+    const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSessionName(event.target.value);
     }
-    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     }
-    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSurname(event.target.value);
     }
     const classes = makeStyles({
-        rootOfRoots:{
-            background: theme.palette.secondary.light,
-            gap: "50px",
-            minHeight: "100vh",
-            alignItems: "center",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            paddingTop: 75,
-            paddingBottom: "10px",
-        },
-        sessionNameField:{
-            top:100,
-            left:312,
-            position:"relative",
-            width:"20%",
-            fontWeight:"bold",
-            backgroundColor:"white",
-        },
         root: {
-            background: theme.palette.secondary.light,
-            gap: "50px",
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            paddingTop: 75,
-            paddingBottom: "10px",
+            background: theme.palette.primary.light,
+            ...lazareTheme.root,
         },
+        content: {
+            ...lazareTheme.singleColumn
+        },
+
+        createSessionFrom: {
+            display: 'grid',
+            gridAutoFlow: 'row',
+            gridTemplateColumns: "1fr 150px",
+            gap: 10,
+        },
+
+        createSessionTextField: {
+            width: "100%",
+            flexShrink: 1,
+            '& label.Mui-focused': {
+                color: theme.palette.secondary.dark,
+            },
+            '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                    borderColor: theme.palette.secondary.dark,
+                },
+            },
+        },
+        formRow: {
+            width: "100%",
+            display: 'flex',
+            gap: 10,
+        },
+
+        formColumn: {
+            width: "100%",
+            display: 'flex',
+            flexDirection: "column",
+            gap: 10,
+
+        },
+
+
         wrapper: {
             position: "relative",
         },
         buttonSuccess: {
-            backgroundColor: green[500],
+            color: green[100] +"!important",
+            backgroundColor: green[800],
             "&:hover": {
-                backgroundColor: green[700],
+                backgroundColor: green[900],
             },
         },
-        fabProgress: {
-            color: green[500],
+        createProgress: {
+            color: green[800],
             position: "absolute",
-            top: -6,
-            left: -6,
+            top: 11,
+            left: 25,
             zIndex: 1,
         },
         sessionBtn: {
-            width: "200px",
-            height: "200px",
-            fontSize: "150px",
-            color: theme.palette.grey[50],
+            width: "150px",
+            height: "100%",
+            fontSize: "100px",
+            color: theme.palette.secondary.light,
         },
         header: {
-            fontSize: "90px",
+            fontSize: 46,
+            textAlign: "center",
+            width: "100%",
             color: theme.palette.primary.dark,
+            fontWeight: "normal",
+            gridColumnStart: "span 2",
+            "& span": {
+                color: theme.palette.secondary.dark,
+                fontWeight: "bolder",
+            },
         },
     })();
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const buttonClassName = clsx({
-        [classes.sessionBtn]: 1,
         [classes.buttonSuccess]: success,
+        [classes.sessionBtn]: 1,
     });
 
     const handleButtonClick = () => {
@@ -104,14 +119,15 @@ export function CreateSessionView(props: { update: () => void }) {
             setSuccess(false);
             setLoading(true);
             const handleCreate = (parsed: LectureCreateResponsePayload) => {
-                setSuccess(true);
-                setLoading(false);
-                store.lectureID = parsed.data.lectureID;
-                store.sendQuizStep = 0;
-                store.timeToNextQuiz = 0;
-                store.link = parsed.data.lectureLink;
-
-                props.update();
+                setTimeout(() => {
+                    setSuccess(true);
+                    setLoading(false);
+                    store.lectureID = parsed.data.lectureID;
+                    store.sendQuizStep = 0;
+                    store.timeToNextQuiz = 0;
+                    store.link = parsed.data.lectureLink;
+                    props.update();
+                },1000);
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);
             };
@@ -131,51 +147,56 @@ export function CreateSessionView(props: { update: () => void }) {
 
 
     return (
-        <div className={classes.rootOfRoots}>
-        <TextField className={classes.sessionNameField} variant="outlined" 
-                   fullWidth={true} label={"Imię"} value={name} 
-                   onChange={handleNameChange}
-                   />
-        <TextField className={classes.sessionNameField} variant="outlined" 
-                   fullWidth={true} label={"Nazwisko"} value={surname} 
-                   onChange={handleSurnameChange}
-                   />
-        <TextField className={classes.sessionNameField} variant="outlined" 
-                   fullWidth={true} label={"Nazwa sesji"} value={sessionName} 
-                   onChange={handleSessionNameChange}
-                   />
-        
         <div className={classes.root}>
-            <h1 className={classes.header}>Rozpocznij sesję</h1>
-            <div className={classes.wrapper}>
-                <Fab
-                    aria-label="save"
-                    color="primary"
-                    className={buttonClassName}
-                    onClick={handleButtonClick}
-                    disabled={sessionName.length === 0 || name.length === 0 || surname.length === 0 }
-                >
-                    {success ? (
-                        <CheckIcon
-                            fontSize="inherit"
-                            color="inherit"
+            <div className={classes.content} >
+                <div className={classes.createSessionFrom}>
+                    <h1 className={classes.header}>Rozpocznij nową sesję z <span>LazareCONNECT</span></h1>
+                    <div className={classes.formColumn}>
+                        <div className={classes.formRow}>
+                            <TextField className={classes.createSessionTextField} variant="outlined"
+                                fullWidth={true} label={"Imię"} value={name}
+                                onChange={handleNameChange}
+                            />
+                            <TextField className={classes.createSessionTextField} variant="outlined"
+                                fullWidth={true} label={"Nazwisko"} value={surname}
+                                onChange={handleSurnameChange}
+                            />
+                        </div>
+                        <TextField className={classes.createSessionTextField} variant="outlined"
+                            fullWidth={true} label={"Nazwa sesji"} value={sessionName}
+                            onChange={handleSessionNameChange}
                         />
-                    ) : (
-                        <PlayArrowIcon
-                            fontSize="inherit"
-                            color="inherit"
-                        />
-                    )}
-                </Fab>
-                {loading && (
-                    <CircularProgress
-                        size={210}
-                        className={classes.fabProgress}
-                    />
-                )}
+                    </div>
+                    <div className={classes.wrapper}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={buttonClassName}
+                            onClick={handleButtonClick}
+                            disabled={ !success && (loading || sessionName.length === 0 || name.length === 0 || surname.length === 0) }
+                        >
+                            {success ? (
+                                <CheckIcon
+                                    fontSize="inherit"
+                                    color="inherit"
+                                />
+                            ) : (
+                                <PlayArrowIcon
+                                    fontSize="inherit"
+                                    color="inherit"
+                                />
+                            )}
+                        </Button>
+                        {loading && (
+                            <CircularProgress
+                                size={100}
+                                className={classes.createProgress}
+                            />
+                        )}
 
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
     );
 }
