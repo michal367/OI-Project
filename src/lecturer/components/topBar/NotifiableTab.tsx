@@ -36,6 +36,14 @@ export default function NotifiableTab(props: NotifiableTabProps) {
             }
         }
     }, [props.observableList]);
+    const theme = useTheme();
+    const classes = makeStyles({
+        topBarTab: {
+            "&:hover": {
+                backgroundColor: theme.palette.primary.dark,
+            },
+        },
+    })();
     const resetNewQuestionsValue = useCallback(() => {
         setNotifiableNumber(0);
         resetFunction();
@@ -48,7 +56,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     return (
         <div>
             <StyledBadge badgeContent={notifiableNumber} overlap="circle" color="error">
-                <Tab onClick={resetNewQuestionsValue} label={label} value={routes} component={RouterLink} to={routes} />
+                <Tab className={classes.topBarTab} onClick={resetNewQuestionsValue} label={label} value={routes} component={RouterLink} to={routes} />
             </StyledBadge>
         </div>
     );

@@ -29,11 +29,11 @@ export function CreateSessionView(props: { update: () => void }) {
     }
     const classes = makeStyles({
         root: {
-            background: theme.palette.primary.light,
             ...lazareTheme.root,
         },
         content: {
-            ...lazareTheme.singleColumn
+            ...lazareTheme.singleColumn,
+            justifyContent: "center",
         },
 
         createSessionFrom: {
@@ -90,8 +90,8 @@ export function CreateSessionView(props: { update: () => void }) {
         sessionBtn: {
             width: "150px",
             height: "100%",
-            fontSize: "100px",
-            color: theme.palette.secondary.light,
+            fontSize: "75px",
+            color: lazareTheme.palette.background,
         },
         header: {
             fontSize: 46,
@@ -122,11 +122,11 @@ export function CreateSessionView(props: { update: () => void }) {
                 setTimeout(() => {
                     setSuccess(true);
                     setLoading(false);
-                    store.lectureID = parsed.data.lectureID;
-                    store.sendQuizStep = 0;
-                    store.timeToNextQuiz = 0;
-                    store.link = parsed.data.lectureLink;
-                    props.update();
+                    // store.lectureID = parsed.data.lectureID;
+                    // store.sendQuizStep = 0;
+                    // store.timeToNextQuiz = 0;
+                    // store.link = parsed.data.lectureLink;
+                    // props.update();
                 },1000);
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);

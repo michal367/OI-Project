@@ -23,14 +23,22 @@ import TopBar from "../topBar/topBar";
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: "#59679F",
-            light: "#95A0C7",
+
+            main: "#4C3957",
+
+            // main: "#59679F",
+            // light: "#95A0C7",
+
             // light: "#ABA685",
             // main: "#3A3D29",
         },
         secondary: {
-            main: "#4B9569",
-            light: "#77BB93",
+
+            main: "#41658A",
+
+            // main: "#4B9569",
+            // light: "#77BB93",
+
             // light: "#A67463",
             // main: "#59170E",
         },

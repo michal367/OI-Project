@@ -38,7 +38,7 @@ export default function TopBar(props: TopBarProps) {
     const NotifiableTabs = withStyles({
         indicator: {
           backgroundColor: theme.palette.secondary.light,
-          padding: 1.5,
+          padding: 2,
         },
     })(Tabs);
 
