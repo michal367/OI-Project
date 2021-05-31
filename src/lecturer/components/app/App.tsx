@@ -86,7 +86,7 @@ function App() {
                     <TopBar />
 
                     <Switch>
-                        <Route exact path="/lecturer">
+                        <Route exact path="/lecturer/">
                             <CreateSessionView />
                         </Route>
 
@@ -118,7 +118,7 @@ function App() {
                         </Route>
                         <Route path="/">
                             {(store.sessionId === "") ?
-                                <Redirect to="/lecturer" />
+                                <Redirect to="/lecturer/" />
                                 :
                                 <Redirect to="/lecturer/session" />
                             }
