@@ -43,13 +43,13 @@ export function QuestionsListView() {
                 counter++;
                 let correct = true;
 
-                if (typeof quest.title != "string" || typeof quest.text != "string") {
+                if (typeof quest.title != "string" || quest.title === "" || typeof quest.text != "string" || quest.text === "") {
                     correct = false;
                 }
 
                 if (quest.options != undefined && correct == true) {
                     for (const option of quest.options) {
-                        if (typeof option.index != 'number' || typeof option.text != 'string' || typeof option.isCorrect != 'boolean') {
+                        if (typeof option.index != 'number' || typeof option.text != 'string' || option.text === "" || typeof option.isCorrect != 'boolean') {
                             correct = false;
                             break;
                         }
