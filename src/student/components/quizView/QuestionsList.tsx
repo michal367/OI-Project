@@ -72,11 +72,11 @@ export function QuestionsList() {
                                 </div>
                             ))) : (
                                 <TextField
-                                    multiline={true}
+                                    multiline
                                     id="standard-basic"
                                     variant="filled"
                                     label="Odpowiedź"
-                                    fullWidth={true}
+                                    fullWidth
                                     rows={5}
                                     onChange={(e) => handleTextAreaChange(e, i)}
                                 />
@@ -86,7 +86,7 @@ export function QuestionsList() {
                     </div>
                 </Paper>
             ))}
-            <Button fullWidth={true} variant="contained" color="primary" onClick={submit}> Wyślij Quiz </Button>
+            <Button fullWidth variant="contained" color="primary" onClick={submit}> Wyślij Quiz </Button>
         </>
     );
 }

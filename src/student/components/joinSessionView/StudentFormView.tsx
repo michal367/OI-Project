@@ -1,16 +1,15 @@
-import React, { useContext, useState, ChangeEvent, useCallback } from "react";
-import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { Backdrop, Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useHistory } from "react-router-dom";
-import { useBackEnd } from "../../services/BackEndService";
-import { StoreContext } from "../../services/StoreService";
-import IconButton from '@material-ui/core/IconButton';
-import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
+import { ChangeEvent, useCallback, useContext, useState } from "react";
 import QrReader from "react-qr-reader";
+import { useHistory } from "react-router-dom";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
 
 
 interface StudentFormViewProps {
@@ -20,7 +19,6 @@ interface StudentFormViewProps {
 
 export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
-    const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
     const theme = useTheme();
     const history = useHistory();
@@ -78,27 +76,16 @@ export function StudentFormView(props: StudentFormViewProps) {
         if (sessionInvNumber.length <= 7) setSession(sessionInvNumber);
     };
 
-    const changeToCapitalCase = (value: string) => {
-        let input = "";
-        value
-            .toLowerCase()
-            .replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
-            .split(" ")
-            .forEach((word) => {
-                if (input.length !== 0) input += " ";
-                if (word.length > 0)
-                    input += word[0].toUpperCase() + word.substring(1);
-                else input += word;
-            });
-        return input;
+    const changeToLettersOnly = (value: string) => {            
+        return value.replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
     };
 
     const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(changeToCapitalCase(event.target.value));
+        setName(changeToLettersOnly(event.target.value));
     };
 
     const handleChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
-        setSurname(changeToCapitalCase(event.target.value));
+        setSurname(changeToLettersOnly(event.target.value));
     };
 
     const isFormCompleted = () => {
@@ -115,6 +102,8 @@ export function StudentFormView(props: StudentFormViewProps) {
             if (session){
                 const handleCreate = (parsed: StudentCreateResponsePayload) =>{
                     store.studentId = parsed.data.studentID;
+                    store.sessionName = parsed.data.sessionName;
+                    store.tutorName = parsed.data.tutor;
                     history.replace("/student/session");
                     socketEmiter.off("student_created", handleCreate);
                     console.log("student created", parsed);
@@ -130,6 +119,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                         nick: name[0] + surname
                     }
                 }
+                store.studentNick = name[0] + surname;
                 sendJsonMessage(payload);
             }
         }

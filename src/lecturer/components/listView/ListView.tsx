@@ -100,7 +100,8 @@ export function ListView(props: ListViewProps) {
         deleteBtn: {
             color: red[700],
             flexShrink: 0,
-            width: 55.4,
+            height: 48,
+            width: 48,
         },
         searchInput: {
             position: "absolute",

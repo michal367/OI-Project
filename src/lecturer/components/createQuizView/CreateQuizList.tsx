@@ -34,7 +34,7 @@ interface QuizListViewProps {
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void,
 }
 
-export function PickQuizList(props: QuizListViewProps) {
+export function CreateQuizList(props: QuizListViewProps) {
     const theme = useTheme();
     const title = props.title;
     
