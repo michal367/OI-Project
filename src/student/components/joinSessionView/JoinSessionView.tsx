@@ -4,7 +4,7 @@ import "fontsource-roboto";
 import { StudentFormView } from "../joinSessionView/StudentFormView";
 import { useRouteMatch } from "react-router";
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface JoinSessionLocationState {
     dialogOpen?: boolean;
@@ -13,7 +13,7 @@ interface JoinSessionLocationState {
 
 const text = {
     sessionEnded: "Sesja została zakończona",
-    failedToJoin: "Nie udało się połaczyć",
+    failedToJoin: "Nie udało się połączyć",
 }
 
 export function JoinSessionView() {
@@ -21,6 +21,16 @@ export function JoinSessionView() {
     const location = useLocation<JoinSessionLocationState>();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogText, setDialogText] = useState(text.sessionEnded);
+
+    const getSessionCodeFromURL = () => {
+        let codeFromURL = "";
+        if (match)
+            codeFromURL = match.params.session.replace(/[^0-9]/, "");
+        else
+            codeFromURL = location.search.substring(1).replace(/[^0-9]/, "");
+        return codeFromURL;
+    };
+    const [sessionCode] = useState(getSessionCodeFromURL());
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -33,11 +43,7 @@ export function JoinSessionView() {
         }
     }, [location.state]);
 
-    let sessionId;
-    if (match)
-        sessionId = match.params.session;
-    else
-        sessionId = location.search.substring(1);
+
 
     const theme = useTheme();
     const classes = makeStyles({
@@ -59,6 +65,7 @@ export function JoinSessionView() {
     const handleJoinFailed = (error?: string) => {
         setDialogOpen(true);
         setDialogText(text.failedToJoin)
+        console.log(error);
     }
 
     return (
@@ -77,7 +84,7 @@ export function JoinSessionView() {
 
 
             <Paper variant="outlined" square className={classes.card}>
-                <StudentFormView session={sessionId.length === 7 ? sessionId : undefined} onFail={handleJoinFailed} />
+                <StudentFormView session={sessionCode.length === 7 ? sessionCode : undefined} onFail={handleJoinFailed} />
             </Paper>
         </div>
     );

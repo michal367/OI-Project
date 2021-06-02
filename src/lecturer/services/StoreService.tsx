@@ -1,83 +1,124 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { lazareLocalStorage } from "../../common/util/LazareLocalStorage";
-import { endedQuizzes } from "../../common/util/mockData";
+import { includeMockData } from "../util/mock/includeMockData";
 export interface StoreProps {
     children: ReactNode
 }
-
-type StorageKey =
-    "link" |
-    "sessionId" |
-    "questions" |
-    "quizzes" |
-    "sendQuizStep" |
-    "selectedQuiz" |
-    "timeToNextQuiz";
-
-// REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
-const STORAGE_VERSION = "0.2";
-const KEY_PREFIX = "lecturer.";
-
-const { loadKey, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
-
-const loadFromStorage = () => {
-    let obj: IStore = {
-        ...initialValue,
-        link: loadKey("link") ?? initialValue.link,
-        sessionId: loadKey("sessionId") ?? initialValue.sessionId,
-        questions: loadKey("questions") ?? initialValue.questions,
-        quizzes: loadKey("quizzes") ?? initialValue.quizzes,
-        sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
-        timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
-    }
-
-    return obj;
-}
-
 export interface IStore {
+    [key: string]: any;
     link: string,
-    sessionId: string,
+    lectureID: string|null,
+    timestamps: Timestamp[],
     questions: Question[],
     quizzes: FrontQuiz[],
     sendQuizStep: number,
     sendQuiz: ScheduledQuiz,
-    endedQuizzes: ScheduledQuiz[],
+    scheduledQuizzes: ScheduledQuiz[],
     isLoading: boolean,
     studentQuestions: StudentQuestion[],
     timeToNextQuiz: number
     reactionValues: number[],
     lastReactionTime: number,
     reactionModes: boolean[],
+    operation?: {
+        clearOnSessionEnd: () => void
+    }
+}
+
+type StorageKey =
+    "link" |
+    "lectureID" |
+    "timestamps" |
+    "questions" |
+    "quizzes" |
+    "sendQuizStep" |
+    "studentQuestions" |
+    "scheduledQuizzes" |
+    "timeToNextQuiz" |
+    "reactionModes" |
+    "reactionValues" |
+    "lastReactionTime";
+
+const independentStorageKeys = ["questions", "quizzes"];
+
+
+// REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
+const STORAGE_VERSION = "0.3";
+const KEY_PREFIX = "lecturer.";
+
+const { loadKey, loadKeyForArray, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
+
+const initialValue: IStore = includeMockData(true, {
+    link: "",
+    lectureID: null,
+    timestamps: [],
+    quizzes: [],
+    questions: [],
+    sendQuizStep: 0,
+    scheduledQuizzes: [],
+    sendQuiz: {
+        students: [],
+        questionStats: [],
+        alreadyShowedResults: true,
+    },
+    isLoading: true,
+    studentQuestions: [],
+    timeToNextQuiz: 0,
+    reactionValues: [0, 0, 0, 0, 0],
+    reactionModes: [false, false, false, false, false],
+    lastReactionTime: 0,
+});
+
+const loadFromStorage = () => {
+    let obj: IStore = {
+        ...initialValue,
+        link: loadKey("link") ?? initialValue.link,
+        lectureID: loadKey("lectureID") ?? initialValue.lectureID,
+        timestamps: loadKey("timestamps") ?? initialValue.timestamps,
+        questions: loadKeyForArray("questions", initialValue.questions),
+        quizzes: loadKeyForArray("quizzes", initialValue.quizzes),
+        sendQuizStep: loadKey("sendQuizStep") ?? initialValue.sendQuizStep,
+        timeToNextQuiz: loadKey("timeToNextQuiz") ?? initialValue.timeToNextQuiz,
+        reactionModes: loadKey("reactionModes") ?? initialValue.reactionModes,
+        reactionValues: loadKey("reactionValues") ?? initialValue.reaction,
+        lastReactionTime: loadKey("lastReactionTime") ?? initialValue.lastReaction,
+        scheduledQuizzes: loadKey("scheduledQuizzes") ?? initialValue.scheduledQuizzes,
+        studentQuestions: loadKey("studentQuestions") ?? initialValue.studentQuestions
+    }
+
+    return obj;
 }
 
 const Store = (props: StoreProps) => {
-    const [sendQuiz, setSendQuiz] = useState<ScheduledQuiz>(initialValue.sendQuiz);
-    const [endedQuizzes, setEndedQuizzes] = useState<ScheduledQuiz[]>(initialValue.endedQuizzes);
+    const [sendQuiz, setSendQuiz] = useState(initialValue.sendQuiz);
+    const [scheduledQuizzes, setScheduledQuizzes] = useState(initialValue.scheduledQuizzes);
     const [link, setLink] = useState(initialValue.link);
-    const [sessionId, setSessionId] = useState(initialValue.sessionId);
-    const [questions, setQuestions] = useState<Question[]>(initialValue.questions);
-    const [quizzes, setQuizzes] = useState<FrontQuiz[]>(initialValue.quizzes);
-    const [selectedQuiz, setSelectedQuiz] = useState(-1);
-    const [sendQuizStep, setSendQuizStep] = useState(0);
+    const [lectureID, setLectureID] = useState(initialValue.lectureID);
+    const [timestamps, setTimestamps] = useState(initialValue.timestamps);
+    const [questions, setQuestions] = useState(initialValue.questions);
+    const [quizzes, setQuizzes] = useState(initialValue.quizzes);
+    const [sendQuizStep, setSendQuizStep] = useState(initialValue.sendQuizStep);
     const [isLoading, setIsLoading] = useState(initialValue.isLoading);
-    const [studentQuestions, setStudentQuestions] = useState<StudentQuestion[]>(initialValue.studentQuestions);
+    const [studentQuestions, setStudentQuestions] = useState(initialValue.studentQuestions);
     const [timeToNextQuiz, setTimeToNextQuiz] = useState(initialValue.timeToNextQuiz);
-    const [reactionValues, setReactionValues] = useState<number[]>(initialValue.reactionValues);
-    const [lastReactionTime, setLastReactionTime] = useState<number>(initialValue.lastReactionTime);
-    const [reactionModes, setReactionModes] = useState<boolean[]>(initialValue.reactionModes)
+    const [reactionValues, setReactionValues] = useState(initialValue.reactionValues);
+    const [lastReactionTime, setLastReactionTime] = useState(initialValue.lastReactionTime);
+    const [reactionModes, setReactionModes] = useState(initialValue.reactionModes)
 
     useEffect(() => {
         if (upgradeStorage()) return;
 
         let initial = loadFromStorage();
         setLink(initial.link);
-        setSessionId(initial.sessionId);
+        setLectureID(initial.lectureID);
         setQuestions(initial.questions);
         setQuizzes(initial.quizzes);
+        setSendQuizStep(initial.sendQuizStep)
         setTimeToNextQuiz(initial.timeToNextQuiz);
     }, []);
 
-    const value = {
+
+    const value: IStore = {
         get link() {
             return link;
         },
@@ -86,12 +127,21 @@ const Store = (props: StoreProps) => {
             saveKey("link", newValue);
         },
 
-        get sessionId() {
-            return sessionId;
+        get lectureID() {
+            return lectureID;
         },
-        set sessionId(newValue: string) {
-            setSessionId(newValue);
-            saveKey("sessionId", newValue);
+        set lectureID(newValue: string | null) {
+            setLectureID(newValue);
+            saveKey("lectureID", newValue);
+        },
+
+        get timestamps() {
+            return timestamps;
+        },
+        set timestamps(newValue: Timestamp[]) {
+            let array = [...newValue];
+            setTimestamps(array);
+            saveKey("timestamps", array);
         },
 
         get questions() {
@@ -112,11 +162,12 @@ const Store = (props: StoreProps) => {
             saveKey("quizzes", array);
         },
 
-        get endedQuizzes() {
-            return endedQuizzes;
+        get scheduledQuizzes() {
+            return scheduledQuizzes;
         },
-        set endedQuizzes(newValue: ScheduledQuiz[]) {
-            setEndedQuizzes([...newValue]);
+        set scheduledQuizzes(newValue: ScheduledQuiz[]) {
+            setScheduledQuizzes([...newValue]);
+            saveKey("scheduledQuizzes", newValue);
         },
 
         get sendQuiz() {
@@ -124,14 +175,6 @@ const Store = (props: StoreProps) => {
         },
         set sendQuiz(newValue: ScheduledQuiz) {
             setSendQuiz(newValue);
-        },
-
-        get selectedQuiz() {
-            return selectedQuiz
-        },
-        set selectedQuiz(newValue: number) {
-            setSelectedQuiz(newValue);
-            saveKey("selectedQuiz", newValue);
         },
 
         get sendQuizStep() {
@@ -154,6 +197,7 @@ const Store = (props: StoreProps) => {
         },
         set studentQuestions(newValue: StudentQuestion[]) {
             setStudentQuestions([...newValue]);
+            saveKey("studentQuestions", newValue);
         },
 
         get timeToNextQuiz() {
@@ -169,6 +213,7 @@ const Store = (props: StoreProps) => {
         },
         set reactionValues(newValue: number[]) {
             setReactionValues([...newValue]);
+            saveKey("reactionValues", newValue);
         },
 
         get lastReactionTime() {
@@ -176,6 +221,7 @@ const Store = (props: StoreProps) => {
         },
         set lastReactionTime(newValue: number) {
             setLastReactionTime(newValue);
+            saveKey("lastReactionTime", newValue);
         },
 
         get reactionModes() {
@@ -183,7 +229,18 @@ const Store = (props: StoreProps) => {
         },
         set reactionModes(newValue: boolean[]) {
             setReactionModes([...newValue]);
+            saveKey("reactionModes", newValue);
         },
+
+        operation: {
+            clearOnSessionEnd: () => {
+                for (const property in initialValue) {
+                    if (independentStorageKeys.indexOf(property) === -1) {
+                        value[property] = initialValue[property as keyof typeof initialValue];
+                    }
+                }
+            }
+        }
     };
 
     return (
@@ -193,26 +250,6 @@ const Store = (props: StoreProps) => {
     )
 };
 
-const initialValue: IStore = {
-    link: "",
-    sessionId: "",
-    quizzes: [],
-    questions: [],
-    sendQuizStep: 0,
-    endedQuizzes: endedQuizzes,
-    sendQuiz: {
-        students: [],
-        questionStats: [],
-        alreadyShowedResults: true,
-    },
-    isLoading: true,
-    studentQuestions: [],
-    timeToNextQuiz: 0,
-    reactionValues: [0, 0, 0, 0, 0],
-    reactionModes: [false, false, false, false, false],
-    lastReactionTime: 30,
-}
-
-export const StoreContext = createContext<IStore>(initialValue);
+export const StoreContext = createContext<IStore>(loadFromStorage());
 
 export default Store;

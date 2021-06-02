@@ -12,11 +12,10 @@ import { StoreContext } from "../../services/StoreService";
 import { useSocket } from "../../services/SocketService";
 
 
-export function CreateSessionView() {
+export function CreateSessionView(props: { update: () => void }) {
     const store = useContext(StoreContext);
     const history = useHistory();
     const theme = useTheme();
-    const backEnd = useBackEnd();
     const { sendJsonMessage, socketEmiter } = useSocket();
     const [sessionName, setSessionName] = useState(""); 
     const [name, setName] = useState(""); 
@@ -100,23 +99,19 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
-    
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            const handleCreate = (parsed: LectureCreateResponsePayload) =>{
+            const handleCreate = (parsed: LectureCreateResponsePayload) => {
                 setSuccess(true);
                 setLoading(false);
-        
-                store.sessionId = parsed.data.lectureID;
+                store.lectureID = parsed.data.lectureID;
                 store.sendQuizStep = 0;
                 store.timeToNextQuiz = 0;
                 store.link = parsed.data.lectureLink;
-                history.push({
-                    pathname: "lecturer/session",
-                    state: { isOpen: true }
-                });
+
+                props.update();
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);
             };

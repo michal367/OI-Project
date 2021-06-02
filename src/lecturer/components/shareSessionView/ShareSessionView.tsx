@@ -23,6 +23,7 @@ import { CopyLinkForm } from "./CopyLinkForm";
 
 interface ShareSessionViewProps {
     isOpen?: boolean;
+    update: () => void;
 }
 
 export function ShareSessionView(props: ShareSessionViewProps) {
@@ -82,17 +83,16 @@ export function ShareSessionView(props: ShareSessionViewProps) {
 
     const handleClickEnd = () => {
         console.log("end lecture");
-        store.link = "";
-        store.sessionId = "";
-        store.timeToNextQuiz = 0;
-        store.sendQuizStep = 0;
+        store.operation?.clearOnSessionEnd();
 
         let event: Payload = {
             event: "delete_lecture"
         }
+
         sendJsonMessage(event);
+        props.update();
         history.push({
-            pathname: "/"
+            pathname: "/lecturer"
         });
     };
 
@@ -101,9 +101,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
             <Dialog
                 open={open}
                 onClose={handleClickClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                fullWidth={true}
+                fullWidth
                 maxWidth="sm"
             >
                 <DialogTitle id="alert-dialog-title">

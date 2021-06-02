@@ -56,11 +56,11 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
 
-
     useEffect(() => {
-        if (props.students)
-            [selectedStudents, toggleAllSelectedStudents] = props.students;
-        setStudents(selectedStudents);
+        if (props.students){
+            let [students] = props.students;
+            setStudents(students);
+        }
     }, [props.students]);
 
     useEffect(() => {
@@ -266,7 +266,7 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
-        if (event.target.checked == true) {
+        if (event.target.checked === true) {
             let tmpQuiz: ScheduledQuiz = store.sendQuiz;
             delete tmpQuiz.timeInSec;
             store.sendQuiz = tmpQuiz;
