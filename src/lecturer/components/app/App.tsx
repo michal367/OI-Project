@@ -93,7 +93,7 @@ function App() {
 
                                 <Switch>
 
-                                    <Route exact path="/lecturer" render={() => {
+                                    <Route exact path="/lecturer/" render={() => {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to={{
@@ -124,7 +124,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <QuizStatsView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -132,7 +132,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <TimestampView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -140,7 +140,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <SessionDashboardView update={updateSessionState} /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -148,7 +148,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to="/lecturer/session" /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
