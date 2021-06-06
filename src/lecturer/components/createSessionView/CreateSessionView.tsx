@@ -35,14 +35,12 @@ export function CreateSessionView(props: { update: () => void }) {
             ...lazareTheme.singleColumn,
             justifyContent: "center",
         },
-
         createSessionFrom: {
+            maxWidth: "100vw",
             display: 'grid',
             gridAutoFlow: 'row',
-            gridTemplateColumns: "1fr 150px",
             gap: 10,
         },
-
         createSessionTextField: {
             width: "100%",
             flexShrink: 1,
@@ -60,18 +58,22 @@ export function CreateSessionView(props: { update: () => void }) {
             display: 'flex',
             gap: 10,
         },
-
         formColumn: {
             width: "100%",
             display: 'flex',
             flexDirection: "column",
             gap: 10,
-
+            flexShrink: 1,
         },
-
-
         wrapper: {
             position: "relative",
+        },
+        formWrapper: {
+            maxWidth: 810,
+            width: "100%",
+            margin: "0 auto",
+            display: "flex",
+            gap: "10px",
         },
         buttonSuccess: {
             color: green[100] +"!important",
@@ -99,7 +101,6 @@ export function CreateSessionView(props: { update: () => void }) {
             width: "100%",
             color: theme.palette.primary.dark,
             fontWeight: "normal",
-            gridColumnStart: "span 2",
             "& span": {
                 color: theme.palette.secondary.dark,
                 fontWeight: "bolder",
@@ -151,6 +152,7 @@ export function CreateSessionView(props: { update: () => void }) {
             <div className={classes.content} >
                 <div className={classes.createSessionFrom}>
                     <h1 className={classes.header}>Rozpocznij nową sesję z <span>LazareCONNECT</span></h1>
+                    <div className={classes.formWrapper}>
                     <div className={classes.formColumn}>
                         <div className={classes.formRow}>
                             <TextField className={classes.createSessionTextField} variant="outlined"
@@ -194,6 +196,7 @@ export function CreateSessionView(props: { update: () => void }) {
                             />
                         )}
 
+                    </div>
                     </div>
                 </div>
             </div>

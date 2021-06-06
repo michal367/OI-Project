@@ -24,7 +24,6 @@ import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ImportExport } from '../importExport/ImportExport';
 import { lazareTheme } from "../../util/theme/customTheme";
-import { Autocomplete } from '@material-ui/lab';
 
 
 export type TitleType = Pick<Question | FrontQuiz, "title">;
@@ -74,7 +73,8 @@ export function ListView(props: ListViewProps) {
             ...lazareTheme.singleSlimColumn,
             gap: 20,
             paddingTop: 60,
-            maxHeight: "calc(100vh - 48px)",
+            height: "calc(100vh - 48px)",
+            minHeight: "500px",
             boxSizing: "border-box",
         },
         // listWrapper: {
@@ -100,7 +100,6 @@ export function ListView(props: ListViewProps) {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            overflow: "auto",
             height: "fit-content",
             flexGrow: 0,
             flexShrink: 0,
@@ -110,9 +109,12 @@ export function ListView(props: ListViewProps) {
             width: "500px",
             height: "500px",
             overflow: "auto",
+            
         },
         deleteBtn: {
-            color: red[700],
+            "&:hover":{
+                color: red[700],
+            },
             flexShrink: 0,
             height: 48,
             width: 48,
@@ -123,6 +125,13 @@ export function ListView(props: ListViewProps) {
             right: 0,
             borderRadius: 5,
             background: "white",
+        },
+        listCardWrapper: {
+            padding: 0,
+            "& li":{
+                height: "60px",
+                display: "flex",
+            },
         },
     })();
 
@@ -176,7 +185,7 @@ export function ListView(props: ListViewProps) {
                 <div className={classes.listBody}>
                     {filterByTitle(getContainer().map(addIndexes)).map((item) => ([
                         <Card>
-                            <List>
+                            <List className={classes.listCardWrapper}>
                                 <ListItem
                                     key={item.element.title}
                                     button

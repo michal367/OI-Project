@@ -10,6 +10,8 @@ export const lazareTheme = {
         gap: "50px",
         minHeight: "calc(100vh - 48px)",
         width: "100%",
+        overflowX: "hidden" as "hidden",
+        overflowY: "auto" as "auto",
         zIndex: -1,
         flexGrow: 1,
         flexShrink: 0,
