@@ -3,15 +3,18 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
 let cmd = getFileName(process.argv[1]);
 let src_dir = process.argv[2];
-let build_dir = process.argv[3];
-let public_dir = "public";
+let public_dir = process.argv[3] || createPublicDirUrl(src_dir);
+let build_dir = process.argv[4];
+
 
 console.log("cmd:", cmd);
 console.log("src dir:", src_dir);
+console.log("public dir:", public_dir);
+
 if (cmd === "build.js")
 	console.log("build dir:", build_dir);
 
-if (typeof src_dir === 'undefined' || (cmd === "build.js" && typeof build_dir === 'undefined')) {
+if (typeof src_dir === 'undefined' || (cmd === "build.js" && (typeof build_dir === 'undefined' || typeof public_dir === 'undefined'))) {
 	console.log("Not all arguments were provided");
 	process.exit(1);
 }
@@ -56,4 +59,13 @@ function getFileName(path) {
 
 function removeLastFromPath(path) {
 	return path.split("/").slice(0, -1).join("/");
+}
+
+function removeFirstFromPath(path) {
+	return path.slice(path.indexOf("/") + 1);
+}
+
+function createPublicDirUrl(path) {
+	path = removeFirstFromPath(path);
+	return "public" + (path.length ? "/" : "") + path;
 }

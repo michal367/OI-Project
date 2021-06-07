@@ -14,6 +14,7 @@ import {
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Search } from "@material-ui/icons";
 interface QuizListViewProps {
+
     title: React.ReactNode,
     data: {
         items: number[],
@@ -21,9 +22,7 @@ interface QuizListViewProps {
         questions: Question[],
     }
     error: string;
-
     titleQuiz?: string;
-
     cardClass?: string;
 
     isQuiz: () => boolean;
@@ -39,7 +38,7 @@ interface QuizListViewProps {
 export function CreateQuizList(props: QuizListViewProps) {
     const theme = useTheme();
     const title = props.title;
-    
+
     const error = props.error;
 
     const items = props.data.items;
@@ -77,7 +76,7 @@ export function CreateQuizList(props: QuizListViewProps) {
             right: 30,
             width: 180,
         },
-        checkbox:{
+        checkbox: {
             width: 42,
         },
     })();

@@ -74,7 +74,7 @@ function App() {
                         </Route>
                         <Route path='/'>
                             <JoinSessionView />
-                            <Redirect to="/student" />
+                            <Redirect to="/student/" />
                         </Route>
                     </Switch>
                 </ThemeProvider>
