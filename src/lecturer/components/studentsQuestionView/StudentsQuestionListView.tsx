@@ -21,7 +21,6 @@ export function StudentsQuestionListView() {
             padding: 10,
             fontSize: "16px",
             textDecoration: "underline",
-
         },
         questionField: {
             padding: 10,

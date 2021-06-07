@@ -70,16 +70,12 @@ export function ListView(props: ListViewProps) {
             ...lazareTheme.root,
         },
         content: {
-            ...lazareTheme.singleSlimColumn,
+            ...lazareTheme.slimColumnWrapper,
             gap: 20,
-            paddingTop: 60,
             height: "calc(100vh - 48px)",
             minHeight: "500px",
             boxSizing: "border-box",
         },
-        // listWrapper: {
-
-        // },
         listHeader: {
             position: "relative",
             width: "100%",

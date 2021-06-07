@@ -24,6 +24,8 @@ interface QuizListViewProps {
 
     titleQuiz?: string;
 
+    cardClass?: string;
+
     isQuiz: () => boolean;
     numberOfChecked: (items: number[]) => number,
 
@@ -55,34 +57,33 @@ export function CreateQuizList(props: QuizListViewProps) {
     const handleSearch = props.handleSearch;
 
     const classes = makeStyles({
-        cardWrapper: {
-            position: "relative",
-        },
         cardHeader: {
             padding: theme.spacing(2, 2),
         },
         list: {
-            width: 450,
+            width: "100%",
             height: 580,
-            backgroundColor: theme.palette.background.paper,
             overflow: "auto",
         },
         quizInput: {
             position: "absolute",
-            top: "5px",
-            right: "25px",
-            width: "180px",
+            top: 5,
+            right: 30,
+            width: 180,
         },
         searchInput: {
             position: "absolute",
-            top: "21px",
-            right: "25px",
-            width: "180px",
+            top: 21,
+            right: 30,
+            width: 180,
+        },
+        checkbox:{
+            width: 42,
         },
     })();
 
     return (
-        <Card className={classes.cardWrapper}>
+        <Card className={props.cardClass ?? ""}>
             <CardHeader
                 className={classes.cardHeader}
                 avatar={
@@ -92,12 +93,12 @@ export function CreateQuizList(props: QuizListViewProps) {
                             numberOfChecked(items) === items.length &&
                             items.length !== 0
                         }
+                        className={classes.checkbox}
                         indeterminate={
                             numberOfChecked(items) !== items.length &&
                             numberOfChecked(items) !== 0
                         }
                         disabled={items.length === 0}
-                        inputProps={{ "aria-label": "all items selected" }}
                     />
                 }
                 title={title}
@@ -145,6 +146,7 @@ export function CreateQuizList(props: QuizListViewProps) {
                                     tabIndex={-1}
                                     disableRipple
                                     inputProps={{ "aria-labelledby": labelId }}
+                                    className={classes.checkbox}
                                 />
                             </ListItemIcon>
                             <ListItemText

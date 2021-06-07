@@ -32,8 +32,9 @@ export function CreateSessionView(props: { update: () => void }) {
             ...lazareTheme.root,
         },
         content: {
-            ...lazareTheme.singleColumn,
+            ...lazareTheme.columnWrapper,
             justifyContent: "center",
+            marginBottom: "15%",
         },
         createSessionFrom: {
             maxWidth: "100vw",
@@ -123,17 +124,17 @@ export function CreateSessionView(props: { update: () => void }) {
                 setTimeout(() => {
                     setSuccess(true);
                     setLoading(false);
-                    // store.lectureID = parsed.data.lectureID;
-                    // store.sendQuizStep = 0;
-                    // store.timeToNextQuiz = 0;
-                    // store.link = parsed.data.lectureLink;
-                    // props.update();
+                    store.lectureID = parsed.data.lectureID;
+                    store.sendQuizStep = 0;
+                    store.timeToNextQuiz = 0;
+                    store.link = parsed.data.lectureLink;
+                    props.update();
                 },1000);
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);
             };
             socketEmiter.on("lecture_created", handleCreate);
-            // there can be negative response - it is not handled yet
+            //TODO there can be negative response - it is not handled yet
             const payload: LectureCreateRequestPayload = {
                 event: "create_lecture",
                 data: {

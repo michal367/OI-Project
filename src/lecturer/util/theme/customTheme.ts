@@ -19,22 +19,68 @@ export const lazareTheme = {
         justifyContent: "center",
         background: background,
     },
-    singleColumn: {
-        maxWidth: 1100,
+    fullWidthWrapper:{
         width: "100%",
         margin: "0 auto",
         padding: 20,
+        paddingTop: 60,
+        paddingBottom: 25,
         minHeight: "fit-content",
         display: "flex",
         flexDirection: "column" as "column",
     },
-    singleSlimColumn: {
+    columnWrapper: {
+        maxWidth: 1100,
+        width: "100%",
+        margin: "0 auto",
+        padding: 20,
+        paddingTop: 60,
+        paddingBottom: 25,
+        minHeight: "fit-content",
+        display: "flex",
+        flexDirection: "column" as "column",
+    },
+    slimColumnWrapper: {
         maxWidth: 760,
         width: "100%",
         margin: "0 auto",
         padding: 20,
+        paddingTop: 60,
+        paddingBottom: 25,
         minHeight: "fit-content",
         display: "flex",
         flexDirection: "column" as "column",   
-    }
+    },
+    twoColumns: {
+        wrapper:{
+            width: "100%",
+            margin: "0 auto",
+            minHeight: "fit-content",
+            display: "grid",
+            position: "relative" as "relative",
+            gridTemplateColumns: "1fr 1fr",
+        },
+        column:{
+
+        },
+        overlay:{
+            position: "absolute" as "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        },
+    },
+    threeColumns: {
+        wrapper:{
+            width: "100%",
+            margin: "0 auto",
+            minHeight: "fit-content",
+            display: "grid",
+            position: "relative" as "relative",
+            gridTemplateColumns: "1fr 1fr 1fr",
+        },
+    },
 };

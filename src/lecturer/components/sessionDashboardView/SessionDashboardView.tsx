@@ -11,11 +11,12 @@ import {
     StudentListRow, StudentListView
 } from "../studentListView/StudentListView";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
+import { lazareTheme } from "../../util/theme/customTheme";
 
 export function SessionDashboardView(props: { update: () => void }) {
     const location = useLocation<{ isOpen: boolean }>();
     let isOpen = false;
-    
+
     if (location.state !== undefined) isOpen = location.state.isOpen ?? false;
 
     const store = useContext(StoreContext);
@@ -68,19 +69,14 @@ export function SessionDashboardView(props: { update: () => void }) {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.primary.light,
-            maxHeight: "100vh",
-            height: "100vh",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            padding: "0 10px",
-            paddingTop: 75,
-            paddingBottom: 100,
-            gap: 30,
+            ...lazareTheme.root,
+        },
+        content: {
+            ...lazareTheme.fullWidthWrapper,
+        },
+        columns: {
+            ...lazareTheme.threeColumns.wrapper,
+            gap: 15,
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
@@ -92,6 +88,7 @@ export function SessionDashboardView(props: { update: () => void }) {
             marginBottom: "auto",
             display: "flex",
             flexDirection: "column",
+            backgroundColor: "white",
         },
         columnWrapper: {
             flexGrow: 1,
@@ -129,6 +126,7 @@ export function SessionDashboardView(props: { update: () => void }) {
         };
     }, [refreshList, socketEmiter]);
 
+    // TODO
     // I do not know what is happening here
     // I use similar format to refresh whole list for ws ap as for rest api
     // useEffect() makes it go into infinite loop of refreshing
@@ -180,34 +178,36 @@ export function SessionDashboardView(props: { update: () => void }) {
 
 
     return (
-        <>
-            <div className={classes.root}>
-                <div className={classes.column}>
-                    <StudentListView
-                        studentList={studentList}
-                        students={[selectedStudents, toggleStudentSelection]}
-                    />
-                </div>
-                <div className={classes.column}>
-                    <div className={classes.columnWrapper}>
-                        <StudentsQuestionListView />
+        <div className={classes.root}>
+            <div className={classes.content}>
+                <div className={classes.columns}>
+                    <div className={classes.column}>
+                        <StudentListView
+                            studentList={studentList}
+                            students={[selectedStudents, toggleStudentSelection]}
+                        />
                     </div>
-                    <div className={classes.columnFooter}>
-                        <ReactionReceiveView />
+                    <div className={classes.column}>
+                        <div className={classes.columnWrapper}>
+                            <StudentsQuestionListView />
+                        </div>
+                        <div className={classes.columnFooter}>
+                            <ReactionReceiveView />
+                        </div>
                     </div>
-                </div>
-                <div className={classes.column}>
-                    <SendQuizView
-                        studentList={studentList}
-                        students={[
-                            selectedStudents,
-                            toggleAllSelectedStudents,
-                            toggleRandomSelectedStudents,
-                        ]}
-                    />
+                    <div className={classes.column}>
+                        <SendQuizView
+                            studentList={studentList}
+                            students={[
+                                selectedStudents,
+                                toggleAllSelectedStudents,
+                                toggleRandomSelectedStudents,
+                            ]}
+                        />
+                    </div>
                 </div>
             </div>
             <ShareSessionView isOpen={isOpen} update={props.update} />
-        </>
+        </div>
     );
 }

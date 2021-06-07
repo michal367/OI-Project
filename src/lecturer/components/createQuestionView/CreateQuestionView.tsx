@@ -95,9 +95,8 @@ export function CreateQuestionView() {
             ...lazareTheme.root,
         },
         content: {
-            ...lazareTheme.singleColumn,
+            ...lazareTheme.columnWrapper,
             gap: 20,
-            paddingTop: 60,
             minHeight: "max(700px, 100vh - 48px)",
             maxHeight: "1320px",
             boxSizing: "border-box",
@@ -182,7 +181,6 @@ export function CreateQuestionView() {
             display: "flex",
             justifyContent: "flex-end",
             position: "relative",
-
         },
         errorColor: {
             color: red[500],

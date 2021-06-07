@@ -18,6 +18,7 @@ import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
 import { QuestionBlock } from "./QuestionBlock";
 import { ImportExport } from "../importExport/ImportExport";
+import { lazareTheme } from "../../util/theme/customTheme";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
@@ -33,18 +34,12 @@ export function QuizStatsView() {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.primary.light,
-            maxHeight: "100vh",
-            height: "100vh",
+            ...lazareTheme.root,
+        },
+        content: {
+            ...lazareTheme.fullWidthWrapper,
             display: "grid",
             gridTemplateColumns: "400px 1fr",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            padding: "0 10px",
-            paddingTop: 75,
-            paddingBottom: 100,
             gap: 15,
         },
         quizColumn: {
@@ -146,8 +141,8 @@ export function QuizStatsView() {
     }
 
     return (
-        <>
-            <div className={classes.root}>
+        <div className={classes.root}>
+            <div className={classes.content}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
                         {store.scheduledQuizzes.map((quizStats, i) => (
@@ -188,26 +183,27 @@ export function QuizStatsView() {
                         })
                     }
                 </Paper>
-                <div className={classes.action}>
 
-                    <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
-
-                    <Fab
-                        variant="extended"
-                        color="secondary"
-                        className={classes.shareFab + " " + classes.showButton}
-                        onClick={() => handleShowResults()}
-                        disabled={!selectedQuizStats}
-                    >
-                        {selectedQuizStats?.alreadyShowedResults ? (
-                            <><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>
-                        ) : (
-                            <><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>
-                        )}
-                    </Fab>
-                </div>
             </div>
-        </>
+            <div className={classes.action}>
+
+                <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
+
+                <Fab
+                    variant="extended"
+                    color="secondary"
+                    className={classes.shareFab + " " + classes.showButton}
+                    onClick={() => handleShowResults()}
+                    disabled={!selectedQuizStats}
+                >
+                    {selectedQuizStats?.alreadyShowedResults ? (
+                        <><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>
+                    ) : (
+                        <><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>
+                    )}
+                </Fab>
+            </div>
+        </div>
     );
 }
 
