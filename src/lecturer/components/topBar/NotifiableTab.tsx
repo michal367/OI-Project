@@ -44,14 +44,11 @@ export default function NotifiableTab(props: NotifiableTabProps) {
             },
         },
     })();
-    const resetNewQuestionsValue = useCallback(() => {
+
+    const resetNewQuestionsValue = () => {
         setNotifiableNumber(0);
         resetFunction();
-    }, [resetFunction]);
-
-    useEffect(() => {
-        resetNewQuestionsValue();
-    }, [store.lectureID, resetNewQuestionsValue]);
+    }
 
     return (
         <div>

@@ -5,7 +5,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
 import clsx from "clsx";
 import "fontsource-roboto";
-import { ChangeEvent, useCallback, useContext, useState } from "react";
+import { ChangeEvent, useCallback, useContext, useState, useEffect } from "react";
 import QrReader from "react-qr-reader";
 import { useHistory } from "react-router-dom";
 import { useSocket } from "../../services/SocketService";
@@ -88,11 +88,11 @@ export function StudentFormView(props: StudentFormViewProps) {
         setSurname(changeToLettersOnly(event.target.value));
     };
 
-    const isFormCompleted = () => {
+    const isFormCompleted = useCallback(() => {
         return session.length === 7 &&
             name.length > 0 && name.length <= 30 &&
             surname.length > 0 && surname.length <= 30;
-    };
+    }, [name, surname, session]);
 
     const handleButtonClick = useCallback(() => {
         if (!loading) {
@@ -145,6 +145,22 @@ export function StudentFormView(props: StudentFormViewProps) {
             console.log("Not a valid url");
         }
     }
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(loading || !isFormCompleted())){
+                handleButtonClick();
+               
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [handleButtonClick, isFormCompleted, loading]);
 
     return (
         <form autoComplete="off" className={classes.form}>
