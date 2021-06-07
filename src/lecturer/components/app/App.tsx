@@ -25,22 +25,10 @@ const theme = createMuiTheme({
         primary: {
 
             main: "#4C3957",
-
-            // main: "#59679F",
-            // light: "#95A0C7",
-
-            // light: "#ABA685",
-            // main: "#3A3D29",
         },
         secondary: {
-
+            
             main: "#41658A",
-
-            // main: "#4B9569",
-            // light: "#77BB93",
-
-            // light: "#A67463",
-            // main: "#59170E",
         },
         contrastThreshold: 3,
         tonalOffset: 0.2,
@@ -109,7 +97,7 @@ function App() {
 
                                 <Switch>
 
-                                    <Route exact path="/lecturer" render={() => {
+                                    <Route exact path="/lecturer/" render={() => {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to={{
@@ -140,7 +128,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <QuizStatsView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -148,7 +136,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <TimestampView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -156,7 +144,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <SessionDashboardView update={updateSessionState} /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -164,7 +152,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to="/lecturer/session" /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 

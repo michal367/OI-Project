@@ -185,6 +185,9 @@ export function CreateQuestionView() {
         errorColor: {
             color: red[500],
         },
+        addAnswerBtn:{
+            fontSize: 16,
+        },
         deleteBtn: {
             "&:hover": {
                 color: red[700],
@@ -286,12 +289,10 @@ export function CreateQuestionView() {
     const handleRemoveAnswer = (index: number) => {
         const list = [...answers];
         list.splice(index, 1);
-        setAnswers(list);
         const list2 = [...checked];
         list2.splice(index, 1);
-        setChecked(list2);
-        if (list.length === 0)
-            setMode(QuestionType.OPEN);
+        setAnswers(prev => list.length > 0 ? list : [""]);
+        setChecked(prev => list2.length > 0 ? list2 : [false]);
     };
 
     let noError: string = "";
@@ -522,6 +523,7 @@ export function CreateQuestionView() {
                                 color="primary"
                                 aria-label="add answer"
                                 onClick={handleAddAnswer}
+                                className={classes.addAnswerBtn}
                             >
                                 Dodaj odpowiedź
                             </Button>
@@ -533,6 +535,7 @@ export function CreateQuestionView() {
                             color="inherit"
                             size="large"
                             onClick={() => history.goBack()}
+                            className={classes.sessionBtn}
                             style={{ color: "rgba(0, 0, 0, 0.87)" }}
                         >
                             Anuluj
