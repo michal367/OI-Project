@@ -183,7 +183,7 @@ export function QuizStatsView() {
                             return question && (<QuestionBlock
                                 question={question}
                                 questionStat={questionStat}
-                                totalSelected={selectedQuizStats.students.length}
+                                totalSelected={selectedQuizStats.studentIDs.length}
                             />)
                         })
                     }

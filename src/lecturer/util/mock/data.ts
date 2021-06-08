@@ -962,7 +962,7 @@ const scheduledQuizzesMock: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -1438,7 +1438,7 @@ const scheduledQuizzesMock: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -1914,7 +1914,7 @@ const scheduledQuizzesMock: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
@@ -2390,7 +2390,7 @@ const scheduledQuizzesMock: ScheduledQuiz[] = [
                 }
             ]
         },
-        "students": [],
+        "studentIDs": [],
         "questionStats": [
             {
                 "index": 0,
