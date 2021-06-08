@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import { useSocket } from "../../services/SocketService";
 import { StoreContext } from "../../services/StoreService";
 import { CopyLinkForm } from "./CopyLinkForm";
+import CloseIcon from '@material-ui/icons/Close';
 
 
 
@@ -39,36 +40,29 @@ export function ShareSessionView(props: ShareSessionViewProps) {
 
     const classes = makeStyles({
         shareIcon: {
-            marginRight: 10,
-            fontSize: 28,
+            marginRight: 3,
+            fontSize: 16,
         },
         shareButton: {
             fontSize: 16,
-            height: 55,
-            marginRight: "20px"
+            height: 36,
         },
         endButton: {
-            background: red[500],
-            "&:hover": {
-                background: red[700],
-            }
-        },
-        action: {
-            position: "absolute",
-            bottom: 20,
-            left: 20,
+            "& .MuiTouchRipple-root span":{
+                backgroundColor: red[700]+'!important',
+                opacity: .3,
+            },
         },
         content: {
             display: "flex",
             gap: 50,
             flexDirection: "column",
-            // background: "red",
             width: 400,
             padding: 0,
             margin: "0 auto",
         },
         qrWrapper: {
-            display:"flex",
+            display: "flex",
             flexDirection: "column"
         }
     })();
@@ -114,8 +108,8 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                         <CopyLinkForm label="Kod" />
                     </div>
                     <div className={classes.qrWrapper}>
-                        <InputLabel style={{marginBottom: "5px"}}>Kod QR</InputLabel>
-                        <Divider style={{marginBottom: "15px"}}/>
+                        <InputLabel style={{ marginBottom: "5px" }}>Kod QR</InputLabel>
+                        <Divider style={{ marginBottom: "15px" }} />
                         <QRCode
                             style={{ alignSelf: "center" }}
                             size={256}
@@ -135,27 +129,22 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                 </DialogActions>
             </Dialog>
 
-            <div className={classes.action}>
-                <Fab
-                    className={classes.shareButton}
-                    variant="extended"
-                    onClick={handleClickShare}
-                    color="secondary"
-                >
-                    <ShareIcon fontSize="large" className={classes.shareIcon} />
-                    Udostępnij
-                </Fab>
-
-                <Fab
-                    className={classes.shareButton + " " + classes.endButton}
-                    variant="extended"
-                    onClick={handleClickEnd}
-                    color="inherit"
-                >
-                    <StopIcon fontSize="large" className={classes.shareIcon} />
-                    Zakończ
-                </Fab>
-            </div>
+            <Button
+                className={classes.shareButton + " " + classes.endButton}
+                onClick={handleClickEnd}
+            >
+                <CloseIcon className={classes.shareIcon} />
+                {"Zakończ"}
+            </Button>
+            <Button
+                className={classes.shareButton}
+                variant="outlined"
+                onClick={handleClickShare}
+                color="secondary"
+            >
+                <ShareIcon className={classes.shareIcon} />
+                {"Udostępnij"}
+            </Button>
         </>
     );
 }

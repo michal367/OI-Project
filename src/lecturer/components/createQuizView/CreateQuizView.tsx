@@ -67,14 +67,14 @@ export function CreateQuizView() {
             position: "relative",
         },
         transferButtonGroup: {
-            width: 32,
+            width: 50,
             height: 100,
             "& .MuiButtonGroup-grouped":{
                 minWidth: "unset",
                 padding: "4px 0",
             },
             "& svg.MuiSvgIcon-root":{
-                width: 16,
+                width: 25,
             },
         },
         buttonSuccess: {

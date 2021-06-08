@@ -38,6 +38,9 @@ export function QuizStatsView() {
         },
         content: {
             ...lazareTheme.fullWidthWrapper,
+            padding: 20,
+            paddingTop: 60,
+            paddingBottom: 25,
             display: "grid",
             gridTemplateColumns: "400px 1fr",
             gap: 15,

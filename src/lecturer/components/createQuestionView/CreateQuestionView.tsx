@@ -50,7 +50,7 @@ export function CreateQuestionView() {
     let titleVal = "";
     let questionVal = "";
     let imageUrlVal = "";
-    let modeVal = QuestionType.CLOSED;
+    let modeVal = QuestionType.OPEN;
     let answersVal: string[] = [];
     let isCorrectVal: boolean[] = [];
 
