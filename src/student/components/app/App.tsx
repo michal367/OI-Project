@@ -61,14 +61,14 @@ function App() {
     const handleNotReconnected = useCallback((payload: Payload) => {
         store.operation?.clear();
         history.push("/student", { dialogOpen: true });
-    },[history, store.operation]);
-    
-    useEffect(()=>{
+    }, [history, store.operation]);
+
+    useEffect(() => {
         console.log("use effect dupa");
         socketEmiter.on("student_not_reconnected", handleNotReconnected);
         // TODO: handle student_connected if you want to
         console.log(store.studentId);
-        if(store.studentId !== null){
+        if (store.studentId !== null) {
             console.log("use effect student id niepuste");
             const payload: StudentReconnectRequestPayload = {
                 "event": "reconnect_student",
@@ -81,36 +81,34 @@ function App() {
             sendJsonMessage(payload);
         }
 
-        return () =>{
+        return () => {
             socketEmiter.off("student_not_reconnected", handleNotReconnected);
         }
     }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.studentId]);
 
 
     return (
-        <Store>
-            <Router>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
-                        <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
-                    </Backdrop>
+        <Router>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
+                    <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
+                </Backdrop>
 
-                    <Switch>
-                        <Route path="/student/session">
-                            <SessionDashboardView />
-                        </Route>
-                        <Route path='/student/code/:session'>
-                            <JoinSessionView />
-                        </Route>
-                        <Route path='/'>
-                            <JoinSessionView />
-                            <Redirect to="/student/" />
-                        </Route>
-                    </Switch>
-                </ThemeProvider>
-            </Router>
-        </Store>
+                <Switch>
+                    <Route path="/student/session">
+                        <SessionDashboardView />
+                    </Route>
+                    <Route path='/student/code/:session'>
+                        <JoinSessionView />
+                    </Route>
+                    <Route path='/'>
+                        <JoinSessionView />
+                        <Redirect to="/student/" />
+                    </Route>
+                </Switch>
+            </ThemeProvider>
+        </Router>
     );
 }
 export default App;

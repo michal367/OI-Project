@@ -9,7 +9,7 @@ export interface IStore {
     [key: string]: any;
     invitation: string,
     studentNick: string,
-    studentId: string|null,
+    studentId: string | null,
     quizzes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
@@ -72,6 +72,7 @@ const Store = (props: StoreProps) => {
     const [tutorName, setTutorName] = useState(initialValue.tutorName);
     const [quizTime, setQuizTime] = useState(initialValue.quizTime);
     const [quizStartTime, setQuizStartTime] = useState(initialValue.quizStartTime);
+
     useEffect(() => {
         if (upgradeStorage()) return;
 
@@ -102,7 +103,7 @@ const Store = (props: StoreProps) => {
         get studentId() {
             return studentId;
         },
-        set studentId(newValue: string|null) {
+        set studentId(newValue: string | null) {
             setStudentId(newValue);
             saveKey("studentId", newValue);
         },
@@ -129,28 +130,28 @@ const Store = (props: StoreProps) => {
         set studentQuestion(newQuestion: StudentQuestion) {
             setStudentQuestion(newQuestion);
         },
-        get sessionName(){
+        get sessionName() {
             return sessionName
         },
-        set sessionName(newValue: string){
+        set sessionName(newValue: string) {
             setSessionName(newValue);
         },
-        get tutorName(){
+        get tutorName() {
             return tutorName
         },
-        set tutorName(newValue: string){
+        set tutorName(newValue: string) {
             setTutorName(newValue);
         },
-        get quizTime(){
+        get quizTime() {
             return quizTime;
         },
-        set quizTime(newValue: number){
+        set quizTime(newValue: number) {
             setQuizTime(newValue);
         },
-        get quizStartTime(){
+        get quizStartTime() {
             return quizStartTime;
         },
-        set quizStartTime(newValue: number){
+        set quizStartTime(newValue: number) {
             setQuizStartTime(newValue);
         },
 

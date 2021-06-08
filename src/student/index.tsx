@@ -5,12 +5,15 @@ import App from "./components/app/App";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { SocketService } from './services/SocketService';
+import Store from '../lecturer/services/StoreService';
 
 ReactDOM.render(
   <React.StrictMode>
-    <SocketService>
-      <App />
-    </SocketService>
+    <Store>
+      <SocketService>
+        <App />
+      </SocketService>
+    </Store>
   </React.StrictMode>,
   document.getElementById('root')
 );
