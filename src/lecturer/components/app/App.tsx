@@ -1,4 +1,4 @@
-import { CssBaseline } from "@material-ui/core";
+import { CssBaseline, makeStyles } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
@@ -23,14 +23,12 @@ import TopBar from "../topBar/topBar";
 const theme = createMuiTheme({
     palette: {
         primary: {
-            light: "#E1F1FF",
-            main: "#80A3E4",
-            dark: "#4870AC",
+
+            main: "#4C3957",
         },
         secondary: {
-            light: "#FFEECB",
-            main: "#D9A21B",
-            dark: "#877455",
+            
+            main: "#41658A",
         },
         contrastThreshold: 3,
         tonalOffset: 0.2,
@@ -70,6 +68,12 @@ function App() {
         setIsLectureStarted((prev) => !prev);
     }
 
+    const classes = makeStyles({
+        mainContainer:{
+            minWidth: "100vw",
+            minHeight: "100vh",
+        }
+    })();
     return (
         <Store>
             <Router>
@@ -80,7 +84,7 @@ function App() {
                         open={store.isLoading}
                     >
                         <GridLoader
-                            color={theme.palette.primary.main}
+                            color={theme.palette.secondary.light}
                             loading={true}
                             margin={10}
                             size={50}
@@ -88,12 +92,12 @@ function App() {
                     </Backdrop>
                     <Route path="/" render={({ location }) => {
                         return (
-                            <>
+                            <div className={classes.mainContainer}>
                                 <TopBar currentLocation={location.pathname} />
 
                                 <Switch>
 
-                                    <Route exact path="/lecturer" render={() => {
+                                    <Route exact path="/lecturer/" render={() => {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to={{
@@ -124,7 +128,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <QuizStatsView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -132,7 +136,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <TimestampView /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -140,7 +144,7 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <SessionDashboardView update={updateSessionState} /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
@@ -148,12 +152,12 @@ function App() {
                                         return (
                                             isLectureStarted ?
                                                 <Redirect to="/lecturer/session" /> :
-                                                <Redirect to="/lecturer" />
+                                                <Redirect to="/lecturer/" />
                                         )
                                     }} />
 
                                 </Switch>
-                            </>
+                            </div>
                         )
                     }} />
                 </ThemeProvider>

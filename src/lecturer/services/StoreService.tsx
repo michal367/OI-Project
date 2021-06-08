@@ -57,7 +57,8 @@ const initialValue: IStore = includeMockData(true, {
     sendQuizStep: 0,
     scheduledQuizzes: [],
     sendQuiz: {
-        students: [],
+        id: "",
+        studentIDs: [],
         questionStats: [],
         alreadyShowedResults: true,
     },
