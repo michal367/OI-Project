@@ -13,6 +13,7 @@ import { intersection, not, union } from "../../../common/util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
 import { CreateQuizList } from "./CreateQuizList";
 
+import { v4 } from 'uuid';
 
 function createIndexArray(s: number) {
     let array = [];
@@ -178,7 +179,7 @@ export function CreateQuizView() {
 
             store.quizzes = [
                 ...store.quizzes,
-                { title, questions: selectedQuestions },
+                { "id": v4(), title, questions: selectedQuestions },
             ];
 
             timer.current = window.setTimeout(() => {
