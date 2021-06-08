@@ -312,12 +312,14 @@ export function CreateQuestionView() {
 
         if (title.length > 40)
             errorTemp.title = tooLongTitle;
-
-        for (const quest of store.questions)
-            if (quest.title === title) {
-                errorTemp.title = duplicateTitle;
-                break;
-            }
+            
+        if (data === undefined || titleVal !== title) {
+            for (const quest of store.questions)
+                if (quest.title === title) {
+                    errorTemp.title = duplicateTitle;
+                    break;
+                }
+        }
 
         for (let i = 0; i < answers.length; i++)
             errorTemp.emptyAnswers.push(answers[i] || mode === QuestionType.OPEN ? noError : required);
