@@ -8,6 +8,17 @@ const load = (key: string) => {
     return obj;
 }
 
+const loadForArray = (key: string, initialValue: any[]) => {
+    let obj : any[] = load(key);
+    if(obj && obj.length > 0)
+        initialValue.forEach((el) => {
+            // TODO add el to array if its ID is not present there. 
+        });
+    else
+        obj = initialValue;
+    return obj
+}
+
 const save = (key: string, value: any) => {
     if (value === undefined) return;
     console.log("saveKey", value);
@@ -30,6 +41,10 @@ export function lazareLocalStorage<T extends string>(keyPrefix: string, version:
         return save(stringKey(key), value);
     }
 
+    function loadKeyForArray(key: T, value: any) {
+        return loadForArray(stringKey(key), value);
+    }
+
     function upgradeStorage() {
         const key = keyPrefix + "version";
         const storedVersion = load(key);
@@ -44,6 +59,7 @@ export function lazareLocalStorage<T extends string>(keyPrefix: string, version:
 
     return {
         loadKey,
+        loadKeyForArray,
         saveKey,
         upgradeStorage
     }

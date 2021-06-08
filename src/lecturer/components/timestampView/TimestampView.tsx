@@ -19,7 +19,7 @@ export function TimestampView() {
             paddingTop: 85,
             paddingBottom: 30,
         },
-        wrapper:{
+        wrapper: {
             width: "745px",
             overflow: "auto",
             height: "100%",
@@ -31,12 +31,10 @@ export function TimestampView() {
     }, []);
 
     return (
-        <>
-            <div className={classes.root}>
-                <div className={classes.wrapper}>
-                        <TimestampTable/>
-                </div>
+        <div className={classes.root}>
+            <div className={classes.wrapper}>
+                <TimestampTable />
             </div>
-        </>
+        </div>
     );
 }

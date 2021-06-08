@@ -12,12 +12,14 @@ class Lecture {
     tutor: string;
     id: string;
     link: string;
+    lectureName: string;
     studentList: StudentList;
     wsc?: WebSocketClient;
     quizzes: Map<string, Quiz>;
 
-    constructor(tutor: string) {
+    constructor(tutor: string, lectureName: string) {
         this.tutor = tutor;
+        this.lectureName = lectureName;
         this.id = v4.generate();
         while (true) {
             this.link = this.link = cryptoRandomString({ length: 7, type: "numeric" });

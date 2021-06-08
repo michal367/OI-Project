@@ -16,6 +16,7 @@ class Student extends EventEmitter {
     canSendReaction: boolean;
     REACTION_TIMEOUT = 1000;
     canSendQuestion: boolean;
+    QUESTION_MAX_LENGTH = 300;
     QUESTION_TIMEOUT = 5000;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
@@ -129,7 +130,7 @@ class Student extends EventEmitter {
     }
     
     handlerSendQuestion(parsed: SendQuestionRequestPayload) {
-        if (this.canSendQuestion) {
+        if (this.canSendQuestion && parsed.data.text.length <= this.QUESTION_MAX_LENGTH) {
             this.canSendQuestion = false;
             this.questions.set(new Date(), parsed.data.text);
             this.emit("question_added", parsed.data.text);

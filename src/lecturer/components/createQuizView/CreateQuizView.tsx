@@ -8,9 +8,10 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import "fontsource-roboto";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { StoreContext } from "../../services/StoreService";
+import { useHistory } from "react-router-dom";
 import { intersection, not, union } from "../../../common/util/boolAlgebra";
-import { PickQuizList } from "./PickQuizList";
+import { StoreContext } from "../../services/StoreService";
+import { CreateQuizList } from "./CreateQuizList";
 
 
 function createIndexArray(s: number) {
@@ -21,8 +22,9 @@ function createIndexArray(s: number) {
     return array;
 }
 
-export function PickQuizView() {
+export function CreateQuizView() {
     const theme = useTheme();
+    const history = useHistory();
     const store = useContext(StoreContext);
 
     const classes = makeStyles({
@@ -65,7 +67,7 @@ export function PickQuizView() {
         },
         sessionBtn: {
             width: 200,
-            marginLeft: "auto",
+            marginLeft: "30px",
             padding: "15px",
             color: theme.palette.grey[50],
         },
@@ -162,9 +164,9 @@ export function PickQuizView() {
             right.forEach((i) => {
                 selectedQuestions.push(questions[i]);
             });
-          
+
             for (const quiz of store.quizzes) {
-                if(quiz.title === title) {
+                if (quiz.title === title) {
                     setError("Istnieje już quiz o takiej nazwie");
                     return;
                 }
@@ -201,7 +203,7 @@ export function PickQuizView() {
                 className={classes.gridContent}
             >
                 <Grid item>
-                    <PickQuizList
+                    <CreateQuizList
                         title="Lista pytań"
                         data={{
                             items: filterByTitle(left),
@@ -242,7 +244,7 @@ export function PickQuizView() {
                     </Grid>
                 </Grid>
                 <Grid item>
-                    <PickQuizList
+                    <CreateQuizList
                         title="Quiz"
                         data={{
                             items: right,
@@ -261,6 +263,14 @@ export function PickQuizView() {
                 </Grid>
             </Grid>
             <div className={classes.wrapper}>
+                <Button
+                    color="inherit"
+                    size="large"
+                    onClick={() => history.goBack()}
+                    style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                >
+                    Anuluj
+                    </Button>
                 <Button
                     variant="contained"
                     color="secondary"

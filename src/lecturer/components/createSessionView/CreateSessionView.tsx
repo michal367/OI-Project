@@ -1,4 +1,4 @@
-import { CircularProgress, Fab } from "@material-ui/core";
+import { CircularProgress, Fab, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
@@ -11,13 +11,44 @@ import { useSocket } from "../../services/SocketService";
 import { StoreContext } from "../../services/StoreService";
 
 
-export function CreateSessionView() {
+export function CreateSessionView(props: { update: () => void }) {
     const store = useContext(StoreContext);
     const history = useHistory();
     const theme = useTheme();
     const { sendJsonMessage, socketEmiter } = useSocket();
-
+    const [sessionName, setSessionName] = useState(""); 
+    const [name, setName] = useState(""); 
+    const [surname, setSurname] = useState(""); 
+    const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setSessionName(event.target.value);
+    }
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setName(event.target.value);
+    }
+    const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setSurname(event.target.value);
+    }
     const classes = makeStyles({
+        rootOfRoots:{
+            background: theme.palette.secondary.light,
+            gap: "50px",
+            minHeight: "100vh",
+            alignItems: "center",
+            position: "absolute",
+            width: "100%",
+            top: 0,
+            zIndex: -1,
+            paddingTop: 75,
+            paddingBottom: "10px",
+        },
+        sessionNameField:{
+            top:100,
+            left:312,
+            position:"relative",
+            width:"20%",
+            fontWeight:"bold",
+            backgroundColor:"white",
+        },
         root: {
             background: theme.palette.secondary.light,
             gap: "50px",
@@ -67,23 +98,19 @@ export function CreateSessionView() {
         [classes.buttonSuccess]: success,
     });
 
-    
     const handleButtonClick = () => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
-            const handleCreate = (parsed: LectureCreateResponsePayload) =>{
+            const handleCreate = (parsed: LectureCreateResponsePayload) => {
                 setSuccess(true);
                 setLoading(false);
-        
-                store.sessionId = parsed.data.lectureID;
+                store.lectureID = parsed.data.lectureID;
                 store.sendQuizStep = 0;
                 store.timeToNextQuiz = 0;
                 store.link = parsed.data.lectureLink;
-                history.push({
-                    pathname: "lecturer/session",
-                    state: { isOpen: true }
-                });
+
+                props.update();
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);
             };
@@ -92,15 +119,31 @@ export function CreateSessionView() {
             const payload: LectureCreateRequestPayload = {
                 event: "create_lecture",
                 data: {
-                    tutor: "Apple I-Dzik"
+                    tutor: name + " " + surname,
+                    sessionName: sessionName,
                 }
             }
             sendJsonMessage(payload);
+            setSessionName("");
         }
     };
 
 
     return (
+        <div className={classes.rootOfRoots}>
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Imię"} value={name} 
+                   onChange={handleNameChange}
+                   />
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Nazwisko"} value={surname} 
+                   onChange={handleSurnameChange}
+                   />
+        <TextField className={classes.sessionNameField} variant="outlined" 
+                   fullWidth={true} label={"Nazwa sesji"} value={sessionName} 
+                   onChange={handleSessionNameChange}
+                   />
+        
         <div className={classes.root}>
             <h1 className={classes.header}>Rozpocznij sesję</h1>
             <div className={classes.wrapper}>
@@ -109,6 +152,7 @@ export function CreateSessionView() {
                     color="primary"
                     className={buttonClassName}
                     onClick={handleButtonClick}
+                    disabled={sessionName.length === 0 || name.length === 0 || surname.length === 0 }
                 >
                     {success ? (
                         <CheckIcon
@@ -131,5 +175,6 @@ export function CreateSessionView() {
 
             </div>
         </div>
+    </div>
     );
 }

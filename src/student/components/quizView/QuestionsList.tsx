@@ -112,7 +112,7 @@ export function QuestionsList(props: QuestionsListProps) {
                     </div>
                 </Paper>
             ))}
-            <Button fullWidth={true} variant="contained" color="primary" onClick={submit}> Wyślij Quiz </Button>
+            <Button fullWidth variant="contained" color="primary" onClick={submit}> Wyślij Quiz </Button>
         </>
     );
 }

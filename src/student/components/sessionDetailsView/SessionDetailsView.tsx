@@ -38,8 +38,9 @@ export default function SessionDetailsView() {
     return (
         <Paper className={classes.details} variant="outlined" square >
             <div>
-                <p><span>Kod zaproszenia: </span> {store.invitation}</p>
+                <p><span>Sesja: </span> {store.sessionName}</p>
                 <p><span>Nick: </span> {store.studentNick}</p>
+                <p><span>Tutor: </span> {store.tutorName}</p>
             </div>
             <Button
                 onClick={handleClickEnd}

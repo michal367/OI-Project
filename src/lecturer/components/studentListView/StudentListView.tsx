@@ -27,20 +27,22 @@ export function StudentListView(props: StudentListViewProps) {
 
     const store = useContext(StoreContext);
     const studentList: StudentListRow[] = props.studentList ?? [];
+
     let [selectedStudents, toggleStudentSelection]: [string[], (id: string) => void] = props.students ?? [[], () => { }]
+
     const [students, setStudents] = useState<string[]>(selectedStudents);
-
-
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
+    
     const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
     }
 
     useEffect(() => {
-        if (props.students)
-            [selectedStudents, toggleStudentSelection] = props.students;
-        setStudents(selectedStudents);
+        if (props.students){
+            let [students] = props.students;
+            setStudents(students);
+        }
     }, [props.students]);
 
     const theme = useTheme();

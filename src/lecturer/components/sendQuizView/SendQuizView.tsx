@@ -57,13 +57,10 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
 
-
-
-
     useEffect(() => {
         if (props.students){
-            let [sStudents] = props.students;
-            setStudents(sStudents);
+            let [students] = props.students;
+            setStudents(students);
         }
     }, [props.students]);
 
@@ -173,6 +170,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     type="number"
                                     value={minutes.toString()}
                                     onChange={handleMinutesChange}
+                                    inputProps={{ min: 0 }}
                                     disabled={checked}
                                     autoFocus={!checked}
                                 />
@@ -183,6 +181,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     type="number"
                                     value={seconds.toString()}
                                     onChange={handleSecondsChange}
+                                    inputProps={{ min: 0 }}
                                     disabled={checked}
                                     autoFocus={!checked}
                                 />
