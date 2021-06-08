@@ -18,6 +18,7 @@ import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
 import { QuestionBlock } from "./QuestionBlock";
 import { ImportExport } from "../importExport/ImportExport";
+import { useSocket } from "../../services/SocketService";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
@@ -26,6 +27,7 @@ export function QuizStatsView() {
     );
 
     const theme = useTheme();
+    const { sendJsonMessage } = useSocket();
 
     useEffect(() => {
         setQuizStats((prev) => prev && store.scheduledQuizzes.indexOf(prev) !== -1 ? prev : undefined);
@@ -133,7 +135,19 @@ export function QuizStatsView() {
     const handleShowResults = () => {
         let tmpQuizzes = store.scheduledQuizzes;
         tmpQuizzes.forEach(
-            (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
+            (scheduledQuiz: ScheduledQuiz) => {
+                if (scheduledQuiz === selectedQuizStats) {
+                    scheduledQuiz.alreadyShowedResults = true;
+
+                    const payload: ShowAnswersPayload = {
+                        event: 'show_answers',
+                        data: {
+                            quizID: scheduledQuiz?.quiz?.id ?? ""
+                        }
+                    }
+                    sendJsonMessage(payload);
+                }
+            }
         )
         store.scheduledQuizzes = tmpQuizzes;
     }
@@ -200,9 +214,9 @@ export function QuizStatsView() {
                         disabled={!selectedQuizStats}
                     >
                         {selectedQuizStats?.alreadyShowedResults ? (
-                            <><DoneIcon className={classes.extendedIcon} />Pokaż ponownie</>
+                            <><DoneIcon className={classes.extendedIcon} />Wyślij odpowiedzi ponownie</>
                         ) : (
-                            <><SendIcon className={classes.extendedIcon} />Pokaż wyniki</>
+                            <><SendIcon className={classes.extendedIcon} />Wyślij poprawne odpowiedzi</>
                         )}
                     </Fab>
                 </div>
