@@ -5,7 +5,7 @@ import {
     Backdrop,
     Card,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import QuizView from "../quizView/QuizView";
 import SessionQuestionView from "../sendQuestionView/SessionQuestionView";
 import SessionDetailsView from "../sessionDetailsView/SessionDetailsView";
@@ -13,6 +13,7 @@ import SessionReactionView from "../sessionReactionView/SessionReactionView";
 import FeedbackView from "../feedbackView/FeedbackView";
 import { TimerClock } from "../timerClock/timerClock";
 import { ReactionName } from "../../../common/util/reactions/enum";
+import { StoreContext } from "../../services/StoreService";
 
 export function SessionDashboardView() {
     const theme = useTheme();
@@ -100,6 +101,8 @@ export function SessionDashboardView() {
     const [open, setOpen] = useState(false);
     const [disable, setDisable] = useState(false);
 
+    const store = useContext(StoreContext);
+
     const handleBlock = () => {
         setDisable(true);
     }
@@ -142,10 +145,7 @@ export function SessionDashboardView() {
                 >
                     Rozwiąż quiz
 
-                    {
-                        //TODO: set target time from loaded quiz 
-                    }
-                    <TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} />
+                    <TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleBlock} />
                 </Button>
             </div>
             <div className={classes.questionBody}>
@@ -160,10 +160,7 @@ export function SessionDashboardView() {
             >
                 <Card className={classes.overlay}>
                     <div style={{ display: "flex" }}>
-                        {
-                            //TODO: set target time from loaded quiz 
-                        }
-                        <p><TimerClock targetTime={new Date(Date.now() + 1000 * 60 * 1.1)} /></p>
+                        <p><TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleClose} /></p>
                         <Button onClick={handleClose} style={{ marginLeft: "auto", padding: "6px 0px" }}>Zamknij</Button>
                     </div>
                     <QuizView handleBlock={handleBlock} handleEnable={handleEnable} handleClose={handleClose} />

@@ -302,7 +302,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                 data:{
                     quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
                     studentIDs: store.sendQuiz.studentIDs,
-                    timeSeconds: 60 * (time ?? 0),
+                    timeSeconds: (time ?? 0),
                     questions: store.sendQuiz.quiz
                 }
             };

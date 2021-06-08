@@ -1,6 +1,7 @@
 import { Button, Grid, makeStyles, Paper } from '@material-ui/core';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useSocket } from '../../services/SocketService';
+import { StoreContext } from '../../services/StoreService';
 import { Answer } from './Answer';
 import { ImageView } from './imageView';
 import { Option } from './Option';
@@ -16,6 +17,7 @@ export function QuestionsList(props: QuestionsListProps) {
     const [quiz, setQuiz] = useState(testData());
     const [quizID, setQuizID] = useState("");
     const [answersRecord, setAnswersRecord] = useState<Record<string, boolean | string | undefined>>({});
+    const store = useContext(StoreContext);
 
     const { socketEmiter, sendJsonMessage } = useSocket();
 
@@ -31,6 +33,8 @@ export function QuestionsList(props: QuestionsListProps) {
         console.log("refreshQuiz");
         setQuiz(payload.data.questions);
         setQuizID(payload.data.quizID);
+        store.quizTime = payload.data.timeSeconds;
+        store.quizStartTime = Date.now();
         setAnswersRecord({});
         props.handleEnable();
     }, []);

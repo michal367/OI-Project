@@ -19,8 +19,10 @@ export function TimerClock(props: TimerClockProps) {
                 clearTimeout(intervalTimer);
             setIntervalTimer(undefined);
             setClock(0);
-
-            if (props.onTimerEnd) props.onTimerEnd();
+            
+            if (props.onTimerEnd) {
+                props.onTimerEnd();
+            }
         } else
             setClock(timeToWait - Date.now());
     }, [intervalTimer, props]);
