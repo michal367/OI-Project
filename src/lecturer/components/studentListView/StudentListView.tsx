@@ -121,7 +121,6 @@ export function StudentListView(props: StudentListViewProps) {
                                             />
                                         )}
                                     </TableCell>
-                                    {/*<TableCell>{row.nick}</TableCell>*/}
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>
