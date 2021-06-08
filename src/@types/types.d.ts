@@ -51,6 +51,7 @@ interface ScheduledQuiz {
 interface AnswerStat {
     index: number;
     numberOfTimesSelected: number;
+    textAnswers?: string;
 }
 
 interface QuestionStat{
