@@ -17,12 +17,15 @@ export function TimerClock(props: TimerClockProps) {
         if (timeToWait - Date.now() <= 0) {
             if (intervalTimer)
                 clearTimeout(intervalTimer);
+            setIntervalTimer(undefined);
             setClock(0);
-
-            if (props.onTimerEnd) props.onTimerEnd();
+            
+            if (props.onTimerEnd) {
+                props.onTimerEnd();
+            }
         } else
             setClock(timeToWait - Date.now());
-    }, [intervalTimer, props])
+    }, [intervalTimer, props]);
 
 
     useEffect(() => {
@@ -30,13 +33,16 @@ export function TimerClock(props: TimerClockProps) {
         let targetTime = props.targetTime.getTime();
         if (targetTime - now > 0) {
             setClock(targetTime - Date.now());
-            setIntervalTimer(setInterval(() => { refreshClock(targetTime) }, 1000));
+            if (!intervalTimer)
+                setIntervalTimer(setInterval(() => { refreshClock(targetTime) }, 1000));
         }
         return () => {
-            if (intervalTimer)
+            if (intervalTimer) {
                 clearTimeout(intervalTimer);
+                setIntervalTimer(undefined);
+            }
         }
-    }, [intervalTimer, props, refreshClock])
+    }, [intervalTimer, props.targetTime, refreshClock])
 
     return (
         <>

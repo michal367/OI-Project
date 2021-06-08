@@ -39,8 +39,8 @@ interface StudentQuestion{
 }
 interface ScheduledQuiz {
     quiz?: FrontQuiz;
-    students: string[];
-    timeInSec?: number;
+    studentIDs: string[];
+    timeSeconds?: number;
     questionStats: QuestionStat[];
     alreadyShowedResults: boolean;
 }

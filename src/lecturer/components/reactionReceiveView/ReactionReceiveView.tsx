@@ -1,5 +1,5 @@
 import { makeStyles, Paper } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useCallback, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { ReactionCounter } from "./ReactionCounter";
 import { reactionsIcons } from "../../../common/util/reactions/icons";
@@ -28,7 +28,7 @@ export function ReactionReceiveView() {
     ];
     const TIME_WAITING = 20000;
     const { socketEmiter } = useSocket();
-    const refreshReactions = (payload?: ReactionResponsePayload) => {
+    const refreshReactions = useCallback((payload?: ReactionResponsePayload) => {
         let index: number;
         if (payload) {
             let indexString: string = payload.data.reaction;
@@ -41,7 +41,8 @@ export function ReactionReceiveView() {
         store.reactionValues = tmpValues;
         if (!store.reactionModes[index] || store.lastReactionTime > 0)
             store.lastReactionTime = Date.now() + TIME_WAITING;
-    };
+    },[]);
+    
     const [progressEnabled, setProgressEnabled] = useState<boolean>(!store.reactionModes.reduce((acc, mode) => {
         return acc && mode;
     }))
@@ -86,7 +87,7 @@ export function ReactionReceiveView() {
             }
         }, 500);
         return () => clearInterval(interval);
-    }, [store, store.lastReactionTime]);
+    }, [store, store.lastReactionTime, resetReactions]);
 
     useEffect(() => {
         socketEmiter.on("send_student_reaction", refreshReactions);
