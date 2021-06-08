@@ -35,9 +35,10 @@ export function QuestionsList(props: QuestionsListProps) {
         setQuizID(payload.data.quizID);
         store.quizTime = payload.data.timeSeconds;
         store.quizStartTime = Date.now();
+        store.quizId = payload.data.quizID;
         setAnswersRecord({});
         props.handleEnable();
-    }, []);
+    }, [props, store]);
 
     useEffect(() => {
         socketEmiter.addListener("send_quiz", refreshQuiz);
