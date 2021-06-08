@@ -70,6 +70,13 @@ export function QuestionsListView() {
                             break;
                         }
                 }
+                if (correct) {
+                    for (const item of result)
+                        if (item.id === quest.id) {
+                            correct = false;
+                            break;
+                        }
+                }
                 if (correct)
                     result.push(quest);
             }

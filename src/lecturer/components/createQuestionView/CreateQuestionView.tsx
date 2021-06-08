@@ -22,6 +22,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { StoreContext } from '../../services/StoreService';
 import { UploadImageField } from '../uploadImageField/uploadImageField';
 
+import { v4 } from 'uuid';
 
 export function CreateQuestionView() {
     const theme = useTheme();
@@ -287,6 +288,7 @@ export function CreateQuestionView() {
             setLoading(true);
 
             let obj: Question = {
+                id: v4(),
                 title: title,
                 text: question,
                 imageSrc: imageUrl
