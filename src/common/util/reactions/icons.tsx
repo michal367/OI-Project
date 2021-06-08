@@ -3,14 +3,7 @@ import SentimentDissatisfiedOutlinedIcon from '@material-ui/icons/SentimentDissa
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import FavoriteOutlinedIcon from '@material-ui/icons/FavoriteOutlined';
-
-export enum ReactionName {
-    HAPPY = "HAPPY",
-    SAD = "SAD",
-    UP = "UP",
-    DOWN = "DOWN",
-    HEART = "HEART"
-}
+import { ReactionName } from './enum';
 
 export const reactionsIcons = {
     [ReactionName.HAPPY]: <SentimentSatisfiedOutlinedIcon fontSize="inherit" />,

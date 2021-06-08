@@ -1,26 +1,25 @@
-import React, { useContext, useState, ChangeEvent } from "react";
-import { TextField, Button, CircularProgress, Backdrop } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { Backdrop, Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
 import clsx from "clsx";
 import "fontsource-roboto";
-import { useHistory } from "react-router-dom";
-import { useBackEnd } from "../../services/BackEndService";
-import { StoreContext } from "../../services/StoreService";
-import IconButton from '@material-ui/core/IconButton';
-import CenterFocusWeakIcon from '@material-ui/icons/CenterFocusWeak';
+import { ChangeEvent, useCallback, useContext, useState, useEffect } from "react";
 import QrReader from "react-qr-reader";
+import { useHistory } from "react-router-dom";
 import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
 
 
 interface StudentFormViewProps {
     session?: string;
+    onFail?: (error: string) => void;
 }
 
 export function StudentFormView(props: StudentFormViewProps) {
     const store = useContext(StoreContext);
-    const backEnd = useBackEnd();
-    const { sendJsonMessage } = useSocket();
+    const { sendJsonMessage, socketEmiter } = useSocket();
     const theme = useTheme();
     const history = useHistory();
 
@@ -77,72 +76,54 @@ export function StudentFormView(props: StudentFormViewProps) {
         if (sessionInvNumber.length <= 7) setSession(sessionInvNumber);
     };
 
-    const changeToCapitalCase = (value: string) => {
-        let input = "";
-        value
-            .toLowerCase()
-            .replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
-            .split(" ")
-            .forEach((word) => {
-                if (input.length !== 0) input += " ";
-                if (word.length > 0)
-                    input += word[0].toUpperCase() + word.substring(1);
-                else input += word;
-            });
-        return input;
+    const changeToLettersOnly = (value: string) => {            
+        return value.replace(/[^a-zA-ZąęłżźćóńśĄŻŹĆĘŁÓŃŚäöüßÄÖÜẞ ]/gi, "")
     };
 
     const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-        setName(changeToCapitalCase(event.target.value));
+        setName(changeToLettersOnly(event.target.value));
     };
 
     const handleChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
-        setSurname(changeToCapitalCase(event.target.value));
+        setSurname(changeToLettersOnly(event.target.value));
     };
 
-    const isFormCompleted = () => {
+    const isFormCompleted = useCallback(() => {
         return session.length === 7 &&
             name.length > 0 && name.length <= 30 &&
             surname.length > 0 && surname.length <= 30;
-    };
+    }, [name, surname, session]);
 
-    const handleButtonClick = () => {
+    const handleButtonClick = useCallback(() => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
 
-            let fakeStudent: Student = {
-                id: "",
-                nick: name[0] + surname,
-                name: name,
-                surname: surname,
-            };
-
-            if (session)
-                backEnd?.joinLecture(session, fakeStudent)
-                    .then((response) => {
-                        console.log(response);
-                        store.studentNick = fakeStudent.nick;
-                        store.invitation = session;
-                        store.studentId = response.student_id;
-
-                        let event: StudentSubPayload = {
-                            event: "subscribe_student",
-                            data: {
-                                student_id: response.student_id,
-                                lecture_link: session,
-                            },
-                        };
-                        sendJsonMessage(event);
-
-                        history.replace("/student/session");
-                    })
-                    .catch((response) => {
-                        setLoading(false);
-                        console.error(response);
-                    });
+            if (session){
+                const handleCreate = (parsed: StudentCreateResponsePayload) =>{
+                    store.studentId = parsed.data.studentID;
+                    store.sessionName = parsed.data.sessionName;
+                    store.tutorName = parsed.data.tutor;
+                    history.replace("/student/session");
+                    socketEmiter.off("student_created", handleCreate);
+                    console.log("student created", parsed);
+                };
+                socketEmiter.on("student_created", handleCreate);
+                // there can be negative response - it is not handled yet
+                const payload: StudentCreateRequestPayload = {
+                    event: "create_student",
+                    data: {
+                        lectureLink: session,
+                        name: name,
+                        surname: surname,
+                        nick: name[0] + surname
+                    }
+                }
+                store.studentNick = name[0] + surname;
+                sendJsonMessage(payload);
+            }
         }
-    };
+    }, [history, loading, name, sendJsonMessage, session, socketEmiter, store, surname]);
 
     const handleScan = (data: string | null) => {
         if (!data) return;
@@ -164,6 +145,22 @@ export function StudentFormView(props: StudentFormViewProps) {
             console.log("Not a valid url");
         }
     }
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(loading || !isFormCompleted())){
+                handleButtonClick();
+               
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [handleButtonClick, isFormCompleted, loading]);
 
     return (
         <form autoComplete="off" className={classes.form}>

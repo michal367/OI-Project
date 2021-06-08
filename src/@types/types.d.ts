@@ -16,6 +16,7 @@ interface Answer {
 }
 
 interface Question {
+    id: string;
     index?: number;
     title: string;
     imageSrc?: string;
@@ -24,6 +25,7 @@ interface Question {
 }
 
 interface FrontQuiz {
+    id: string;
     title: string;
     questions: Question[];
 }
@@ -35,11 +37,13 @@ interface StudentQuestion{
     studentNick: string,
     time: Date;
     text: string;
+    processed: boolean;
 }
 interface ScheduledQuiz {
+    id: string;
     quiz?: FrontQuiz;
-    students: string[];
-    timeInSec: number;
+    studentIDs: string[];
+    timeSeconds?: number;
     questionStats: QuestionStat[];
     alreadyShowedResults: boolean;
     inProgress?: boolean;
@@ -62,7 +66,7 @@ interface QuizStat{
 }
 
 interface Statistic{
-    quizes: QuizStat[];
+    quizzes: QuizStat[];
 }
 type TimestampType = 
     "QuestionType" |

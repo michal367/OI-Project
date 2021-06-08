@@ -1,20 +1,24 @@
 import { makeStyles, Paper } from '@material-ui/core';
 import { QuestionsList } from './QuestionsList';
 
-
-export default function QuizView() {
+interface QuizViewProps {
+    handleBlock: (() => void);
+    handleEnable: (() => void);
+    handleClose: (() => void);
+}
+export default function QuizView(props: QuizViewProps) {
 
     const classes = makeStyles({
-        overlay : {
+        overlay: {
             maxWidth: '100%',
-            maxHeight: '100%', 
+            maxHeight: '100%',
             overflow: "auto",
         },
     })();
-    
+
     return (
         <Paper className={classes.overlay}>
-            <QuestionsList></QuestionsList>
+            <QuestionsList handleBlock={props.handleBlock} handleEnable={props.handleEnable} handleClose={props.handleClose}></QuestionsList>
         </Paper>
     );
 }

@@ -10,20 +10,20 @@
 -   **Emitted Payload Content:** `co zostanie przesłane dalej`
 -   **Payload Content Emitted On Event:** `co zostanie wyslane przy zaistnieniu eventu`
 
-## **subscribeToLecture**
+## **createLecture**
 
-    Ustanawia połączenie między widokiem wykładu a obiektem wykładu po stronie serwera.
+    Tworzy obiekt wykładu po stronie serwera i subskrybuje go na różne zdarzenia.
 
 -   **Requirements:** `None`
--   **Event type:** `subscribe_lecture`
+-   **Event type:** `create_lecture`
 -   **Payload Content:**
 
     ```json
     {
-        "event": "subscribe_lecture",
+        "event": "create_lecture",
         "data": {
-            "lecture_id": "d92245aa-11ee-4895-8e62-79f4be38570a"
-        }
+            "tutor": "Apple I-Dzik"
+        }         
     }
     ```
 
@@ -31,7 +31,11 @@
 
     ```json
     {
-        "event": "lecture_subscribed"
+        "event": "lecture_created",
+        "data": {
+            "lectureID": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "lectureLink": "1765661"
+        }        
     }
     ```
 
@@ -39,7 +43,7 @@
 
     ```json
     {
-        "event": "lecture_not_subscribed"
+        "event": "lecture_not_created"
     }
     ```
 
@@ -47,31 +51,42 @@
 -   **Payload Content Emitted On Event:** `new student added`
 
     ```json
-        "studentAdded"
+    {
+        "event": "student_added",
+        "data": {
+            "studentID": "7101b8b4-acd2-4838-9464-1da7aeff5335",
+            "nick": "nickowicz",
+            "name": "namowicz",
+            "surname": "surnamowicz"
+        }        
+    }
     ```
 
 -   **Payload Content Emitted On Event:** `student deleted`
 
     ```json
-        "studentDeleted"
+    {
+        "event": "student_deleted",
+        "data": {
+            "studentID": "7101b8b4-acd2-4838-9464-1da7aeff5335"
+        }        
+    }
     ```
 
+## **reconnectLecture**
 
-## **subscribeStudentToLecture**
+    Przywraca połączenie z istniejącym po stronie serwera obiektem wykładu.
 
-    Ustanawia połączenie między widokiem studenta a obiektem studenta po stronie serwera.
-
--   **Requirements:** `None`
--   **Event type:** `subscribe_student`
+-   **Requirements:** `createLecture`
+-   **Event type:** `reconnect_lecture`
 -   **Payload Content:**
 
     ```json
     {
-        "event": "subscribe_student",
+        "event": "reconnect_lecture",
         "data": {
-            "student_id": "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
-            "lecture_link": "4779336"
-        }
+            "lectureID": "8ae1c319-b480-4e4c-a10a-8c5836cd8f3b"
+        }         
     }
     ```
 
@@ -79,7 +94,7 @@
 
     ```json
     {
-        "event": "student_subscribed"
+        "event": "lecture_reconnected",      
     }
     ```
 
@@ -87,11 +102,44 @@
 
     ```json
     {
-        "event": "student_not_subscribed"
+        "event": "lecture_not_reconnected"
     }
     ```
 
 -   **Emitted Payload Content:** `None`
+-   **Payload Content Emitted On Event:** `None`
+
+## **deleteLecture**
+
+    Usuwa obiekt wykładu i przypisanych do niego studentów po stronie serwera i zrywa połączenia.
+
+-   **Requirements:** `createLecture`
+-   **Event type:** `delete_lecture`
+-   **Payload Content:**
+
+    ```json
+    {
+        "event": "delete_lecture"
+    }
+    ```
+
+-   **Response Payload:**
+
+    ```json
+    {
+        "event": "lecture_ended"
+    }
+    ```
+
+-   **Error Response Payload:** `None`
+-   **Emitted Payload Content:** 
+
+    ```json
+    {
+        "event": "lecture_ended"
+    }
+    ```
+
 -   **Payload Content Emitted On Event:** `None`
 
 ## **sendQuizToStudents**
@@ -106,12 +154,12 @@
     {
         "event": "send_quiz",
         "data": {
-            "student_ids": [
-                "861ee0e7-c1a1-48d4-8d29-c1a81bc88889",
+            "studentIDs": [
+                "c3b6e86d-8b12-472b-85f2-f8452380ca87",
                 "20d7a5c9-f4f6-45ca-87a4-39ac97df3499"
             ],
-            "time_seconds": 90,
-            "quiz": {
+            "timeSeconds": 90,
+            "questions": {
                 "title":"Zwierze",
                 "questions":
                 [
@@ -157,7 +205,7 @@
     {
         "event": "send_quiz",
         "data": {
-            "quiz_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "quizID": "185f192f-3c51-4855-a46e-868756d66c6c",
             "timeSeconds": 90,
             "questions": "literally any type"
         }
@@ -170,8 +218,8 @@
     {
         "event": "quiz_answers_added",
         "data": {
-            "quiz_id":  "some identifiable string",
-            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
+            "quizID":  "some identifiable string",
+            "studentID": "185f192f-3c51-4855-a46e-868756d66c6c",
             "answers": "literally any type"
         }
     }
@@ -183,7 +231,7 @@
     {
         "event": "quiz_ended",
         "data": {
-            "quiz_id":  "some identifiable string",
+            "quizID":  "some identifiable string",
             "reason": "timeout"
         }
     }
@@ -195,27 +243,24 @@
     {
         "event": "quiz_ended",
         "data": {
-            "quiz_id":  "f19f15b7-be67-4591-ad2f-e098128c6c17",
+            "quizID":  "f19f15b7-be67-4591-ad2f-e098128c6c17",
             "reason": "timeout"
         }
     }
     ```
 
-## **sendResponseFromStudent**
 
-    Odsyła odpowiedzi na zadany quiz.
+## **getStudentList**
 
--   **Requirements:** `subsribeStudentToLecture`
--   **Event type:** `send_quiz_response`
+    Odysła listę zapisanych do wykładu studentów.
+
+-   **Requirements:** `createLecture`
+-   **Event type:** `get_student_list`
 -   **Payload Content:**
 
     ```json
     {
-        "event": "send_quiz_response",
-        "data": {
-            "quiz_id": "5c286036-a496-405a-9ca2-bb2ecb47e1a0",
-            "answers": "literally any type"
-        }
+        "event": "get_student_list"
     }
     ```
 
@@ -223,65 +268,30 @@
 
     ```json
     {
-        "event": "student_answers_added"
-    }
-    ```
-
--   **Error Response Payload:**
-
-    ```json
-    {
-        "event": "student_answers_not_added"
-    }
-    ```
-
--   **Emitted Payload Content:** `None`
-
-
-## **sendReactionFromStudent**
-
-    Odsyła odpowiedzi na zadany quiz.
-
--   **Requirements:** `subsribeStudentToLecture`
--   **Event type:** `send_reaction`
--   **Payload Content:**
-
-    ```json
-    {
-        "event": "send_reaction",
-        "data": {
-            "reaction": "POG"
+        "event":"student_list",
+        "data":{
+            "studentList":[
+                {
+                    "id":"20f52cf6-ddbb-4380-a046-5f528b76beca",
+                    "nick":"nickomowicz",
+                    "name":"namowicz",
+                    "surname":"surnamowicz"
+                },
+                {
+                    "id":"80a93b73-d017-487f-aa2c-b14222d1e70a",
+                    "nick":"nickomowicz",
+                    "name":"namowicz",
+                    "surname":"surnamowicz"
+                }
+            ]
         }
     }
     ```
 
--   **Response Payload:**
+-   **Error Response Payload:** `None`
+-   **Emitted Payload Content:**  `None`
+-   **Payload Content Emitted On Event:** `None`
 
-    ```json
-    {
-        "event": "student_reaction_sent"
-    }
-    ```
-
--   **Error Response Payload:**
-
-    ```json
-    {
-        "event": "student_reaction_not_sent"
-    }
-    ```
-
--   **Payload Content Emitted On Event:** `student added reaction`
-
-    ```json
-    {
-        "event": "send_student_reaction",
-        "data": {
-            "reaction": "POG",
-            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c"
-        }
-    }
-    ```
 
 ## **showAnswersToStudent**
 
@@ -295,7 +305,7 @@
     {
         "event": "show_answers",
         "data": {
-            "quizID": "5c286036-a496-405a-9ca2-bb2ecb47e1a0"
+            "quizID": "e1cb341e-73d3-4481-80e4-2f71371f845c"
         }
     }
     ```
@@ -325,51 +335,6 @@
             "quizID": "2e847f59-aa76-4621-a853-b0af852998e3",
             "correctAnswers": "answers",
             "studentAnswers": "student answers"
-        }
-    }
-    ```
-
-## **sendQuestionFromStudent**
-
-    Wysyła pytanie studenta TYLKO do wykładowcy.
-
--   **Requirements:** `subsribeStudentToLecture`
--   **Event type:** `send_question`
--   **Payload Content:**
-
-    ```json
-    {
-        "event": "send_question",
-        "data": {
-            "text": "Czy pingwiny maja kolana?"
-        }
-    }
-    ```
-
--   **Response Payload:**
-
-    ```json
-    {
-        "event": "student_question_sent"
-    }
-    ```
-
--   **Error Response Payload:**
-
-    ```json
-    {
-        "event": "student_question_not_sent"
-    }
-    ```
-
--   **Payload Content Emitted On Event:** `student added question`
-
-    ```json
-    {
-        "event": "send_student_question",
-        "data": {
-            "text": "Czy pingwiny maja kolana?",
-            "student_id": "185f192f-3c51-4855-a46e-868756d66c6c",
         }
     }
     ```

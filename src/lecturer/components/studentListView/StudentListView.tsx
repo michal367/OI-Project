@@ -10,8 +10,8 @@ import {
     TableRow,
 } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
+import { Order, stableSort, getComparator } from "../../../common/util/comparators";
 import { StoreContext } from "../../services/StoreService";
-import { getComparator, Order, stableSort } from "../../util/comparators";
 import { HeadCell, StudentListHead } from "./StudentListHead";
 
 interface StudentListViewProps {
@@ -27,20 +27,22 @@ export function StudentListView(props: StudentListViewProps) {
 
     const store = useContext(StoreContext);
     const studentList: StudentListRow[] = props.studentList ?? [];
+
     let [selectedStudents, toggleStudentSelection]: [string[], (id: string) => void] = props.students ?? [[], () => { }]
+
     const [students, setStudents] = useState<string[]>(selectedStudents);
-
-
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
+    
     const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
     }
 
     useEffect(() => {
-        if (props.students)
-            [selectedStudents, toggleStudentSelection] = props.students;
-        setStudents(selectedStudents);
+        if (props.students){
+            let [students] = props.students;
+            setStudents(students);
+        }
     }, [props.students]);
 
     const theme = useTheme();
@@ -119,7 +121,6 @@ export function StudentListView(props: StudentListViewProps) {
                                             />
                                         )}
                                     </TableCell>
-                                    {/*<TableCell>{row.nick}</TableCell>*/}
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell>{row.surname}</TableCell>
                                 </TableRow>

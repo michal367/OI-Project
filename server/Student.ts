@@ -3,6 +3,7 @@ import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
+import { REACTION_TIMEOUT, QUESTION_TIMEOUT, QUESTION_MAX_LENGTH } from "../src/common/util/globalConfig.ts";
 
 class Student extends EventEmitter {
     id: string;
@@ -14,9 +15,10 @@ class Student extends EventEmitter {
     reactions: Map<Date, string>;
     questions: Map<Date, string>;
     canSendReaction: boolean;
-    REACTION_TIMEOUT = 1000;
+    REACTION_TIMEOUT = REACTION_TIMEOUT;
     canSendQuestion: boolean;
-    QUESTION_TIMEOUT = 5000;
+    QUESTION_MAX_LENGTH = QUESTION_MAX_LENGTH;
+    QUESTION_TIMEOUT = QUESTION_TIMEOUT;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -40,6 +42,7 @@ class Student extends EventEmitter {
         this.wsc = wsc;
 
         this.wsc.on("message", (message: string) => {
+            console.log(message);
             const parsed = JSON.parse(message);
             console.log(parsed);
             switch (parsed.event) {
@@ -49,6 +52,9 @@ class Student extends EventEmitter {
                 case "send_reaction":
                     this.handlerSendReaction(parsed);
                     break;
+                case "delete_student":
+                    this.handleDelete();
+                    break;
                 case "send_question":
                     this.handlerSendQuestion(parsed);
                     break;
@@ -56,21 +62,21 @@ class Student extends EventEmitter {
                     break;
                 default:
                     console.log(`Student Websockets: Unexpected type of event \n\t Event:${parsed.event}`)
-
             }
         });
 
-        this.wsc.on("close", () => {
-            console.log("Student Websockets closed");
+        this.wsc.on("close", (reason: string) => {
+            console.log(`Student Websockets closed \n\t reason: ${reason}`);
             this.wsc = undefined;
             //TODO: cleanup after closing websocket connection
         });
     }
 
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
-        const quiz: Quiz | undefined = this.lecture.quizes.get(parsed.data.quiz_id);
+        const quiz: Quiz | undefined = this.lecture.quizzes.get(parsed.data.quizID);
         if (quiz?.isActive()) {
             quiz.addStudentAnswers(this, parsed.data.answers);
+
             const response: Payload = {
                 event: "student_answers_added"
             }
@@ -86,12 +92,14 @@ class Student extends EventEmitter {
     handlerSendReaction(parsed: ReactionRequestPayload) {
         if (this.canSendReaction) {
             this.canSendReaction = false;
+
             this.reactions.set(new Date(), parsed.data.reaction);
             this.emit("reaction_added", parsed.data.reaction);
             const response: Payload = {
                 event: "student_reaction_sent"
             };
             this.wsc?.send(JSON.stringify(response));
+
             setTimeout(() => this.canSendReaction = true, this.REACTION_TIMEOUT);
         } else {
             const response: Payload = {
@@ -101,8 +109,29 @@ class Student extends EventEmitter {
         }
     }
 
+    handleDelete() {
+        const response: Payload = {
+            event: "student_deleted"
+        };
+        this.wsc?.send(JSON.stringify(response));
+
+        if (!this.wsc?.isClosed) {
+            this.wsc?.close(1000, "Student requested shutdown");
+        }
+
+        this.handleGDPR();
+        this.lecture.studentList.deleteStudent(this.id);
+        console.log("Student has been deleted");
+    }
+
+    handleGDPR() {
+        this.name = "";
+        this.surname = "";
+        this.nick = "";
+    }
+
     handlerSendQuestion(parsed: SendQuestionRequestPayload) {
-        if (this.canSendQuestion) {
+        if (this.canSendQuestion && parsed.data.text.length <= this.QUESTION_MAX_LENGTH) {
             this.canSendQuestion = false;
             this.questions.set(new Date(), parsed.data.text);
             this.emit("question_added", parsed.data.text);

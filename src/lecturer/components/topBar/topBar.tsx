@@ -1,62 +1,63 @@
-import React, { useContext } from 'react';
+import { useTheme, withStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../services/StoreService';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import NotifiableTab from "./NotifiableTab"
-import Button from '@material-ui/core/Button';
-export default function TopBar() {
-    const store = useContext(StoreContext);
-    const location = useLocation();
+import routeToTabsValue from '../../util/route/routeToTabsValue';
+import NotifiableTab from './NotifiableTab';
 
-    const [selectedTab, setSelectedTab] = useState(location.pathname);
+interface TopBarProps {
+    currentLocation: string;
+}
+
+export default function TopBar(props: TopBarProps) {
+    const store = useContext(StoreContext);
+    const [selectedTab, setSelectedTab] = useState(routeToTabsValue(props.currentLocation));
 
     const routes = {
         index: "/lecturer",
         session: "/lecturer/session",
         quiz: "/lecturer/quizzes",
         questions: "/lecturer/questions",
-        stats: "/lecturer/stats",
         timestamp: "/lecturer/timestamp",
+        stats: "/lecturer/stats",
     }
-    const possibleRoutes = Object.values(routes);
 
-  
     useEffect(() => {
-        if (possibleRoutes.includes(location.pathname)) setSelectedTab(location.pathname);
-    }, [location.pathname, possibleRoutes]);
+        setSelectedTab(routeToTabsValue(props.currentLocation));
+    }, [props.currentLocation]);
 
-    const newQuestion = () => {
-        let newStudentQuestion: StudentQuestion = {
-            studentNick: "Null",
-            time: new Date(),
-            text: "null",
-        }
-        store.studentQuestions = [...store.studentQuestions, newStudentQuestion];
+    const tabProps = (route: string) => {
+        return { routes: route, value: routeToTabsValue(route) };
     }
+
+    const processQuestions = () =>{
+        store.studentQuestions.forEach(question => question.processed = true)
+    }
+    const theme = useTheme();
+    const NotifiableTabs = withStyles({
+        indicator: {
+          backgroundColor: theme.palette.secondary.light,
+          padding: 2,
+        },
+    })(Tabs);
 
     return (
-        <AppBar position="static">
-            <Tabs
+        <AppBar position="relative" style={{flexShrink:0,}}>
+            <NotifiableTabs
                 value={selectedTab}
                 centered
             >
-                {(store.sessionId === "") ?
-                    <NotifiableTab value={routes.index} label="Rozpocznij sesję" routes={routes.index}/>
-                    :
-                    <NotifiableTab value={routes.session} label="Uczestnicy" observableList={store.studentQuestions} routes={routes.session}/>
-                }
-                <NotifiableTab value={routes.quiz} label="Quizy" routes={routes.quiz}/>
-                <NotifiableTab value={routes.questions} label="Pytania" routes={routes.questions}/>
-                <NotifiableTab value={routes.timestamp} label="Zdarzenia" routes={routes.timestamp}/>
-                <Button onClick={newQuestion}>New question</Button>
-                {(store.sessionId != "") && (<NotifiableTab
-                    label="Statystyki"
-                    routes={routes.stats}
-                />)}
-            </Tabs>
+                <NotifiableTab label="Sesja" resetFunction={processQuestions} observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
+                <NotifiableTab label="Quizy" {...tabProps(routes.quiz)} />
+                <NotifiableTab label="Pytania" {...tabProps(routes.questions)} />
+                {store.lectureID && (
+                    <NotifiableTab label="Zdarzenia" {...tabProps(routes.timestamp)} />
+                )}
+                {store.lectureID && ( //Can't be in one condition because <Tabs> doesn't accept wrapped children
+                    <NotifiableTab label="Statystyki" {...tabProps(routes.stats)} />
+                )}
+            </NotifiableTabs>
         </AppBar>
     );
 }

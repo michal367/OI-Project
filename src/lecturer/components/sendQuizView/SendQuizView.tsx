@@ -1,5 +1,3 @@
-/* Code adopted from: https://material-ui.com/components/tables/ */
-
 import {
     makeStyles,
     useTheme,
@@ -11,22 +9,20 @@ import {
     Step,
     StepLabel,
     StepContent,
+    Grid,
     Typography,
     Button,
     Checkbox,
     FormControlLabel,
     FormControl,
-    MenuItem,
-    Select,
-    InputLabel,
     TextField
 } from "@material-ui/core";
-import { useContext, useState, useEffect, ChangeEvent } from "react";
+import { useContext, useState, useEffect, ChangeEvent, useCallback } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
-import { getRandomIndexes } from "../../util/random";
-import { useCallback } from "react";
-import { formatTime } from "../../util/time";
+import { getRandomIndexes } from "../../../common/util/random";
+import { formatTime } from "../../../common/util/time";
+import { useSocket } from "../../services/SocketService";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -45,24 +41,27 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
+    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeInSec ?? 10);
+    const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeSeconds !== undefined ? Math.floor(store.sendQuiz.timeSeconds / 60) : 1);
+    const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeSeconds ? Math.floor(store.sendQuiz.timeSeconds) % 60 : 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 0);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(time === 0);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
 
-
     useEffect(() => {
-        if (props.students)
-            [selectedStudents, toggleAllSelectedStudents] = props.students;
-        setStudents(selectedStudents);
+        if (props.students){
+            let [students] = props.students;
+            setStudents(students);
+        }
     }, [props.students]);
 
     useEffect(() => {
@@ -78,15 +77,27 @@ export function SendQuizView(props: SendQuizViewProps) {
         store.sendQuiz = sendQuiz;
         setQuiz(quiz !== undefined);
     }
-    const setSelectedTime = (value: unknown) => {
+
+    const setSelectedTime = (minutes: unknown, seconds: unknown) => {
+        let minutesNumber: number = Number(minutes);
+        let secondsNumber: number = Number(seconds);
+        setMinutes(minutesNumber);
+        setSeconds(secondsNumber);
+        let timeInSeconds = 60 * minutesNumber + secondsNumber;
         let sendQuiz = store.sendQuiz;
-        sendQuiz.timeInSec = value as number;
+        sendQuiz.timeSeconds = timeInSeconds;
         store.sendQuiz = sendQuiz;
-        setTime(store.sendQuiz.timeInSec ?? 0);
+        setTime(store.sendQuiz.timeSeconds ?? 0);
     }
-    const handlePicker = (event: ChangeEvent<{ value: unknown }>) => {
-        setSelectedTime(event.target.value);
-    };
+    const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>) => {
+        let numberStr = e.target.value.replace(/[^0-9]/g, '');
+        setSelectedTime(numberStr, seconds);
+    }
+    const handleSecondsChange = (e: ChangeEvent<HTMLInputElement>) => {
+        let numberStr = e.target.value.replace(/[^0-9]/g, '');
+        setSelectedTime(minutes, numberStr);
+    }
+
     const handleRandomStudentsNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -119,9 +130,7 @@ export function SendQuizView(props: SendQuizViewProps) {
         },
         container: {
             display: "flex",
-            flexWrap: "wrap",
             flexDirection: "column",
-            alignItems: "center",
             width: "fit-content",
         },
         textField: {
@@ -154,30 +163,30 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 1:
                 return (
                     <FormControl className={classes.container}>
-                        <InputLabel>
-                            Czas na wypełnienie
-                        </InputLabel>
-                        <Select
-                            labelId="time-select"
-                            className={classes.textField}
-                            id="time-select"
-                            value={time > 0 ? time : ""}
-                            onChange={handlePicker}
-                            disabled={checked}
-                            autoFocus={!checked}
-                        >
-                            <MenuItem value={0.5}>30 sek</MenuItem>
-                            <MenuItem value={1}>1 min</MenuItem>
-                            <MenuItem value={2}>2 min</MenuItem>
-                            <MenuItem value={3}>3 min</MenuItem>
-                            <MenuItem value={5}>5 min</MenuItem>
-                            <MenuItem value={10}>10 min</MenuItem>
-                            <MenuItem value={20}>20 min</MenuItem>
-                            <MenuItem value={40}>40 min</MenuItem>
-                            <MenuItem value={60}>1 h</MenuItem>
-                            <MenuItem value={90}>1.5 h</MenuItem>
-                            <MenuItem value={180}>3 h</MenuItem>
-                        </Select>
+                        <Grid container spacing={3} style={{ margin: "0 0 5px 0" }}>
+                            <Grid item xs={3} style={{ paddingLeft: "0" }}>
+                                <TextField
+                                    label="Minuty"
+                                    type="number"
+                                    value={minutes.toString()}
+                                    onChange={handleMinutesChange}
+                                    inputProps={{ min: 0 }}
+                                    disabled={checked}
+                                    autoFocus={!checked}
+                                />
+                            </Grid>
+                            <Grid item xs={3}>
+                                <TextField
+                                    label="Sekundy"
+                                    type="number"
+                                    value={seconds.toString()}
+                                    onChange={handleSecondsChange}
+                                    inputProps={{ min: 0 }}
+                                    disabled={checked}
+                                    autoFocus={!checked}
+                                />
+                            </Grid>
+                        </Grid>
 
                         <FormControlLabel
                             control={
@@ -199,6 +208,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                             className={classes.button}
                             variant="contained"
                             onClick={drawSelectedStudents}
+                            disabled={!randomStudentsNumber || Number(randomStudentsNumber) === 0}
                         >
                             Wybór losowy
                         </Button>
@@ -237,7 +247,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                 <ListItemText
                                     primary="Ilość przeznaczonego czasu:"
                                     secondary={
-                                        time > 0 ? formatTime(time * 60 * 1000) : "nieograniczone"
+                                        time > 0 ? formatTime(time * 1000) : "nieograniczone"
                                     }
                                 />
                             </ListItem>
@@ -257,10 +267,15 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
-        let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        tmpQuiz.timeInSec = 0;
-        store.sendQuiz = tmpQuiz;
-        setTime(0);
+        if (event.target.checked === true) {
+            let tmpQuiz: ScheduledQuiz = store.sendQuiz;
+            tmpQuiz.timeSeconds = 0;
+            store.sendQuiz = tmpQuiz;
+            setTime(0);
+        }
+        else {
+            setSelectedTime(minutes, seconds);
+        }
     };
     const steps = getSteps();
 
@@ -285,14 +300,26 @@ export function SendQuizView(props: SendQuizViewProps) {
     const handleNext = useCallback(() => {
         if (store.sendQuizStep === steps.length - 1) {
             console.log("scheduled quiz", store.sendQuiz);
-            let timeToWait = Date.now() + 60000 * (time ?? 0);
-            store.sendQuiz.timeToEnd = timeToWait;
+            let timeToWait = Date.now() + 1000 * (time ?? 0);
+            store.timeToNextQuiz = timeToWait;
             setClock(timeToWait - Date.now());
             store.scheduledQuizzes.push(store.sendQuiz);
             setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
+
+            let payload: QuizRequestPayload = {
+                event: "send_quiz",
+                data:{
+                    quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
+                    studentIDs: store.sendQuiz.studentIDs,
+                    timeSeconds: (time ?? 0),
+                    questions: store.sendQuiz.quiz
+                }
+            };
+            sendJsonMessage(payload);
+            console.log(payload);
         }
         store.sendQuizStep = store.sendQuizStep + 1;
-    }, [refreshClock, steps.length, store, time]);
+    }, [refreshClock, steps.length, store, time, sendJsonMessage]);
 
     useEffect(() => {
         return () => {
@@ -317,7 +344,9 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleReset = () => {
         store.sendQuizStep = 0;
-        setSelectedTime(undefined);
+        setSelectedTime(undefined, undefined);
+        setMinutes(1);
+        setSeconds(0);
         setSelectedQuiz(undefined);
         changeSelectedStudents(true);
     };
@@ -327,9 +356,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 3:
                 return false;
             case 0:
-                return !quiz
+                return !quiz;
             case 1:
-                return !(time > 0 || checked)
+                return !(time > 0 || checked);
             case 2:
                 return students.length === 0;
             default:
