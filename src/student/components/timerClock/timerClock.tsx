@@ -25,18 +25,18 @@ export function TimerClock(props: TimerClockProps) {
     }, [intervalTimer, props])
 
 
-    useEffect(() => {
-        let now = Date.now();
-        let targetTime = props.targetTime.getTime();
-        if (targetTime - now > 0) {
-            setClock(targetTime - Date.now());
-            setIntervalTimer(setInterval(() => { refreshClock(targetTime) }, 1000));
-        }
-        return () => {
-            if (intervalTimer)
-                clearTimeout(intervalTimer);
-        }
-    }, [intervalTimer, props, refreshClock])
+    // useEffect(() => {
+    //     let now = Date.now();
+    //     let targetTime = props.targetTime.getTime();
+    //     if (targetTime - now > 0) {
+    //         setClock(targetTime - Date.now());
+    //         setIntervalTimer(setInterval(() => { refreshClock(targetTime) }, 1000));
+    //     }
+    //     return () => {
+    //         if (intervalTimer)
+    //             clearTimeout(intervalTimer);
+    //     }
+    // }, [intervalTimer, props, refreshClock])
 
     return (
         <>

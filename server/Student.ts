@@ -3,6 +3,7 @@ import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
+import { REACTION_TIMEOUT, QUESTION_TIMEOUT, QUESTION_MAX_LENGTH } from "../src/common/util/globalConfig.ts";
 
 class Student extends EventEmitter {
     id: string;
@@ -14,10 +15,10 @@ class Student extends EventEmitter {
     reactions: Map<Date, string>;
     questions: Map<Date, string>;
     canSendReaction: boolean;
-    REACTION_TIMEOUT = 1000;
+    REACTION_TIMEOUT = REACTION_TIMEOUT;
     canSendQuestion: boolean;
-    QUESTION_MAX_LENGTH = 300;
-    QUESTION_TIMEOUT = 5000;
+    QUESTION_MAX_LENGTH = QUESTION_MAX_LENGTH;
+    QUESTION_TIMEOUT = QUESTION_TIMEOUT;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -127,7 +128,7 @@ class Student extends EventEmitter {
         this.surname = "";
         this.nick = "";
     }
-    
+
     handlerSendQuestion(parsed: SendQuestionRequestPayload) {
         if (this.canSendQuestion && parsed.data.text.length <= this.QUESTION_MAX_LENGTH) {
             this.canSendQuestion = false;
