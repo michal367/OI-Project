@@ -9,7 +9,7 @@ export interface IStore {
     [key: string]: any;
     invitation: string,
     studentNick: string,
-    studentId: string,
+    studentId: string|null,
     quizzes: FrontQuiz[],
     isLoading: boolean,
     studentQuestion: StudentQuestion,
@@ -34,7 +34,7 @@ const { loadKey, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_
 const initialValue: IStore = {
     invitation: "",
     studentNick: "",
-    studentId: "",
+    studentId: null,
     quizzes: [],
     isLoading: true,
     studentQuestion: {
@@ -79,6 +79,7 @@ const Store = (props: StoreProps) => {
         setInvitation(initial.invitation);
         setStudentNick(initial.studentNick);
         setQuizzes(initial.quizzes);
+        setStudentId(initial.studentId);
     }, [])
 
     const value: IStore = {
@@ -101,7 +102,7 @@ const Store = (props: StoreProps) => {
         get studentId() {
             return studentId;
         },
-        set studentId(newValue: string) {
+        set studentId(newValue: string|null) {
             setStudentId(newValue);
             saveKey("studentId", newValue);
         },

@@ -2,13 +2,14 @@ import { CssBaseline } from "@material-ui/core";
 import Backdrop from '@material-ui/core/Backdrop';
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import "fontsource-roboto";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { GridLoader } from "react-spinners";
 import { useSocket } from "../../services/SocketService";
 import Store, { StoreContext } from "../../services/StoreService";
 import { JoinSessionView } from "../joinSessionView/JoinSessionView";
 import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
+import { useHistory } from "react-router-dom";
 
 const theme = createMuiTheme({
     palette: {
@@ -30,6 +31,7 @@ const theme = createMuiTheme({
 function App() {
     const store = useContext(StoreContext);
     const { socketEmiter, sendJsonMessage } = useSocket();
+    const history = useHistory();
 
     // heroku 55s timeout fix
     useEffect(() => {
@@ -55,6 +57,35 @@ function App() {
             socketEmiter.off("onOpen", onOpen);
         }
     }, [socketEmiter, store]);
+
+    const handleNotReconnected = useCallback((payload: Payload) => {
+        store.operation?.clear();
+        history.push("/student", { dialogOpen: true });
+    },[history, store.operation]);
+    
+    useEffect(()=>{
+        console.log("use effect dupa");
+        socketEmiter.on("student_not_reconnected", handleNotReconnected);
+        // TODO: handle student_connected if you want to
+        console.log(store.studentId);
+        if(store.studentId !== null){
+            console.log("use effect student id niepuste");
+            const payload: StudentReconnectRequestPayload = {
+                "event": "reconnect_student",
+                "data": {
+                    "lectureLink": store.invitation,
+                    "studentID": store.studentId
+                }
+            };
+            store.studentId = null;
+            sendJsonMessage(payload);
+        }
+
+        return () =>{
+            socketEmiter.off("student_not_reconnected", handleNotReconnected);
+        }
+    }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.studentId]);
+
 
     return (
         <Store>

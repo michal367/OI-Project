@@ -37,7 +37,7 @@ export function QuestionsList(props: QuestionsListProps) {
         store.quizStartTime = Date.now();
         setAnswersRecord({});
         props.handleEnable();
-    }, []);
+    }, [props, store]);
 
     useEffect(() => {
         socketEmiter.addListener("send_quiz", refreshQuiz);
