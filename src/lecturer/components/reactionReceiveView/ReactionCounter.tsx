@@ -3,8 +3,7 @@ import React, {
     JSXElementConstructor,
     ReactElement,
     useEffect,
-    useRef,
-    useState,
+    useState
 } from "react";
 import { useThrottle } from 'use-lodash-debounce-throttle';
 
@@ -45,7 +44,7 @@ export function ReactionCounter(props: ReactionCounterProps) {
     useEffect(() => {
         animate()
         setValue(props.value);
-    }, [props.value]);
+    }, [props.value, animate]);
 
     useEffect(() => {
         setMode(props.currentMode);

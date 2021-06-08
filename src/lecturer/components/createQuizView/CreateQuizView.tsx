@@ -16,6 +16,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { lazareTheme } from "../../util/theme/customTheme";
 
+import { v4 } from 'uuid';
 
 function createIndexArray(s: number) {
     let array = [];
@@ -203,7 +204,7 @@ export function CreateQuizView() {
 
             store.quizzes = [
                 ...store.quizzes,
-                { title, questions: selectedQuestions },
+                { "id": v4(), title, questions: selectedQuestions },
             ];
 
             timer.current = window.setTimeout(() => {

@@ -25,35 +25,35 @@ export function SessionDashboardView(props: { update: () => void }) {
 
     const [studentList, setStudentList] = useState<StudentListRow[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<string[]>(
-        store.sendQuiz.students
+        store.sendQuiz.studentIDs
     );
 
     const toggleAllSelectedStudents = (checked: boolean) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let mapById = (student: Student) => student.id;
         if (checked) {
-            tmpQuiz.students = [];
+            tmpQuiz.studentIDs = [];
         } else {
-            tmpQuiz.students = [...studentList.map(mapById)];
+            tmpQuiz.studentIDs = [...studentList.map(mapById)];
         }
 
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
 
     const toggleRandomSelectedStudents = (randomNumbers: Array<number>) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
         let selectedStudents = randomNumbers.map((i) => studentList[i]);
         let mapById = (student: Student) => student.id;
-        tmpQuiz.students = [...selectedStudents.map(mapById)];
+        tmpQuiz.studentIDs = [...selectedStudents.map(mapById)];
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
 
     const toggleStudentSelection = (id: string) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-        let currentIndex = store.sendQuiz.students.indexOf(id);
-        let newSelected = [...store.sendQuiz.students];
+        let currentIndex = store.sendQuiz.studentIDs.indexOf(id);
+        let newSelected = [...store.sendQuiz.studentIDs];
 
         if (currentIndex === -1) {
             newSelected.push(id);
@@ -61,9 +61,9 @@ export function SessionDashboardView(props: { update: () => void }) {
             newSelected.splice(currentIndex, 1);
         }
 
-        tmpQuiz.students = newSelected;
+        tmpQuiz.studentIDs = newSelected;
         store.sendQuiz = tmpQuiz;
-        setSelectedStudents(tmpQuiz.students);
+        setSelectedStudents(tmpQuiz.studentIDs);
     };
     const theme = useTheme();
 

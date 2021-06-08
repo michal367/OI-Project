@@ -16,6 +16,7 @@ interface Answer {
 }
 
 interface Question {
+    id: string;
     index?: number;
     title: string;
     imageSrc?: string;
@@ -24,6 +25,7 @@ interface Question {
 }
 
 interface FrontQuiz {
+    id: string;
     title: string;
     questions: Question[];
 }
@@ -38,9 +40,10 @@ interface StudentQuestion{
     processed: boolean;
 }
 interface ScheduledQuiz {
+    id: string;
     quiz?: FrontQuiz;
-    students: string[];
-    timeInSec?: number;
+    studentIDs: string[];
+    timeSeconds?: number;
     questionStats: QuestionStat[];
     alreadyShowedResults: boolean;
 }

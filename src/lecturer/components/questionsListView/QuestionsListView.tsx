@@ -47,7 +47,7 @@ export function QuestionsListView() {
                     correct = false;
                 }
 
-                if (quest.options != undefined && correct == true) {
+                if (quest.options !== undefined && correct === true) {
                     for (const option of quest.options) {
                         if (typeof option.index != 'number' || typeof option.text != 'string' || typeof option.isCorrect != 'boolean') {
                             correct = false;
@@ -66,6 +66,13 @@ export function QuestionsListView() {
                 if (correct) {
                     for (const item of result)
                         if (item.title === quest.title) {
+                            correct = false;
+                            break;
+                        }
+                }
+                if (correct) {
+                    for (const item of result)
+                        if (item.id === quest.id) {
                             correct = false;
                             break;
                         }

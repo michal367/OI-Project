@@ -28,6 +28,7 @@ import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
+import { v4 } from 'uuid';
 
 export function CreateQuestionView() {
     const theme = useTheme();
@@ -346,6 +347,7 @@ export function CreateQuestionView() {
             setLoading(true);
 
             let obj: Question = {
+                id: v4(),
                 title: title,
                 text: question,
                 imageSrc: imageUrl
