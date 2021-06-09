@@ -1,11 +1,25 @@
-import { makeStyles, Paper, Button, Grid, Checkbox, TextField } from '@material-ui/core';
-import React, { ChangeEvent } from 'react';
+import { Button, Grid, makeStyles, Paper } from '@material-ui/core';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { useSocket } from '../../services/SocketService';
+import { StoreContext } from '../../services/StoreService';
+import { Answer } from './Answer';
 import { ImageView } from './imageView';
+import { Option } from './Option';
 import { testData } from './testData';
 
-export function QuestionsList() {
-    let answers = new Map();
-    let quiz = testData();
+interface QuestionsListProps {
+    handleBlock: (() => void);
+    handleEnable: (() => void);
+    handleClose: (() => void);
+}
+
+export function QuestionsList(props: QuestionsListProps) {
+    const [quiz, setQuiz] = useState(testData());
+    const [quizID, setQuizID] = useState("");
+    const [answersRecord, setAnswersRecord] = useState<Record<string, boolean | string | undefined>>({});
+    const store = useContext(StoreContext);
+
+    const { socketEmiter, sendJsonMessage } = useSocket();
 
     const classes = makeStyles({
         details: {
@@ -15,43 +29,72 @@ export function QuestionsList() {
         }
     })();
 
-    const handleCheckboxChange = (e: ChangeEvent<any>, questionNumber: number, answerNumber: number) => {
+    const refreshQuiz = useCallback((payload: ServerQuizRequestPayload) => {
+        console.log("refreshQuiz");
+        setQuiz(payload.data.questions);
+        setQuizID(payload.data.quizID);
+        store.quizTime = payload.data.timeSeconds;
+        store.quizStartTime = Date.now();
+        store.quizId = payload.data.quizID;
+        setAnswersRecord({});
+        props.handleEnable();
+    }, [props, store]);
 
-        if (!answers.has(questionNumber)) {
-            const len = quiz.questions[questionNumber].options?.length;
-            if (len === undefined) return;
+    useEffect(() => {
+        socketEmiter.addListener("send_quiz", refreshQuiz);
+        return () => {
+            socketEmiter.removeListener("send_quiz", refreshQuiz);
+        };
+    }, [refreshQuiz, socketEmiter]);
 
-            let array = [];
-            for (let i = 0; i < len; i++) {
-                array.push(false);
-            }
+    const handleCheckboxChange = (isChecked: boolean, questionNumber: number, answerNumber: number) => {
 
-            array[answerNumber] = e.target.checked;
-            answers.set(questionNumber, array);
-        }
-        else {
-            let array = answers.get(questionNumber);
-            array[answerNumber] = e.target.checked;
-            answers.set(questionNumber, array);
-        }
+        let key = questionNumber + ":" + answerNumber;
+        setAnswersRecord((prev) => {
+            prev[key] = !prev[key];
+            return prev;
+        })
     }
 
-    const handleTextAreaChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, questionNumber: number) => {
-        const { value } = e.target;
-        answers.set(questionNumber, value);
+    const handleTextAreaChange = (text: string, questionNumber: number) => {
+        let key = questionNumber + "";
+        setAnswersRecord((prev) => {
+            prev[key] = text;
+            return prev;
+        })
     };
 
-    const submit = () => {
-        let result = [];
-
+    const generateAnswersData = () => {
+        let data: (boolean[] | string)[] = [];
         for (let i = 0; i < quiz.questions.length; i++) {
-            let answer = answers.get(i);
-            result.push(answer);
-            console.log("answer for question: ", i, "is:", answer);
+            let len = quiz.questions[i].options?.length;
+            if (len) {
+                let answers: boolean[] = [];
+                for (let j = 0; j < len; j++) {
+                    answers.push(!!answersRecord[i + ":" + j]);
+                }
+                data.push(answers);
+            } else {
+                data.push(answersRecord[i] ? answersRecord[i] + "" : "")
+            }
         }
-        console.log(result);
+        return data;
     }
 
+    const submit = () => {
+        let payload: QuizResponsePayload = {
+            event: "send_quiz_response",
+            data: {
+                quizID: quizID,
+                answers: generateAnswersData(),
+            }
+        };
+        console.log(payload);
+        sendJsonMessage(payload);
+        setAnswersRecord({});
+        props.handleBlock();
+        props.handleClose();
+    }
     return (
         <>
             {quiz.questions.map((question, i) => (
@@ -61,25 +104,13 @@ export function QuestionsList() {
                     <div className='answer-section'>
                         <Grid container spacing={1}>
                             {question.options ? (question.options.map((option, j) => (
-                                <div style={{ display: "flex", marginBottom: "10px" }}>
-                                    <Checkbox
-                                        color="primary"
-                                        onChange={(e) => handleCheckboxChange(e, i, j)}
-                                    />
-                                    <TextField id="outlined-basic" variant="outlined" defaultValue={option.text} InputProps={{
-                                        readOnly: true,
-                                    }} />
-                                </div>
+                                <Option checked={!!answersRecord[i + ":" + j]} onChange={(checked) => {
+                                    handleCheckboxChange(checked, i, j)
+                                }} text={option.text} />
                             ))) : (
-                                <TextField
-                                    multiline
-                                    id="standard-basic"
-                                    variant="filled"
-                                    label="Odpowiedź"
-                                    fullWidth
-                                    rows={5}
-                                    onChange={(e) => handleTextAreaChange(e, i)}
-                                />
+                                <Answer label={"Odpowiedź"} value={answersRecord[i] ? answersRecord[i] + "" : ""} onChange={(text) => {
+                                    handleTextAreaChange(text, i)
+                                }} />
                             )}
                         </Grid>
 

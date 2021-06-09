@@ -22,11 +22,12 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { lazareTheme } from "../../util/theme/customTheme";
 import { ImportExport } from '../importExport/ImportExport';
 import { lazareTheme } from "../../util/theme/customTheme";
 
 
-export type TitleType = Pick<Question | FrontQuiz, "title">;
+export type TitleType = Pick<Question | FrontQuiz, "id" | "title">;
 
 interface ListViewProps {
     getContainer: (() => TitleType[]);
@@ -42,10 +43,6 @@ export function ListView(props: ListViewProps) {
         return ('title' in object && 'text' in object);
     }
 
-    interface IndexedElement {
-        index: number;
-        element: TitleType;
-    }
     const onImportBasic = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
             let jsonString = e.target.result as string;
@@ -131,28 +128,25 @@ export function ListView(props: ListViewProps) {
         },
     })();
 
-    const handleRemoveElement = (index: number) => {
-        const list = getContainer();
-        list.splice(index, 1);
+    const handleRemoveElement = (id: string) => {
+        let list = getContainer();
+        list = list.filter((item) => { 
+            return item.id != id;
+        });
         setContainer(list);
-
     }
-    const selectElement = (index: number) => {
+    const selectElement = (id: string) => {
         history.push({
             pathname: createEditPathname,
-            state: { index: index }
+            state: { id: id }
         });
     }
 
     const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
         setFilter(e.target.value);
     }
-    const filterByTitle = (items: IndexedElement[]) => {
-        return items.filter(item => item.element.title.toLowerCase().includes(filter));
-    }
-    const addIndexes = (item: TitleType, i: number) => {
-        let q: IndexedElement = { index: i, element: item };
-        return q;
+    const filterByTitle = (items: TitleType[]) => {
+        return items.filter(item => item.title.toLowerCase().includes(filter));
     }
 
     return (
@@ -162,7 +156,7 @@ export function ListView(props: ListViewProps) {
                 <div className={classes.listHeader}>
                     <CardHeader
                         title={`Lista ${listElements}`}
-                        subheader={`${filterByTitle(getContainer().map(addIndexes)).length} ${listElements}`}
+                        subheader={`${filterByTitle(getContainer()).length} ${listElements}`}
                     />
                     <TextField
                         className={classes.searchInput}
@@ -179,23 +173,23 @@ export function ListView(props: ListViewProps) {
                     <Divider />
                 </div>
                 <div className={classes.listBody}>
-                    {filterByTitle(getContainer().map(addIndexes)).map((item) => ([
+                    {filterByTitle(getContainer()).map((item) => ([
                         <Card>
                             <List className={classes.listCardWrapper}>
                                 <ListItem
-                                    key={item.element.title}
+                                    key={item.title}
                                     button
-                                    onClick={() => selectElement(item.index)}
+                                    onClick={() => selectElement(item.id)}
                                 >
-                                    {isQuestion(item.element) && (
-                                        <ListItemIcon>{item.element.options ? <DoneAllIcon /> : <DescriptionIcon />}</ListItemIcon>
+                                    {isQuestion(item) && (
+                                        <ListItemIcon>{item.options ? <DoneAllIcon /> : <DescriptionIcon />}</ListItemIcon>
                                     )}
-                                    <ListItemText primary={item.element.title} />
+                                    <ListItemText primary={item.title} />
                                     <ListItemSecondaryAction>
                                         <IconButton
                                             aria-label="delete"
                                             className={classes.deleteBtn}
-                                            onClick={() => handleRemoveElement(item.index)}
+                                            onClick={() => handleRemoveElement(item.id)}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
