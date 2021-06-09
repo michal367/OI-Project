@@ -18,7 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import clsx from 'clsx';
 import { Location } from 'history';
-import React, { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactScrollableFeed from 'react-scrollable-feed';
 import { v4 } from 'uuid';
@@ -303,7 +303,7 @@ export function CreateQuestionView() {
     };
 
     let noError: string = "";
-    const validate = () => {
+    const validate = useCallback(() => {
         let required: string = "To pole jest wymagane";
         let tooLongTitle: string = "Tytuł może mieć maksymalnie 40 znaków";
         let noAnswers: string = "Trzeba dodać odpowiedzi";
@@ -318,12 +318,14 @@ export function CreateQuestionView() {
 
         if (title.length > 40)
             errorTemp.title = tooLongTitle;
-
-        for (const quest of store.questions)
-            if (quest.title === title) {
-                errorTemp.title = duplicateTitle;
-                break;
-            }
+            
+        if (data === undefined || titleVal !== title) {
+            for (const quest of store.questions)
+                if (quest.title === title) {
+                    errorTemp.title = duplicateTitle;
+                    break;
+                }
+        }
 
         for (let i = 0; i < answers.length; i++)
             errorTemp.emptyAnswers.push(answers[i] || mode === QuestionType.OPEN ? noError : required);
@@ -336,11 +338,10 @@ export function CreateQuestionView() {
             errorTemp.noAnswers === noError &&
             errorTemp.emptyAnswers.every((x: string) => x === noError)
         );
-    };
+    }, [QuestionType, answers, mode, noError, question, store.questions, title]);
 
     const timer = useRef<number>();
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = useCallback(() => {
         if (!loading) {
 
             if (!validate()) {
@@ -398,8 +399,23 @@ export function CreateQuestionView() {
                 }, 500);
             }
         }
-    };
+    }, [QuestionType, answers, checked, data, imageUrl, loading, mode, question, store, title, validate]);
 
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!loading){
+                handleSubmit();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [loading, handleSubmit]);
 
     return (
         <div className={classes.root}>

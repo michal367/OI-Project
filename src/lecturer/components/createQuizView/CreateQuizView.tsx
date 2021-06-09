@@ -10,7 +10,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import clsx from "clsx";
 import "fontsource-roboto";
 import { Location } from 'history';
-import React, { ChangeEvent, useContext, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { v4 } from 'uuid';
 import { intersection, not, union } from "../../../common/util/boolAlgebra";
@@ -220,7 +220,7 @@ export function CreateQuizView() {
     }
 
     const timer = useRef<number>();
-    const handleSaveQuiz = () => {
+    const handleSaveQuiz = useCallback(() => {
         if (!loading) {
             let selectedQuestions: Question[] = [];
             right.forEach((i) => {
@@ -276,7 +276,22 @@ export function CreateQuizView() {
                 }, 500);
             }
         }
-    };
+    }, [checked, indexArray, loading, questions, right, rightChecked, store, title]);
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(loading || right.length === 0 || title.length === 0 || title.length > 40)){
+                handleSaveQuiz();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [loading, right, title, handleSaveQuiz]);
 
     return (
         <div className={classes.root}>

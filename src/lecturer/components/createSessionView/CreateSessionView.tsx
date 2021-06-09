@@ -1,14 +1,12 @@
-import { Button, CircularProgress, TextField } from "@material-ui/core";
+import { useTheme, makeStyles, Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CheckIcon from "@material-ui/icons/Check";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import clsx from "clsx";
-import "fontsource-roboto";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback, useEffect } from "react";
 import { useSocket } from "../../services/SocketService";
 import { StoreContext } from "../../services/StoreService";
 import { lazareTheme } from "../../util/theme/customTheme";
+import CheckIcon from "@material-ui/icons/Check";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 
 
 export function CreateSessionView(props: { update: () => void }) {
@@ -116,7 +114,7 @@ export function CreateSessionView(props: { update: () => void }) {
         [classes.sessionBtn]: 1,
     });
 
-    const handleButtonClick = () => {
+    const handleButtonClick = useCallback(() => {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
@@ -145,8 +143,22 @@ export function CreateSessionView(props: { update: () => void }) {
             sendJsonMessage(payload);
             setSessionName("");
         }
-    };
+    }, [loading, name, props, sendJsonMessage, sessionName, socketEmiter, store, surname]);
 
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(sessionName.length === 0 || name.length === 0 || surname.length === 0 )){
+                handleButtonClick();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [sessionName, name, surname, handleButtonClick]);
 
     return (
         <div className={classes.root}>
