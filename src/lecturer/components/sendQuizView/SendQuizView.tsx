@@ -349,7 +349,7 @@ export function SendQuizView(props: SendQuizViewProps) {
         }
         sendJsonMessage(payload);
     };
-    const isStepReady = (step: number) => {
+    const isStepReady = useCallback((step: number) => {
         switch (step) {
             case 3:
                 return false;
@@ -362,7 +362,22 @@ export function SendQuizView(props: SendQuizViewProps) {
             default:
                 return true;
         }
-    };
+    }, [quiz, time, checked, students]);
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!isStepReady(store.sendQuizStep)){
+                handleNext();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [store, isStepReady, handleNext]);
 
     return (
         <Paper className={classes.details} variant="outlined" square>
