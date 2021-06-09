@@ -1,77 +1,133 @@
-import { Button, makeStyles, Paper, useTheme } from "@material-ui/core";
-import Timeline from '@material-ui/lab/Timeline';
-import { useContext, useEffect, useState } from "react";
+import { Button, Card, makeStyles, Paper, useTheme, withStyles } from "@material-ui/core";
+import { Timeline, ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import React, { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { TimestampRow } from "./TimestampRow";
+import HelpIcon from '@material-ui/icons/Help';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import StarsIcon from '@material-ui/icons/Stars';
+import ReactScrollableFeed from 'react-scrollable-feed';
+
 export function TimestampTable() {
+
     const store = useContext(StoreContext);
-    const [filterType, setFilterType] = useState("QuestionType");
+    const [filterTypes, setFilterTypes] = useState<TimestampType[]>(() => ["LogType"]);
     const [timestamps, setTimestamps] = useState(store.timestamps);
-    useEffect(() => setTimestamps(store.timestamps),[store.timestamps]);
+    useEffect(() => setTimestamps(store.timestamps), [store.timestamps]);
 
     const theme = useTheme();
-    const changeFilterType = (type: string) =>{
-        setFilterType(type);
+    const changeFilterType = (event: React.MouseEvent<HTMLElement>, newFilters: TimestampType[]) => {
+        if (newFilters.length)
+            setFilterTypes(newFilters);
+    }
+    const getIcon = (type: TimestampType) => {
+        switch(type){
+            case"QuestionType":
+                return(<HelpIcon fontSize="small" />);
+            case"LogType":
+                return(<AccountCircleIcon fontSize="small" />);
+            case"QuizType":
+                return(<CheckCircleIcon fontSize="small" />);
+            case"ReactionType":
+                return(<StarsIcon fontSize="small" />);
+            default:
+                return(<></>);
+        }
     }
 
     const classes = makeStyles({
-        logsWrapper: {
+        logsCard: {
             width: "100%",
-            borderRadius: "0",
-            height: "600px",
-            background: theme.palette.secondary.light,
+            minHeight: 400,
+            maxHeight: 700,
+            height: "100%",
             display: "flex",
             flexDirection: "column",
+            position: "relative",
         },
-        buttonBar: {
-            width:"100%",
+        toggleButtonBar: {
+            width: "100%",
             flexShrink: 0,
-            flexGrow: 0,
-            height: "fit-content",
+            borderRadius: "5px 5px 0 0",
+            background: theme.palette.secondary.light,
             display: "flex",
-            flexWrap: "nowrap",
         },
-        timelineWrapper:{
-            width:"100%",
+        timelineWrapper: {
+            width: "100%",
             boxSizing: "border-box",
             padding: 10,
-            overflow:"auto",
-            height: "100%",
+            overflow: "auto",
             flexGrow: 1,
-            flexShrink: 1,
+            "&:after":{
+                width: "90%",
+                position: "absolute",
+                content: '""',
+                display: "block",
+                top: 54,
+                left: 0,
+                borderTop: "15px solid white",
+                borderBottom: "15px solid white",
+                height: "calc(100% - 54px)",
+            },
         },
-        button:{
-            width: "100%",
-            flexShrink: 1,
-        },
-        timeline:{
+        timeline: {
+            width: "min(700px, 100vw)",
             display: "block",
-            width: "100%",
-            height: "100%",
-            transform: "translateX(-40%)",
+            transform: "translateX(-30%)",
+            position: "relative",
         },
     })();
 
+    const FilterToggleGroup = withStyles((theme) => ({
+        grouped: {
+          margin: theme.spacing(0.5),
+          border: 'none',
+          flexShrink: 1,
+          flexGrow: 1,
+          '&:not(:first-child)': {
+            borderRadius: theme.shape.borderRadius,
+          },
+          '&:first-child': {
+            borderRadius: theme.shape.borderRadius,
+          },
+          "&.Mui-selected":{
+            background: theme.palette.secondary.main,
+            color: "white",
+          }
+        },
+      }))(ToggleButtonGroup);
 
     return (
-        <Paper className={classes.logsWrapper} variant="outlined" square>
-            <div className={classes.buttonBar}>
-                <Button variant={filterType === "LogType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("LogType")}>Dołączanie i opuszczanie</Button>
-                <Button variant={filterType === "QuestionType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("QuestionType")}>Pytania</Button>
-                <Button variant={filterType === "ReactionType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("ReactionType")}>Reakcje</Button>
-                <Button variant={filterType === "QuizType" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("QuizType")}>Odpowiedzi na quiz</Button>
-                <Button variant={filterType === "" ? "contained" : "outlined"} color="primary" className={classes.button} onClick={() => changeFilterType("")}>Wszystkie</Button>
-            </div>
+        <Card className={classes.logsCard}>
+                <FilterToggleGroup
+                    value={filterTypes}
+                    onChange={changeFilterType}
+                    className={classes.toggleButtonBar}
+                >
+                    <ToggleButton value="LogType">Dołączanie i opuszczanie</ToggleButton>
+                    <ToggleButton value="QuestionType">Zadane Pytania</ToggleButton>
+                    <ToggleButton value="ReactionType">Wysłane Reakcje</ToggleButton>
+                    <ToggleButton value="QuizType">Odpowiedzi na quiz</ToggleButton>
+                </FilterToggleGroup>
             <div className={classes.timelineWrapper}>
-                <Timeline  className={classes.timeline}>
-                    {timestamps.filter(timestamp => timestamp.type === filterType || filterType === "").map((timestamp) => {
-                        return(
-                                <TimestampRow owner={timestamp.owner} message={timestamp.message} hours={timestamp.hours} minutes={timestamp.minutes}/>
+                <Timeline className={classes.timeline}>
+                    <ReactScrollableFeed>
+                    {timestamps.filter(timestamp => filterTypes.some(type => type === timestamp.type)).map((timestamp) => {
+                        return (
+                            <TimestampRow 
+                                owner={timestamp.owner} 
+                                message={timestamp.message} 
+                                hours={timestamp.hours} 
+                                minutes={timestamp.minutes} 
+                                icon={getIcon(timestamp.type)}
+                            />
                         )
                     })}
+                    </ReactScrollableFeed>
                 </Timeline>
             </div>
-        </Paper>
+        </Card>
     );
 }
 

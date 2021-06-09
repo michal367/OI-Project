@@ -14,13 +14,14 @@ import FeedbackView from "../feedbackView/FeedbackView";
 import { TimerClock } from "../timerClock/timerClock";
 import { ReactionName } from "../../../common/util/reactions/enum";
 import { StoreContext } from "../../services/StoreService";
+import { green, red } from '@material-ui/core/colors';
 
 export function SessionDashboardView() {
     const theme = useTheme();
-
+    const background = "#D3D0CB";
     const classes = makeStyles({
         root: {
-            background: theme.palette.primary.light,
+            background: background,
             maxHeight: "100vh",
             height: "100vh",
             display: "flex",
@@ -82,8 +83,12 @@ export function SessionDashboardView() {
             flexDirection: "column",
         },
         okButton: {
+            marginLeft: 10,
             color: "white",
-            backgroundColor: "green",
+            backgroundColor: green[500],
+            "&.MuiButton-root:hover":{
+                backgroundColor: green[700],
+            }
         },
         wrapper: {
             display: "flex",
@@ -93,13 +98,13 @@ export function SessionDashboardView() {
         quizButton: {
             "& span": {
                 flexWrap: "wrap",
-                gap:"10px"
+                gap: "10px"
             }
         }
     })();
 
     const [open, setOpen] = useState(false);
-    const [disable, setDisable] = useState(false);
+    const [disable, setDisable] = useState(true);
 
     const store = useContext(StoreContext);
 
@@ -145,7 +150,7 @@ export function SessionDashboardView() {
                 >
                     Rozwiąż quiz
 
-                    <TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleBlock} />
+                    {!disable && (<TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleBlock} />)}
                 </Button>
             </div>
             <div className={classes.questionBody}>

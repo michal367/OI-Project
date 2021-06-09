@@ -22,18 +22,17 @@ export default function SessionQuestionView() {
         inputBar: {
             padding: 10,
             flexShrink: 0,
-            background: theme.palette.primary.light,
             width: "100%",
         },
     })();
 
     return (
-        <Paper className={classes.details} variant="outlined" square>
+        <div className={classes.details}>
             <div className={classes.wrapper}>
                 <div className={classes.inputBar}>
                     <SendQuestion />
                 </div>
             </div>
-        </Paper>
+        </div>
     );
 }

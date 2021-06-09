@@ -17,9 +17,7 @@ import { lazareTheme } from "../../util/theme/customTheme";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
-    const [selectedQuizStats, setQuizStats] = useState<ScheduledQuiz | undefined>(
-        store.scheduledQuizzes.length > 0 ? store.scheduledQuizzes[0] : undefined
-    );
+    const [selectedQuizStats, setQuizStats] = useState<ScheduledQuiz | undefined>(undefined);
 
     const theme = useTheme();
     const { sendJsonMessage } = useSocket();
@@ -34,12 +32,16 @@ export function QuizStatsView() {
         },
         content: {
             ...lazareTheme.fullWidthWrapper,
+            padding: 20,
+            paddingTop: 60,
+            paddingBottom: 25,
             display: "grid",
             gridTemplateColumns: "400px 1fr",
+            gridAutoRows: "calc(100% - 64px)",
             gap: 15,
         },
         quizColumn: {
-            height: "80vh",
+            height: "100%",
             overflow: "auto",
             width: "100%",
             marginBottom: "auto",
@@ -54,7 +56,7 @@ export function QuizStatsView() {
             },
         },
         statsColumn: {
-            height: "80vh",
+            height: "100%",
             overflow: "auto",
             width: "100%",
             marginBottom: "auto",

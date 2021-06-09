@@ -29,11 +29,24 @@ export function QuizListView(props: QuizListViewProps) {
 
     const classes = makeStyles({
         wrapper: {
-            margin: "15px auto",
-            background: theme.palette.secondary.light,
+            margin: "15px 0",
             overflow: "auto",
             maxHeight: "calc(50vh - 100px)",
-            padding: 0
+            padding: 0,
+            width: "70%",
+            border: "1px solid #D3D0CB",
+        },
+        listItem:{
+            "&:nth-of-type(odd)": {
+                background: "rgba(65, 101, 138, 0.2)",
+            },
+            "&:hover":{
+                background: theme.palette.secondary.light,
+            },
+            "&.MuiListItem-root.Mui-selected":{
+                background: theme.palette.primary.light,
+                color: "white",
+            }
         }
     })();
 
@@ -51,6 +64,7 @@ export function QuizListView(props: QuizListViewProps) {
                             button
                             selected={selected?.id === value.id}
                             onClick={handleQuiz(value)}
+                            className={classes.listItem}
                         >
                             <ListItemText primary={value.title} />
                         </ListItem>
@@ -61,7 +75,7 @@ export function QuizListView(props: QuizListViewProps) {
                 );
             })}
             {store.quizzes.length === 0 && (
-                <Typography style={{ paddingLeft: "10px" }}>
+                <Typography style={{ padding: "10px" }}>
                     Nie ma żadnego Quizu
                 </Typography>
             )}

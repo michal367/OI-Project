@@ -39,8 +39,19 @@ export function StudentListHead(props: StudentListHeadProps) {
             padding: "20px 15px",
             textAlign: "left",
             fontWeight: 500,
-            color: "#fff",
-            backgroundColor: theme.palette.primary.main,
+            "& th":{
+                color: "#fff",
+                "& span.MuiTableSortLabel-root.MuiTableSortLabel-active":{
+                    color: "#fff",
+                },
+                backgroundColor: theme.palette.secondary.main,
+                "&:first-child":{
+                    borderRadius: "5px 0 0 0",
+                },
+                "&:last-child":{
+                    borderRadius: "0 5px 0 0",
+                },
+            },
             "& span": {
                 fontSize: "16px",
             },

@@ -1,5 +1,5 @@
-import { makeStyles, useTheme } from "@material-ui/core";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { Card, Fab, IconButton, makeStyles, Typography, useTheme } from "@material-ui/core";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useBackEnd } from "../../services/BackEndService";
 import { useSocket } from "../../services/SocketService";
@@ -12,6 +12,8 @@ import {
 } from "../studentListView/StudentListView";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 import { lazareTheme } from "../../util/theme/customTheme";
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 export function SessionDashboardView(props: { update: () => void }) {
     const location = useLocation<{ isOpen: boolean }>();
@@ -27,6 +29,7 @@ export function SessionDashboardView(props: { update: () => void }) {
     const [selectedStudents, setSelectedStudents] = useState<string[]>(
         store.sendQuiz.studentIDs
     );
+    const [minimizeColumns, setMinimizeColumns] = useState<boolean>(true);
 
     const toggleAllSelectedStudents = (checked: boolean) => {
         let tmpQuiz: ScheduledQuiz = store.sendQuiz;
@@ -70,13 +73,63 @@ export function SessionDashboardView(props: { update: () => void }) {
     const classes = makeStyles({
         root: {
             ...lazareTheme.root,
+            flexDirection: "column",
+            maxHeight: "calc(100vh - 48px)",
+        },
+        aside:{
+            flexShrink: 0,
+            width: 400,
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            minHeight: "calc(32vh - 18px)",
+            ...(() => {
+                if(minimizeColumns) return {
+                    maxHeight: "calc(100vh - 648px)" 
+                }
+                return { maxHeight : "calc(100vh - 248px)", 
+                minHeight: "calc(100vh - 298px)",}
+            })(),
+            alignSelf: "flex-end",
+        },
+        sessionDetails: {
+            padding: 20,
+            flexGrow: 1,
+            display: "grid",
+            gridTemplateColumns: "auto auto", 
+            gridAutoRows: "minmax(60px, min-content)",
+            gap: 10,
+            borderRadius: 0,
+        },
+        sessionName:{
+            gridColumn: "span 2",
         },
         content: {
             ...lazareTheme.fullWidthWrapper,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexShrink: 1,
+            flexGrow: 1,
+            paddingRight: 15,
+            gap: 15,
+        },
+        contentBottom:{
+            ...lazareTheme.fullWidthWrapper,
         },
         columns: {
-            ...lazareTheme.threeColumns.wrapper,
+            ...lazareTheme.twoColumns.wrapper,
             gap: 15,
+        },
+        bottomSection: {
+            width: "100%",
+            transition: "max-height .5s",
+            height: 600,
+            ...(() => {
+                if(minimizeColumns) return {
+                    maxHeight: "68vh"
+                }
+                return {maxHeight : 250}
+            })(),
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
@@ -85,15 +138,15 @@ export function SessionDashboardView(props: { update: () => void }) {
         column: {
             height: "100%",
             width: "100%",
-            marginBottom: "auto",
+            flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "white",
+            justifyContent: "center",
         },
         columnWrapper: {
             flexGrow: 1,
-
-            maxHeight: "calc(80vh)",
+            transition: "max-height .5s",
+            maxHeight: "calc(100% - 58px)",
         },
         columnFooter: {
             maxHeight: "100px",
@@ -102,6 +155,13 @@ export function SessionDashboardView(props: { update: () => void }) {
         button: {
             marginLeft: "auto",
             marginBottom: "auto",
+        },
+        minimalButton: {
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            textAlign: "center",
         }
     })();
 
@@ -176,24 +236,26 @@ export function SessionDashboardView(props: { update: () => void }) {
         refreshListWithWholeListWithRest();
     }, [refreshListWithWholeListWithRest]);
 
-
     return (
         <div className={classes.root}>
             <div className={classes.content}>
+                <div className={classes.aside} style={{transition: "max-height .5s, min-height .5s",}}>
+                    <Card className={classes.sessionDetails}>
+                        <Typography className={classes.sessionName}>{"Zajęcia: " + store.lectureName}</Typography>
+                        <ShareSessionView isOpen={isOpen} update={props.update} />
+                    </Card>
+                    <div className={classes.minimalButton}>
+                        <IconButton  onClick={()=>setMinimizeColumns(prev=>!prev)}> {minimizeColumns ? (<ExpandMoreIcon />) : (<ExpandLessIcon />)}</IconButton>
+                    </div>
+                </div>
                 <div className={classes.columns}>
                     <div className={classes.column}>
                         <StudentListView
                             studentList={studentList}
                             students={[selectedStudents, toggleStudentSelection]}
+                            minimal={minimizeColumns}
+                            setMinimal={setMinimizeColumns}
                         />
-                    </div>
-                    <div className={classes.column}>
-                        <div className={classes.columnWrapper}>
-                            <StudentsQuestionListView />
-                        </div>
-                        <div className={classes.columnFooter}>
-                            <ReactionReceiveView />
-                        </div>
                     </div>
                     <div className={classes.column}>
                         <SendQuizView
@@ -203,11 +265,24 @@ export function SessionDashboardView(props: { update: () => void }) {
                                 toggleAllSelectedStudents,
                                 toggleRandomSelectedStudents,
                             ]}
+                            minimal={minimizeColumns}
+                            setMinimal={setMinimizeColumns}
                         />
                     </div>
                 </div>
             </div>
-            <ShareSessionView isOpen={isOpen} update={props.update} />
+            <div className={classes.contentBottom}>
+                <div className={classes.bottomSection}>
+                    <div className={classes.column}>
+                        <div className={classes.columnWrapper}>
+                            <StudentsQuestionListView />
+                        </div>
+                        <div className={classes.columnFooter}>
+                            <ReactionReceiveView />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

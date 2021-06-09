@@ -12,19 +12,19 @@ export function Answer(props: AnswerProps) {
     const [answer, setAnswer] = useState<string>(props.value);
     useEffect(() => setAnswer(props.value), [props.value, props]);
 
-    return (
-        <TextField
-            multiline={true}
-            variant="filled"
-            label={props.label}
-            value={answer}
-            fullWidth={true}
-            rows={5}
-            inputProps={{ maxLength: OPEN_ANSWER_MAX_LENGTH }}
-            onChange={(e) => {
-                let text = e.target.value;
-                setAnswer(text);
-                props.onChange(text);
-            }}
-        />)
+    return (<TextField
+        multiline={true}
+        variant="filled"
+        color="secondary"
+        label={props.label}
+        value={answer}
+        fullWidth={true}
+        rows={5}
+        inputProps={{ maxLength: OPEN_ANSWER_MAX_LENGTH }}
+        onChange={(e) => {
+            let text = e.target.value;
+            setAnswer(text);
+            props.onChange(text);
+        }}
+    />)
 }

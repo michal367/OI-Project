@@ -21,6 +21,9 @@ export interface IStore {
     reactionValues: number[],
     lastReactionTime: number,
     reactionModes: boolean[],
+    lectureName: string,
+    tutorFirstName: string,
+    tutorLastName: string,
     operation?: {
         clearOnSessionEnd: () => void
     }
@@ -38,13 +41,16 @@ type StorageKey =
     "timeToNextQuiz" |
     "reactionModes" |
     "reactionValues" |
+    "lectureName" |
+    "tutorFirstName" |
+    "tutorLastName" |
     "lastReactionTime";
 
-const independentStorageKeys = ["questions", "quizzes"];
+const independentStorageKeys = ["questions", "quizzes", "tutorFirstName", "tutorLastName"];
 
 
 // REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
-const STORAGE_VERSION = "0.4";
+const STORAGE_VERSION = "0.5";
 const KEY_PREFIX = "lecturer.";
 
 const { loadKey, loadKeyForArray, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
@@ -54,6 +60,9 @@ const initialValue: IStore = includeMockData(true, {
     lectureID: null,
     timestamps: [],
     quizzes: [],
+    lectureName: "",
+    tutorFirstName: "",
+    tutorLastName: "",
     questions: [],
     sendQuizStep: 0,
     scheduledQuizzes: [],
@@ -88,7 +97,10 @@ const loadFromStorage = () => {
         reactionValues: loadKey("reactionValues") ?? initialValue.reaction,
         lastReactionTime: loadKey("lastReactionTime") ?? initialValue.lastReaction,
         scheduledQuizzes: loadKey("scheduledQuizzes") ?? initialValue.scheduledQuizzes,
-        studentQuestions: loadKey("studentQuestions") ?? initialValue.studentQuestions
+        studentQuestions: loadKey("studentQuestions") ?? initialValue.studentQuestions,
+        lectureName: loadKey("lectureName") ?? initialValue.lectureName,
+        tutorFirstName: loadKey("tutorFirstName") ?? initialValue.tutorFirstName,
+        tutorLastName: loadKey("tutorLastName") ?? initialValue.tutorLastName
     }
 
     return obj;
@@ -109,6 +121,9 @@ const Store = (props: StoreProps) => {
     const [reactionValues, setReactionValues] = useState(initialValue.reactionValues);
     const [lastReactionTime, setLastReactionTime] = useState(initialValue.lastReactionTime);
     const [reactionModes, setReactionModes] = useState(initialValue.reactionModes)
+    const [lectureName, setLectureName] = useState(initialValue.lectureName)
+    const [tutorFirstName, setTutorFirstName] = useState(initialValue.tutorFirstName)
+    const [tutorLastName, setTutorLastName] = useState(initialValue.tutorLastName)
 
     useEffect(() => {
         if (upgradeStorage()) return;
@@ -138,6 +153,30 @@ const Store = (props: StoreProps) => {
         set lectureID(newValue: string | null) {
             setLectureID(newValue);
             saveKey("lectureID", newValue);
+        },
+
+        get lectureName() {
+            return lectureName;
+        },
+        set lectureName(newValue: string) {
+            setLectureName(newValue);
+            saveKey("lectureName", newValue);
+        },
+
+        get tutorFirstName() {
+            return tutorFirstName;
+        },
+        set tutorFirstName(newValue: string) {
+            setTutorFirstName(newValue);
+            saveKey("tutorFirstName", newValue);
+        },
+
+        get tutorLastName() {
+            return tutorLastName;
+        },
+        set tutorLastName(newValue: string) {
+            setTutorLastName(newValue);
+            saveKey("tutorLastName", newValue);
         },
 
         get timestamps() {
