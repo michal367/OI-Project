@@ -1,18 +1,12 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { Fab, CircularProgress, TextField } from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Button} from "@material-ui/core";
+import { useTheme, makeStyles, Button, CircularProgress, TextField } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import clsx from "clsx";
+import React, { useContext, useState, useCallback, useEffect } from "react";
+import { useSocket } from "../../services/SocketService";
+import { StoreContext } from "../../services/StoreService";
+import { lazareTheme } from "../../util/theme/customTheme";
 import CheckIcon from "@material-ui/icons/Check";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import clsx from "clsx";
-import "fontsource-roboto";
-import { useHistory } from "react-router-dom";
-import { StoreContext } from "../../services/StoreService";
-import React, { useContext, useState } from "react";
-import { useSocket } from "../../services/SocketService";
-import { lazareTheme } from "../../util/theme/customTheme";
 
 
 export function CreateSessionView(props: { update: () => void }) {

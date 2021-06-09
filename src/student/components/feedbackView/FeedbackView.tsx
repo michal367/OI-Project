@@ -1,37 +1,49 @@
 import { makeStyles, Paper, Grid, TextField, useTheme } from '@material-ui/core';
-import React from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useSocket } from '../../services/SocketService';
+import { StoreContext } from '../../services/StoreService';
 import { ImageView } from '../quizView/imageView';
-import { testData } from '../quizView/testData';
 
 export default function FeedbackView() {
-    let answers: Map<number, number[]> = new Map();
+    const { socketEmiter } = useSocket();
+    const store = useContext(StoreContext);
 
-    const fullFillMap = () => {
-        var i;
-        for (i = 0; i < quiz.questions.length; i++) {
-            let array = [];
-            array.push(1);
-            array.push(3);
-            answers.set(i, array);
-        }
-    }
-    const correctFullFilled = (i: number, j: number) => {
-        if (answers.get(i)?.includes(j)) {
+    const correctFullFilled = (checked: boolean) => {
+        if (checked) {
             return classes.correctFullFilledAnswer;
         } else {
             return classes.correctAnswer;
         };
     }
 
-    const wrongFullFilled = (i: number, j: number) => {
-        if (answers.get(i)?.includes(j)) {
+    const wrongFullFilled = (checked: boolean) => {
+        if (checked) {
             return classes.wrongFullFilledAnswer;
         } else {
             return classes.wrongAnswer;
         };
     }
 
-    let quiz = testData();
+    const [payload, setPayload] = useState<ShowAnswersToStudentPayload>();
+
+    const refreshQuiz = useCallback((payload: ShowAnswersToStudentPayload) => {
+        setPayload(payload);
+        
+        if (store.quizId === payload.data.quizID) {
+            store.quizTime = 0;
+            store.quizStartTime = 0;
+            store.quizId = "";
+        }
+
+    }, [store]);
+
+    useEffect(() => {
+        socketEmiter.addListener("show_answers", refreshQuiz);
+        return () => {
+            socketEmiter.removeListener("show_answers", refreshQuiz);
+        };
+    }, [refreshQuiz, socketEmiter]);
+
     const theme = useTheme();
     const classes = makeStyles({
         details: {
@@ -66,8 +78,7 @@ export default function FeedbackView() {
 
     return (
         <>
-            {fullFillMap()}
-            {quiz.questions.map((question, i) => (
+            {payload?.data.correctAnswers?.questions.map((question: Question, i: number) => (
                 <div>
                     {question.options ?
                         (<Paper className={classes.details} variant="outlined" square >
@@ -78,12 +89,12 @@ export default function FeedbackView() {
                                     <Grid item xs={11}>
                                         {(option.isCorrect ? (
                                             <TextField variant="outlined" defaultValue={option.text} InputProps={{
-                                                className: correctFullFilled(i, j),
+                                                className: correctFullFilled(payload?.data.studentAnswers[i][j]),
                                                 readOnly: true,
                                             }} />
                                         ) : (
                                             <TextField variant="outlined" defaultValue={option.text} InputProps={{
-                                                className: wrongFullFilled(i, j),
+                                                className: wrongFullFilled(payload?.data.studentAnswers[i][j]),
                                                 readOnly: true,
                                             }} />
                                         ))}
