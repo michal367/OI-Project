@@ -146,7 +146,6 @@ export function CreateSessionView(props: { update: () => void }) {
                 }
             }
             sendJsonMessage(payload);
-            setLectureName("");
         }
     }, [loading, name, props, sendJsonMessage, lectureName, socketEmiter, store, surname]);
 

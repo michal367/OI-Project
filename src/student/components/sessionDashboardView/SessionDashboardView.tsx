@@ -20,7 +20,7 @@ export function SessionDashboardView() {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.primary.light,
+            background: theme.palette.secondary.light,
             maxHeight: "100vh",
             height: "100vh",
             display: "flex",
@@ -93,13 +93,13 @@ export function SessionDashboardView() {
         quizButton: {
             "& span": {
                 flexWrap: "wrap",
-                gap:"10px"
+                gap: "10px"
             }
         }
     })();
 
     const [open, setOpen] = useState(false);
-    const [disable, setDisable] = useState(false);
+    const [disable, setDisable] = useState(true);
 
     const store = useContext(StoreContext);
 
@@ -145,7 +145,7 @@ export function SessionDashboardView() {
                 >
                     Rozwiąż quiz
 
-                    <TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleBlock} />
+                    {!disable && (<TimerClock targetTime={new Date(store.quizStartTime + 1000 * store.quizTime)} onTimerEnd={handleBlock} />)}
                 </Button>
             </div>
             <div className={classes.questionBody}>
