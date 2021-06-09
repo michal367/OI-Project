@@ -67,8 +67,6 @@ function App() {
         setIsLectureStarted((prev) => !prev);
     }
 
-
-    
     // hotfix by me
     // TODO get reaction index with string sent with payload
     // TODO make it work nice and properly, because I do not know how 
@@ -101,6 +99,28 @@ function App() {
             socketEmiter.off("send_student_reaction", refreshReactions);
         };
     }, [refreshReactions, socketEmiter]);
+
+
+    const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
+        console.log("refreshQuestionList");
+        console.log(payload);
+        const studentQuestion: StudentQuestion = {
+            studentNick: payload.data.studentID,
+            time: new Date(),
+            text: payload.data.text,
+            processed: false,
+        };
+        const newStudentQuestions = store.studentQuestions;
+        newStudentQuestions.push(studentQuestion);
+        store.studentQuestions = newStudentQuestions;
+    }, [store]);
+
+    useEffect(() => {
+        socketEmiter.on("send_student_question", refreshQuestionList);
+        return () => {
+            socketEmiter.off("send_student_question", refreshQuestionList);
+        };
+    }, [refreshQuestionList, socketEmiter]);
 
     const classes = makeStyles({
         mainContainer:{

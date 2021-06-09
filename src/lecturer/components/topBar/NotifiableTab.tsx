@@ -35,7 +35,7 @@ export default function NotifiableTab(props: NotifiableTabProps) {
                 setNotifiableNumber(prev => ++prev);
             }
         }
-    }, [props.observableList]);
+    }, [props.observableList, store.studentQuestions]);
     const theme = useTheme();
     const classes = makeStyles({
         topBarTab: {

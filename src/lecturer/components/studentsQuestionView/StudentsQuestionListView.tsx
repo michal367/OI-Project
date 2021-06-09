@@ -1,8 +1,9 @@
 import { makeStyles, Paper, TextField } from '@material-ui/core';
 import { useCallback, useContext, useEffect } from 'react';
 import ReactScrollableFeed from 'react-scrollable-feed';
+
 import { useSocket } from '../../services/SocketService';
-import { StoreContext } from "../../services/StoreService";
+import { StoreContext } from '../../services/StoreService';
 
 
 export function StudentsQuestionListView() {
@@ -63,27 +64,6 @@ export function StudentsQuestionListView() {
             width:"100%"
         },
     })();
-
-    const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
-        console.log("refreshQuestionList");
-        console.log(payload);
-        const studentQuestion: StudentQuestion = {
-            studentNick: payload.data.studentID,
-            time: new Date(),
-            text: payload.data.text,
-            processed: false,
-        };
-        const newStudentQuestions = store.studentQuestions;
-        newStudentQuestions.push(studentQuestion);
-        store.studentQuestions = newStudentQuestions;
-    }, [store]);
-
-    useEffect(() => {
-        socketEmiter.on("send_student_question", refreshQuestionList);
-        return () => {
-            socketEmiter.off("send_student_question", refreshQuestionList);
-        };
-    }, [refreshQuestionList, socketEmiter]);
 
     return (
         <Paper className={classes.root} variant="outlined" square>
