@@ -1,6 +1,7 @@
 import { Snackbar, SnackbarOrigin } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import { StoreContext } from '../../services/StoreService';
+import { isQuestionCorrect, isQuizCorrect } from '../../util/parse';
 import { ListView, TitleType } from '../listView/ListView';
 
 export interface SnackbarState extends SnackbarOrigin {
@@ -46,63 +47,7 @@ export function QuizzesListView() {
             }
             for (const quiz of parsed) {
                 counter++;
-                let result = [];
-                let correctQuiz = true;
-
-                if (typeof quiz.title != "string" || quiz.title === "" || !(quiz.questions instanceof Array)){
-                    continue;
-                } 
-                
-                if (quiz.questions.length == 0) continue;
-                
-                for (const item of store.quizzes)
-                    if (item.title === quiz.title) {
-                        correctQuiz = false;
-                        break;
-                    }
-                
-                for (const item of resultQuiz) {
-                    if (item.title === quiz.title) {
-                        correctQuiz = false;
-                        break;
-                    }
-                }
-
-                if (!correctQuiz) continue;
-                
-                for (const quest of quiz.questions) {
-                    let correct = true;
-
-                    if (typeof quest.title != "string"  || quest.title === "" || typeof quest.text != "string" || quest.text === "") {
-                        correct = false;
-                    }
-
-                    if (quest.options != undefined && correct == true) {
-                        for (const option of quest.options) {
-                            if (typeof option.index != 'number' || typeof option.text != 'string' || option.text === "" || typeof option.isCorrect != 'boolean') {
-                                correct = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (correct) {
-                        for (const item of result)
-                            if (item.title === quest.title) {
-                                correct = false;
-                                break;
-                            }
-                    }
-                    if (correct) {
-                        result.push(quest);
-                    }
-                    else {
-                        correctQuiz = false;
-                        break;
-                    }
-                }
-
-                if (correctQuiz){
+                if (isQuizCorrect(quiz, store.quizzes, resultQuiz)) {
                     resultQuiz.push(quiz);
                 }
             }
@@ -118,7 +63,7 @@ export function QuizzesListView() {
 
     return (
         <div>
-        <Snackbar
+            <Snackbar
                 anchorOrigin={{ vertical, horizontal }}
                 open={open}
                 onClose={closeSnackbar}
@@ -127,14 +72,14 @@ export function QuizzesListView() {
                 autoHideDuration={1000}
                 style={{ top: "60px" }}
             />
-        <ListView
-            getContainer={getContainer}
-            setContainer={setContainer}
-            createEditPathname="/lecturer/quiz"
-            listElements="quizów"
-            exportFilename="quizzes"
-            onImport={onImport}
-        />
+            <ListView
+                getContainer={getContainer}
+                setContainer={setContainer}
+                createEditPathname="/lecturer/quiz"
+                listElements="quizów"
+                exportFilename="quizzes"
+                onImport={onImport}
+            />
         </div>
     );
 }
