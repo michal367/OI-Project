@@ -1,23 +1,15 @@
-import "./index.css";
-
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
-
+import "./index.css";
 import App from "./components/app/App";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import { SocketService } from "./services/SocketService";
-import Store from "./services/StoreService";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 ReactDOM.render(
     <React.StrictMode>
         <SocketService>
-            <Store>
-                <Router>
-                    <App />
-                </Router>
-            </Store>
+            <App />
         </SocketService>
     </React.StrictMode>,
     document.getElementById("root")
