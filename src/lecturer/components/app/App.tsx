@@ -23,7 +23,6 @@ import TopBar from "../topBar/topBar";
 const theme = createMuiTheme({
     palette: {
         primary: {
-
             main: "#4C3957",
         },
         secondary: {
@@ -52,7 +51,6 @@ function App() {
     useEffect(() => {
         const handleInProgress = (parsed: ShowAnswersPayload) => {
             let quizzes = store.scheduledQuizzes;
-            console.log(quizzes[store.scheduledQuizzes.length - 1].id, parsed.data.quizID)
             quizzes[store.scheduledQuizzes.length - 1].id = parsed.data.quizID;
             store.scheduledQuizzes = quizzes;
         }
@@ -79,8 +77,9 @@ function App() {
                 let response = responses[qStat.index];
                 if (question?.options?.length ?? 0 > 0) {
                     qStat.options.forEach(oStat => {
-                        oStat.numberOfTimesSelected =
-                            oStat.numberOfTimesSelected ?? 0 + response[oStat.index];
+                        if (!oStat.numberOfTimesSelected)
+                            oStat.numberOfTimesSelected = 0;
+                        oStat.numberOfTimesSelected += response[oStat.index];
                     })
                 } else {
                     let answersArray = qStat.options;
@@ -89,7 +88,6 @@ function App() {
                 }
             })
             quizzes[index] = quizStats
-            console.log(quizStats, "SAME SAME");
             store.scheduledQuizzes = quizzes;
         }
         socketEmiter.on("onClose", onClose);
