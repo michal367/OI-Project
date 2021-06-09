@@ -1,4 +1,4 @@
-import { Card, makeStyles, Typography, useTheme } from "@material-ui/core";
+import { Card, Fab, IconButton, makeStyles, Typography, useTheme } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useBackEnd } from "../../services/BackEndService";
@@ -12,6 +12,8 @@ import {
 } from "../studentListView/StudentListView";
 import StudentsQuestionListView from "../studentsQuestionView/StudentsQuestionListView";
 import { lazareTheme } from "../../util/theme/customTheme";
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 export function SessionDashboardView(props: { update: () => void }) {
     const location = useLocation<{ isOpen: boolean }>();
@@ -72,14 +74,23 @@ export function SessionDashboardView(props: { update: () => void }) {
         root: {
             ...lazareTheme.root,
             flexDirection: "column",
-            maxHeight: "max(100vh, 900px)",
+            maxHeight: "calc(100vh - 48px)",
         },
         aside:{
             flexShrink: 0,
             width: 400,
             display: "flex",
             flexDirection: "column",
-            height: "calc(100vh - 448px)",
+            position: "relative",
+            minHeight: "calc(32vh - 18px)",
+            ...(() => {
+                if(minimizeColumns) return {
+                    maxHeight: "calc(100vh - 648px)" 
+                }
+                return { maxHeight : "calc(100vh - 248px)", 
+                minHeight: "calc(100vh - 298px)",}
+            })(),
+            alignSelf: "flex-end",
         },
         sessionDetails: {
             padding: 20,
@@ -111,7 +122,14 @@ export function SessionDashboardView(props: { update: () => void }) {
         },
         bottomSection: {
             width: "100%",
-            height: 400,
+            transition: "max-height .5s",
+            height: 600,
+            ...(() => {
+                if(minimizeColumns) return {
+                    maxHeight: "68vh"
+                }
+                return {maxHeight : 250}
+            })(),
         },
         backdrop: {
             zIndex: theme.zIndex.drawer + 1,
@@ -127,8 +145,8 @@ export function SessionDashboardView(props: { update: () => void }) {
         },
         columnWrapper: {
             flexGrow: 1,
-
-            maxHeight: "calc(80vh)",
+            transition: "max-height .5s",
+            maxHeight: "calc(100% - 58px)",
         },
         columnFooter: {
             maxHeight: "100px",
@@ -137,6 +155,13 @@ export function SessionDashboardView(props: { update: () => void }) {
         button: {
             marginLeft: "auto",
             marginBottom: "auto",
+        },
+        minimalButton: {
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            textAlign: "center",
         }
     })();
 
@@ -214,11 +239,14 @@ export function SessionDashboardView(props: { update: () => void }) {
     return (
         <div className={classes.root}>
             <div className={classes.content}>
-                <div className={classes.aside}>
+                <div className={classes.aside} style={{transition: "max-height .5s, min-height .5s",}}>
                     <Card className={classes.sessionDetails}>
-                        <Typography className={classes.sessionName}>Session Name</Typography>
+                        <Typography className={classes.sessionName}>{"Zajęcia: " + store.lectureName}</Typography>
                         <ShareSessionView isOpen={isOpen} update={props.update} />
                     </Card>
+                    <div className={classes.minimalButton}>
+                        <IconButton  onClick={()=>setMinimizeColumns(prev=>!prev)}> {minimizeColumns ? (<ExpandMoreIcon />) : (<ExpandLessIcon />)}</IconButton>
+                    </div>
                 </div>
                 <div className={classes.columns}>
                     <div className={classes.column}>

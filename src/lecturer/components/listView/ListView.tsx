@@ -1,6 +1,6 @@
 import {
     Card,
-    CardContent,
+
     CardHeader,
     Divider,
     Fab,
@@ -24,7 +24,6 @@ import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { lazareTheme } from "../../util/theme/customTheme";
 import { ImportExport } from '../importExport/ImportExport';
-import { lazareTheme } from "../../util/theme/customTheme";
 
 
 export type TitleType = Pick<Question | FrontQuiz, "id" | "title">;

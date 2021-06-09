@@ -1,6 +1,6 @@
 import {
     Button,
-    ButtonGroup, 
+    ButtonGroup,
     CircularProgress
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
@@ -17,9 +17,6 @@ import { intersection, not, union } from "../../../common/util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
 import { lazareTheme } from "../../util/theme/customTheme";
 import { CreateQuizList } from "./CreateQuizList";
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { lazareTheme } from "../../util/theme/customTheme";
 
 
 function createIndexArray(s: number) {
@@ -279,7 +276,7 @@ export function CreateQuizView() {
                 }, 500);
             }
         }
-    }, [checked, indexArray, loading, questions, right, rightChecked, store, title]);
+    }, [checked, loading, questions, right, rightChecked, store, title]);
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {

@@ -140,7 +140,7 @@ export function ShareSessionView(props: ShareSessionViewProps) {
                 className={classes.shareButton}
                 variant="outlined"
                 onClick={handleClickShare}
-                color="secondary"
+                color="primary"
             >
                 <ShareIcon className={classes.shareIcon} />
                 {"Udostępnij"}

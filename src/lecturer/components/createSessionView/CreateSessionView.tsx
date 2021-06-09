@@ -15,17 +15,20 @@ export function CreateSessionView(props: { update: () => void }) {
     const store = useContext(StoreContext);
     const theme = useTheme();
     const { sendJsonMessage, socketEmiter } = useSocket();
-    const [sessionName, setSessionName] = useState("");
-    const [name, setName] = useState("");
-    const [surname, setSurname] = useState("");
+    const [lectureName, setLectureName] = useState(store.lectureName);
+    const [name, setName] = useState(store.tutorFirstName);
+    const [surname, setSurname] = useState(store.tutorLastName);
     const handleSessionNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSessionName(event.target.value);
+        setLectureName(event.target.value);
+        store.lectureName = event.target.value;
     }
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
+        store.tutorFirstName = event.target.value;
     }
     const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSurname(event.target.value);
+        store.tutorLastName = event.target.value;
     }
     const classes = makeStyles({
         root: {
@@ -139,19 +142,19 @@ export function CreateSessionView(props: { update: () => void }) {
                 event: "create_lecture",
                 data: {
                     tutor: name + " " + surname,
-                    sessionName: sessionName,
+                    sessionName: lectureName,
                 }
             }
             sendJsonMessage(payload);
-            setSessionName("");
+            setLectureName("");
         }
-    }, [loading, name, props, sendJsonMessage, sessionName, socketEmiter, store, surname]);
+    }, [loading, name, props, sendJsonMessage, lectureName, socketEmiter, store, surname]);
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
           if (event.code === "Enter" || event.code === "NumpadEnter") {
             event.preventDefault();
-            if (!(sessionName.length === 0 || name.length === 0 || surname.length === 0 )){
+            if (!(lectureName.length === 0 || name.length === 0 || surname.length === 0 )){
                 handleButtonClick();
             } 
           }
@@ -160,7 +163,7 @@ export function CreateSessionView(props: { update: () => void }) {
         return () => {
           document.removeEventListener("keydown", listener);
         };
-      }, [sessionName, name, surname, handleButtonClick]);
+      }, [lectureName, name, surname, handleButtonClick]);
 
     return (
         <div className={classes.root}>
@@ -180,7 +183,7 @@ export function CreateSessionView(props: { update: () => void }) {
                             />
                         </div>
                         <TextField className={classes.createSessionTextField} variant="outlined"
-                            fullWidth={true} label={"Nazwa sesji"} value={sessionName}
+                            fullWidth={true} label={"Nazwa sesji"} value={lectureName}
                             onChange={handleSessionNameChange}
                         />
                     </div>
@@ -190,7 +193,7 @@ export function CreateSessionView(props: { update: () => void }) {
                             color="primary"
                             className={buttonClassName}
                             onClick={handleButtonClick}
-                            disabled={ !success && (loading || sessionName.length === 0 || name.length === 0 || surname.length === 0) }
+                            disabled={ !success && (loading || lectureName.length === 0 || name.length === 0 || surname.length === 0) }
                         >
                             {success ? (
                                 <CheckIcon

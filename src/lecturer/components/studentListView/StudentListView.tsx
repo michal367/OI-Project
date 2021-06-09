@@ -40,6 +40,8 @@ export function StudentListView(props: StudentListViewProps) {
     const [students, setStudents] = useState<string[]>(selectedStudents);
     const [order, setOrder] = useState<Order>("asc");
     const [orderBy, setOrderBy] = useState<keyof StudentListRow>("orderIndex");
+    const [minimal, setMinimal] = useState(props.minimal);
+    useEffect(() => setMinimal(props.minimal));
 
     const changeSelectedStudents = (index: string) => () => {
         toggleStudentSelection(index);
@@ -57,8 +59,14 @@ export function StudentListView(props: StudentListViewProps) {
         root: {
             width: "100%",
             padding: 1,
-            maxHeight: 200,
-            height: "100%",
+            height: "93%",
+            ...(()=>{
+                if(minimal) return {maxHeight: 220}
+                return {maxHeight: "100vh"}
+            })(),
+            "& .MuiTableContainer-root":{
+                height: "100%",
+            },
         },
         row: {
             "& td": {
@@ -72,11 +80,12 @@ export function StudentListView(props: StudentListViewProps) {
                 borderBottom: "solid 1px rgba(255,255,255,0.1)",
             },
             "&:nth-of-type(odd)": {
-                background: "#fedf9d;",
+                background: "rgba(65, 101, 138, 0.2)",
             },
         },
         table: {
             maxHeight: "100%",
+
         },
         minimalContent: {
             height: "100%",
@@ -105,16 +114,21 @@ export function StudentListView(props: StudentListViewProps) {
         setOrder(isAsc ? "desc" : "asc");
         setOrderBy(property);
     };
+    const updateMinimal = () => {
+        if(props.setMinimal)
+            props!.setMinimal(prev=>!prev)
+        setMinimal(prev=>!prev);
+    }
 
     return (
         <Card className={classes.root} style={{transition: "max-height 0.5s"}}>
-            {props.minimal ?
+            {minimal ?
                 (<Button
                     variant="outlined"
                     color="secondary"
                     className={classes.minimalContent}
                     size="large"
-                    onClick={()=>props.setMinimal?props.setMinimal(prev=>!prev):null}
+                    onClick={()=>props.setMinimal?updateMinimal():null}
                 >
                     <span>{"Lista uczestników"}</span>
                     <Divider orientation="vertical" flexItem/>

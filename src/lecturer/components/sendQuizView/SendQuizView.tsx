@@ -61,6 +61,8 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
+    const [minimal, setMinimal] = useState(props.minimal);
+    useEffect(() => setMinimal(props.minimal));
 
     useEffect(() => {
         if (props.students) {
@@ -131,8 +133,11 @@ export function SendQuizView(props: SendQuizViewProps) {
         root: {
             width: "100%",
             padding: 1,
-            maxHeight: 200,
-            height: "100%",
+            height: "93%",
+            ...(()=>{
+                if(minimal) return {maxHeight: 220}
+                return {maxHeight: "100vh"}
+            })(),
         },
         container: {
             display: "flex",
@@ -169,7 +174,11 @@ export function SendQuizView(props: SendQuizViewProps) {
             "& .MuiButton-label": {
                 display: "flex",
                 gap: 10,
-            }
+            },
+            "& .MuiSvgIcon-root":{
+                marginRight: 10,
+                marginTop: 2,
+            },
         },
     })();
     const getStepContent = (step: number) => {
@@ -395,21 +404,27 @@ export function SendQuizView(props: SendQuizViewProps) {
         };
     }, [store, isStepReady, handleNext]);
 
+    const updateMinimal = () => {
+        if(props.setMinimal)
+            props!.setMinimal(prev=>!prev)
+        setMinimal(prev=>!prev);
+    }
+
     return (
         <Card className={classes.root} style={{ transition: "max-height 0.5s" }}>
-            {props.minimal ?
+            {minimal ?
                 (<Button
                     variant="outlined"
                     color="secondary"
                     className={classes.minimalContent}
                     size="large"
-                    onClick={() => props.setMinimal ? props.setMinimal(prev => !prev) : null}
+                    onClick={() => props.setMinimal ? updateMinimal() : null}
                 >
                     <span>{clock > 0 ? "Do końca quizu" : "Wyślij nowy quiz"}</span>
                     <Divider orientation="vertical" flexItem />
                     <span style={{ display: "inline-flex" }}>
                         <TimerIcon fontSize="large" />
-                        {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "00:00"}
+                        {clock > 0 ? formatTime(clock) : "00:00:00"}
                     </span>
                 </Button>) :
                 (<><Stepper

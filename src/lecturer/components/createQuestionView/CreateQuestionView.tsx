@@ -18,7 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import clsx from 'clsx';
 import { Location } from 'history';
-import { ChangeEvent, FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactScrollableFeed from 'react-scrollable-feed';
 import { v4 } from 'uuid';
@@ -26,10 +26,6 @@ import { StoreContext } from '../../services/StoreService';
 import { numToSSColumn } from '../../util/numToOptionLetter';
 import { lazareTheme } from "../../util/theme/customTheme";
 import { UploadImageField } from '../uploadImageField/uploadImageField';
-import ReactScrollableFeed from 'react-scrollable-feed';
-import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
-import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 
 export function CreateQuestionView() {
