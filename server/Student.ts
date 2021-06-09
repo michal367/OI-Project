@@ -42,7 +42,6 @@ class Student extends EventEmitter {
         this.wsc = wsc;
 
         this.wsc.on("message", (message: string) => {
-            console.log(message);
             const parsed = JSON.parse(message);
             console.log(parsed);
             switch (parsed.event) {
