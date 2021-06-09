@@ -1,17 +1,20 @@
 import {
     Button,
     CircularProgress,
-    Grid
+    ButtonGroup
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import "fontsource-roboto";
-import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { intersection, not, union } from "../../../common/util/boolAlgebra";
 import { StoreContext } from "../../services/StoreService";
 import { CreateQuizList } from "./CreateQuizList";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { lazareTheme } from "../../util/theme/customTheme";
 
 import { v4 } from 'uuid';
 
@@ -30,28 +33,50 @@ export function CreateQuizView() {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.secondary.light,
-            gap: "10px",
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            justifyContent: "center",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            paddingTop: 75,
-            paddingBottom: "10px",
+            ...lazareTheme.root,
         },
-        wrapper: {
-            width: 1000,
+        content: {
+            ...lazareTheme.columnWrapper,
+            gap: 20,
+            height: "calc(100vh - 48px)",
+            minHeight: "500px",
+            boxSizing: "border-box",
+            justifyContent: "space-between",
+        },
+        contentColumns: {
+            ...lazareTheme.twoColumns.wrapper,
+            position: "relative",
+        },
+        column: {
+            ...lazareTheme.twoColumns.column,
+        },
+        cardLeft: {
+            position: "relative",
+            borderRadius: "5px 0 0 5px",
+        },
+        cardRight: {
+            position: "relative",
+            borderRadius: "0 5px 5px 0",
+        },
+        transferButtons: {
+            ...lazareTheme.twoColumns.overlay,
+        },
+
+        right: {
             display: "flex",
             justifyContent: "flex-end",
             position: "relative",
         },
-        button: {
-            margin: theme.spacing(0.5, 0),
+        transferButtonGroup: {
+            width: 32,
+            height: 100,
+            "& .MuiButtonGroup-grouped":{
+                minWidth: "unset",
+                padding: "4px 0",
+            },
+            "& svg.MuiSvgIcon-root":{
+                width: 16,
+            },
         },
         buttonSuccess: {
             backgroundColor: green[500],
@@ -159,7 +184,7 @@ export function CreateQuizView() {
     }
 
     const timer = useRef<number>();
-    const handleSaveQuiz = () => {
+    const handleSaveQuiz = useCallback(() => {
         if (!loading) {
             let selectedQuestions: Question[] = [];
             right.forEach((i) => {
@@ -192,101 +217,112 @@ export function CreateQuizView() {
                 setLoading(false);
             }, 500);
         }
-    };
+    }, [checked, indexArray, loading, questions, right, rightChecked, store, title]);
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!(loading || right.length === 0 || title.length === 0 || title.length > 40)){
+                handleSaveQuiz();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [loading, right, title, handleSaveQuiz]);
 
     return (
         <div className={classes.root}>
-            <Grid
-                container
-                spacing={2}
-                justify="center"
-                alignItems="center"
-                className={classes.gridContent}
-            >
-                <Grid item>
-                    <CreateQuizList
-                        title="Lista pytań"
-                        data={{
-                            items: filterByTitle(left),
-                            checked: checked,
-                            questions: questions
-                        }}
-                        error={""}
-                        isQuiz={() => false}
-                        numberOfChecked={numberOfChecked}
-                        handleToggleAll={handleToggleAll}
-                        handleChange={handleChange}
-                        handleToggle={handleToggle}
-                        handleSearch={handleSearchInput}
-                    />
-                </Grid>
-                <Grid item>
-                    <Grid container direction="column" alignItems="center">
-                        <Button
-                            variant="outlined"
+            <div className={classes.content}>
+                <div className={classes.contentColumns}>
+                    <div className={classes.column}>
+                        <CreateQuizList
+                            title="Lista pytań"
+                            data={{
+                                items: filterByTitle(left),
+                                checked: checked,
+                                questions: questions
+                            }}
+                            error={""}
+                            isQuiz={() => false}
+                            numberOfChecked={numberOfChecked}
+                            handleToggleAll={handleToggleAll}
+                            handleChange={handleChange}
+                            handleToggle={handleToggle}
+                            handleSearch={handleSearchInput}
+                            cardClass={classes.cardLeft}
+                        />
+                    </div>
+                    <div className={classes.column}>
+                        <CreateQuizList
+                            title="Quiz"
+                            data={{
+                                items: right,
+                                checked: checked,
+                                questions: questions
+                            }}
+                            error={error}
+                            titleQuiz={title}
+                            isQuiz={() => true}
+                            numberOfChecked={numberOfChecked}
+                            handleToggleAll={handleToggleAll}
+                            handleChange={handleChange}
+                            handleToggle={handleToggle}
+                            handleSearch={handleSearchInput}
+                            cardClass={classes.cardRight}
+                        />
+                    </div>
+                    <div className={classes.transferButtons}>
+                        <ButtonGroup
+                            variant="contained"
                             size="small"
-                            className={classes.button}
-                            onClick={handleCheckedRight}
-                            disabled={leftChecked.length === 0}
-                            aria-label="move selected right"
+                            color="primary"
+                            className={classes.transferButtonGroup}
                         >
-                            &gt;
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            className={classes.button}
-                            onClick={handleCheckedLeft}
-                            disabled={rightChecked.length === 0}
-                            aria-label="move selected left"
-                        >
-                            &lt;
-                        </Button>
-                    </Grid>
-                </Grid>
-                <Grid item>
-                    <CreateQuizList
-                        title="Quiz"
-                        data={{
-                            items: right,
-                            checked: checked,
-                            questions: questions
-                        }}
-                        error={error}
-                        titleQuiz={title}
-                        isQuiz={() => true}
-                        numberOfChecked={numberOfChecked}
-                        handleToggleAll={handleToggleAll}
-                        handleChange={handleChange}
-                        handleToggle={handleToggle}
-                        handleSearch={handleSearchInput}
-                    />
-                </Grid>
-            </Grid>
-            <div className={classes.wrapper}>
-                <Button
-                    color="inherit"
-                    size="large"
-                    onClick={() => history.goBack()}
-                    style={{ color: "rgba(0, 0, 0, 0.87)" }}
-                >
-                    Anuluj
+                            <Button
+                                onClick={handleCheckedLeft}
+                                disabled={rightChecked.length === 0}
+                            >
+                                <ChevronLeftIcon />
+                            </Button>
+                            <Button
+                                onClick={handleCheckedRight}
+                                disabled={leftChecked.length === 0}
+                            >
+                                <ChevronRightIcon />
+                            </Button>
+                        </ButtonGroup>
+                    </div>
+                </div>
+                <div className={classes.right}>
+                    <Button
+                        color="inherit"
+                        size="large"
+                        onClick={() => history.goBack()}
+                        className={classes.sessionBtn}
+                        style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                    >
+                        Anuluj
                     </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    className={buttonClassName}
-                    disabled={loading || right.length === 0 || title.length === 0 || title.length > 40}
-                    onClick={handleSaveQuiz}
-                >
-                    {success ? `Zapisano Quiz` : `Zapisz Quiz`}
-                </Button>
-                {loading && (
-                    <CircularProgress
-                        size={38}
-                        className={classes.fabProgress}
-                    />
-                )}
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={buttonClassName}
+                        disabled={loading || right.length === 0 || title.length === 0 || title.length > 40}
+                        onClick={handleSaveQuiz}
+                    >
+                        {success ? `Zapisano Quiz` : `Zapisz Quiz`}
+                    </Button>
+                    {loading && (
+                        <CircularProgress
+                            size={38}
+                            className={classes.fabProgress}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );
