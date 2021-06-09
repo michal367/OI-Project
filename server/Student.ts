@@ -3,7 +3,7 @@ import { WebSocketClient } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 import Lecture from "./Lecture.ts";
 import Quiz from "./Quiz.ts";
 import EventEmitter from "https://deno.land/x/events/mod.ts";
-import { REACTION_TIMEOUT, QUESTION_TIMEOUT, QUESTION_MAX_LENGTH } from "../src/common/util/globalConfig.ts";
+import { REACTION_TIMEOUT, QUESTION_TIMEOUT, QUESTION_MAX_LENGTH, OPEN_ANSWER_MAX_LENGTH } from "../src/common/util/globalConfig.ts";
 
 class Student extends EventEmitter {
     id: string;
@@ -15,10 +15,7 @@ class Student extends EventEmitter {
     reactions: Map<Date, string>;
     questions: Map<Date, string>;
     canSendReaction: boolean;
-    REACTION_TIMEOUT = REACTION_TIMEOUT;
     canSendQuestion: boolean;
-    QUESTION_MAX_LENGTH = QUESTION_MAX_LENGTH;
-    QUESTION_TIMEOUT = QUESTION_TIMEOUT;
 
     constructor(nick: string, name: string, surname: string, lecture: Lecture) {
         super();
@@ -42,7 +39,6 @@ class Student extends EventEmitter {
         this.wsc = wsc;
 
         this.wsc.on("message", (message: string) => {
-            console.log(message);
             const parsed = JSON.parse(message);
             console.log(parsed);
             switch (parsed.event) {
@@ -74,7 +70,14 @@ class Student extends EventEmitter {
 
     handlerSendQuizResponse(parsed: QuizResponsePayload) {
         const quiz: Quiz | undefined = this.lecture.quizzes.get(parsed.data.quizID);
-        if (quiz?.isActive()) {
+
+        let correct: boolean = true;
+        for (const ans of parsed.data.answers) {
+            if (typeof ans === "string" && ans.length > OPEN_ANSWER_MAX_LENGTH)
+                correct = false;
+        }
+
+        if (quiz?.isActive() && correct) {
             quiz.addStudentAnswers(this, parsed.data.answers);
 
             const response: Payload = {
@@ -100,7 +103,7 @@ class Student extends EventEmitter {
             };
             this.wsc?.send(JSON.stringify(response));
 
-            setTimeout(() => this.canSendReaction = true, this.REACTION_TIMEOUT);
+            setTimeout(() => this.canSendReaction = true, REACTION_TIMEOUT);
         } else {
             const response: Payload = {
                 event: "student_reaction_not_sent"
@@ -131,7 +134,7 @@ class Student extends EventEmitter {
     }
 
     handlerSendQuestion(parsed: SendQuestionRequestPayload) {
-        if (this.canSendQuestion && parsed.data.text.length <= this.QUESTION_MAX_LENGTH) {
+        if (this.canSendQuestion && parsed.data.text.length <= QUESTION_MAX_LENGTH) {
             this.canSendQuestion = false;
             this.questions.set(new Date(), parsed.data.text);
             this.emit("question_added", parsed.data.text);
@@ -139,7 +142,7 @@ class Student extends EventEmitter {
                 event: "student_question_sent"
             };
             this.wsc?.send(JSON.stringify(response));
-            setTimeout(() => this.canSendQuestion = true, this.QUESTION_TIMEOUT);
+            setTimeout(() => this.canSendQuestion = true, QUESTION_TIMEOUT);
         } else {
             const response: Payload = {
                 event: "student_question_not_sent"

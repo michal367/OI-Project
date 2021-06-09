@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, makeStyles, TextField } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import { useContext, useState } from "react";
-import { QUESTION_TIMEOUT } from "../../../common/util/globalConfig";
+import { QUESTION_MAX_LENGTH, QUESTION_TIMEOUT } from "../../../common/util/globalConfig";
 import { useSocket } from "../../services/SocketService";
 import { StoreContext } from "../../services/StoreService";
 
@@ -69,7 +69,7 @@ export function SendQuestion() {
                     value={value}
                     disabled={waitTime}
                     onChange={handleChange}
-                    inputProps={{ maxLength: 300 }}
+                    inputProps={{ maxLength: QUESTION_MAX_LENGTH }}
                 />
                 <Button
                     size="small"

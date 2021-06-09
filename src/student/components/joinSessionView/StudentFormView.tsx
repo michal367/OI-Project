@@ -104,6 +104,7 @@ export function StudentFormView(props: StudentFormViewProps) {
                     store.studentId = parsed.data.studentID;
                     store.sessionName = parsed.data.sessionName;
                     store.tutorName = parsed.data.tutor;
+                    store.invitation = session;
                     history.replace("/student/session");
                     socketEmiter.off("student_created", handleCreate);
                     console.log("student created", parsed);

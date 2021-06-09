@@ -16,6 +16,7 @@ class Lecture {
     studentList: StudentList;
     wsc?: WebSocketClient;
     quizzes: Map<string, Quiz>;
+    timeout?: any;
 
     constructor(tutor: string, lectureName: string) {
         this.tutor = tutor;
@@ -31,10 +32,7 @@ class Lecture {
 
         this.studentList = new StudentList();
         this.quizzes = new Map();
-    }
 
-    setWebSocketClient(wsc: WebSocketClient): void {
-        this.wsc = wsc;
         this.studentList.on("studentAdded", (student: Student) => {
             const reactionHandler = (reaction: string) => {
                 const payload: ReactionResponsePayload = {
@@ -44,9 +42,24 @@ class Lecture {
                         studentID: student.id
                     }
                 };
+                console.log(payload);
                 this.wsc?.send(JSON.stringify(payload));
             };
             student.on("reaction_added", reactionHandler);
+            
+            const questionHandler = (text: string) => {
+                const payload: SendQuestionResponsePayload = {
+                    event: "send_student_question",
+                    data: {
+                        text: text,
+                        studentID: student.id
+                    }
+                };
+                console.log(payload);
+                this.wsc?.send(JSON.stringify(payload));
+            };
+            student.on("question_added", questionHandler);
+            
             const payload: StudentAddedPayload = {
                 event: "student_added",
                 data: {
@@ -56,20 +69,8 @@ class Lecture {
                     surname: student.surname
                 }
             };
+            console.log(payload);
             this.wsc?.send(JSON.stringify(payload));
-
-            const questionHandler = (text: string) => {
-                const payload: SendQuestionResponsePayload = {
-                    event: "send_student_question",
-                    data: {
-                        text: text,
-                        studentID: student.id
-                    }
-                };
-                this.wsc?.send(JSON.stringify(payload));
-            };
-            student.on("question_added", questionHandler);
-
         });
         this.studentList.on("studentDeleted", (student: Student) => {
             const payload: StudentDeletedPayload = {
@@ -78,12 +79,14 @@ class Lecture {
                     studentID: student.id,
                 }
             };
+            console.log(payload);
             this.wsc?.send(JSON.stringify(payload));
         });
+    }
 
-
+    setWebSocketClient(wsc: WebSocketClient): void {
+        this.wsc = wsc;
         this.wsc.on("message", (message: string) => {
-            console.log(message);
             const parsed = JSON.parse(message);
             console.log(parsed);
             switch (parsed.event) {
@@ -103,15 +106,22 @@ class Lecture {
                     break;
                 default:
                     console.log(`Lecture Websockets: Unexpected type of event \n\t Event: ${parsed.event}`)
-
             }
         });
 
         this.wsc.on("close", (reason: string) => {
             console.log(`Lecture Websockets closed \n\t reason: ${reason}`);
-            this.wsc = undefined;
-            //TODO: cleanup after closing websocket connection
+            this.timeout = setTimeout(()=>{
+                const payload: Payload = {
+                    event: "lecture_ended"
+                };
+                this.disconnectStudentAndRemovaLectureData(payload);
+            }, 1000*60*1);
         });
+
+        if(this.timeout){
+            clearTimeout(this.timeout);
+        }
     }
 
     handlerSendQuiz(parsed: QuizRequestPayload): void {
@@ -198,6 +208,10 @@ class Lecture {
             this.wsc?.close(1000, "Lecturer requested shutdown");
         }
 
+        this.disconnectStudentAndRemovaLectureData(payload);
+    }
+
+    private disconnectStudentAndRemovaLectureData(payload: any) {
         this.studentList.asArray().forEach((student: Student) => {
             student.handleGDPR();
             student.wsc?.send(JSON.stringify(payload));
@@ -208,6 +222,7 @@ class Lecture {
 
         this.tutor = "";
         lectures.delete(this.id);
+        this.wsc = undefined;
         console.log("Lecture has been deleted");
     }
 
