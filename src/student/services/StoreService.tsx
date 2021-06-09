@@ -16,7 +16,8 @@ export interface IStore {
     operation?: {
         clear: () => void
     },
-    quizTime: number
+    quizTime: number,
+    quizId: string,
 }
 
 type StorageKey =
@@ -46,7 +47,8 @@ const initialValue: IStore = {
     sessionName: "",
     tutorName: "",
     quizTime: 0,
-    quizStartTime: 0
+    quizStartTime: 0,
+    quizId: ""
 }
 
 const loadFromStorage = () => {
@@ -72,6 +74,7 @@ const Store = (props: StoreProps) => {
     const [tutorName, setTutorName] = useState(initialValue.tutorName);
     const [quizTime, setQuizTime] = useState(initialValue.quizTime);
     const [quizStartTime, setQuizStartTime] = useState(initialValue.quizStartTime);
+    const [quizId, setQuizId] = useState(initialValue.quizId);
 
     useEffect(() => {
         if (upgradeStorage()) return;
@@ -130,29 +133,40 @@ const Store = (props: StoreProps) => {
         set studentQuestion(newQuestion: StudentQuestion) {
             setStudentQuestion(newQuestion);
         },
+        
         get sessionName() {
             return sessionName
         },
         set sessionName(newValue: string) {
             setSessionName(newValue);
         },
+
         get tutorName() {
             return tutorName
         },
         set tutorName(newValue: string) {
             setTutorName(newValue);
         },
+        
         get quizTime() {
             return quizTime;
         },
         set quizTime(newValue: number) {
             setQuizTime(newValue);
         },
+        
         get quizStartTime() {
             return quizStartTime;
         },
         set quizStartTime(newValue: number) {
             setQuizStartTime(newValue);
+        },
+
+        get quizId() {
+            return quizId;
+        },
+        set quizId(newValue: string) {
+            setQuizId(newValue);
         },
 
         operation: {

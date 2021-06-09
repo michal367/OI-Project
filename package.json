@@ -31,6 +31,7 @@
     "react-use-websocket": "^2.5.0",
     "typescript": "^4.2.3",
     "use-lodash-debounce-throttle": "^0.3.5",
+    "uuid": "^8.3.2",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
@@ -85,6 +86,7 @@
     "@types/file-saver": "^2.0.2",
     "@types/node": "^12.20.7",
     "@types/react-router-dom": "^5.1.7",
+    "@types/uuid": "^8.3.0",
     "react-app-rewired": "^2.1.8"
   },
   "homepage": "."

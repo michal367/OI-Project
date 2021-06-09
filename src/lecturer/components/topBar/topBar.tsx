@@ -1,3 +1,4 @@
+import { useTheme, withStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import { useContext, useEffect, useState } from 'react';
@@ -33,10 +34,17 @@ export default function TopBar(props: TopBarProps) {
     const processQuestions = () =>{
         store.studentQuestions.forEach(question => question.processed = true)
     }
+    const theme = useTheme();
+    const NotifiableTabs = withStyles({
+        indicator: {
+          backgroundColor: theme.palette.secondary.light,
+          padding: 2,
+        },
+    })(Tabs);
 
     return (
-        <AppBar position="static">
-            <Tabs
+        <AppBar position="relative" style={{flexShrink:0,}}>
+            <NotifiableTabs
                 value={selectedTab}
                 centered
             >
@@ -49,7 +57,7 @@ export default function TopBar(props: TopBarProps) {
                 {store.lectureID && ( //Can't be in one condition because <Tabs> doesn't accept wrapped children
                     <NotifiableTab label="Statystyki" {...tabProps(routes.stats)} />
                 )}
-            </Tabs>
+            </NotifiableTabs>
         </AppBar>
     );
 }

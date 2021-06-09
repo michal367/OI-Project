@@ -39,6 +39,7 @@ export function QuestionBlock(props: QuestionBlockProps) {
             },
         },
     })();
+    
     return (<Paper
         variant="outlined"
         square

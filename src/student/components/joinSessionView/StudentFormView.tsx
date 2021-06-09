@@ -14,7 +14,7 @@ import { StoreContext } from "../../services/StoreService";
 
 interface StudentFormViewProps {
     session?: string;
-    onFail?: (error: string) => void;
+    onFail: (error: string) => void;
 }
 
 export function StudentFormView(props: StudentFormViewProps) {
@@ -110,6 +110,11 @@ export function StudentFormView(props: StudentFormViewProps) {
                     console.log("student created", parsed);
                 };
                 socketEmiter.on("student_created", handleCreate);
+                const handleFail = (error: string) => {
+                    setLoading(false);
+                    props.onFail(error);
+                }
+                socketEmiter.on("student_not_created", handleFail);
                 // there can be negative response - it is not handled yet
                 const payload: StudentCreateRequestPayload = {
                     event: "create_student",

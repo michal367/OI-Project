@@ -2,6 +2,7 @@ import { Snackbar } from '@material-ui/core';
 import { SnackbarOrigin } from '@material-ui/core/Snackbar';
 import { useContext, useState } from 'react';
 import { StoreContext } from '../../services/StoreService';
+import { isQuestionCorrect } from '../../util/parse';
 import { ListView, TitleType } from '../listView/ListView';
 
 
@@ -41,36 +42,7 @@ export function QuestionsListView() {
             }
             for (const quest of parsed) {
                 counter++;
-                let correct = true;
-
-                if (typeof quest.title != "string" || typeof quest.text != "string") {
-                    correct = false;
-                }
-
-                if (quest.options !== undefined && correct === true) {
-                    for (const option of quest.options) {
-                        if (typeof option.index != 'number' || typeof option.text != 'string' || typeof option.isCorrect != 'boolean') {
-                            correct = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (correct) {
-                    for (const item of store.questions)
-                        if (item.title === quest.title) {
-                            correct = false;
-                            break;
-                        }
-                }
-                if (correct) {
-                    for (const item of result)
-                        if (item.title === quest.title) {
-                            correct = false;
-                            break;
-                        }
-                }
-                if (correct)
+                if (isQuestionCorrect(quest, store.questions, result))
                     result.push(quest);
             }
 

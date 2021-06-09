@@ -340,8 +340,16 @@ export function SendQuizView(props: SendQuizViewProps) {
         setSelectedQuiz(undefined);
         changeSelectedStudents(true);
     };
-
-    const isStepReady = (step: number) => {
+    const handleSendAnswers = () =>{
+        const payload: ShowAnswersPayload = {
+            event: 'show_answers',
+            data: {
+                quizID: store.sendQuiz.id ?? "",
+            }
+        }
+        sendJsonMessage(payload);
+    };
+    const isStepReady = useCallback((step: number) => {
         switch (step) {
             case 3:
                 return false;
@@ -354,7 +362,22 @@ export function SendQuizView(props: SendQuizViewProps) {
             default:
                 return true;
         }
-    };
+    }, [quiz, time, checked, students]);
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!isStepReady(store.sendQuizStep)){
+                handleNext();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [store, isStepReady, handleNext]);
 
     return (
         <Paper className={classes.details} variant="outlined" square>
@@ -399,6 +422,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             {store.sendQuizStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
                     <Typography>Quiz został wysłany.</Typography>
+                    <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
+                        {"Pokaż odpowiedzi"}
+                    </Button>
                     <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
                         {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
                     </Button>

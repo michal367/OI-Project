@@ -17,9 +17,8 @@ export function StudentsQuestionListView() {
         },
         questionsHeader:{
             padding: 10,
+            fontSize: "16px",
             display: "block",
-            fontSize:"16px",
-
         },
         questionField:{
             overflow:"auto",

@@ -16,6 +16,7 @@ interface Answer {
 }
 
 interface Question {
+    id: string;
     index?: number;
     title: string;
     imageSrc?: string;
@@ -24,6 +25,7 @@ interface Question {
 }
 
 interface FrontQuiz {
+    id: string;
     title: string;
     questions: Question[];
 }
@@ -38,6 +40,7 @@ interface StudentQuestion{
     processed: boolean;
 }
 interface ScheduledQuiz {
+    id: string;
     quiz?: FrontQuiz;
     studentIDs: string[];
     timeSeconds?: number;
@@ -48,6 +51,7 @@ interface ScheduledQuiz {
 interface AnswerStat {
     index: number;
     numberOfTimesSelected: number;
+    textAnswers?: string;
 }
 
 interface QuestionStat{
