@@ -9,26 +9,24 @@ import {
     IconButton,
     makeStyles,
     TextField,
-    Typography,
-    Tooltip,
+    Tooltip, Typography,
     useTheme
 } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import clsx from 'clsx';
 import { Location } from 'history';
 import { ChangeEvent, FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import ReactScrollableFeed from 'react-scrollable-feed';
+import { v4 } from 'uuid';
 import { StoreContext } from '../../services/StoreService';
 import { numToSSColumn } from '../../util/numToOptionLetter';
 import { lazareTheme } from "../../util/theme/customTheme";
 import { UploadImageField } from '../uploadImageField/uploadImageField';
-import ReactScrollableFeed from 'react-scrollable-feed';
-import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
-import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
-import { v4 } from 'uuid';
 
 export function CreateQuestionView() {
     const theme = useTheme();
@@ -57,16 +55,24 @@ export function CreateQuestionView() {
 
     let data: any = location.state;
     if (data !== undefined) {
-        let index = data.index;
-        if (store.questions[index]) {
-            titleVal = store.questions[index].title;
-            questionVal = store.questions[index].text;
-            imageUrlVal = store.questions[index].imageSrc ?? "";
+        let id = data.id;
+        let question: Question | undefined = undefined;
+        for (const item of store.questions) {
+            if (item.id === id) {
+                question = item;
+                break;
+            }
+        }
 
-            if (store.questions[index].options !== undefined) {
+        if (question) {
+            titleVal = question.title;
+            questionVal = question.text;
+            imageUrlVal = question.imageSrc ?? "";
+
+            if (question.options !== undefined) {
                 modeVal = QuestionType.CLOSED;
 
-                let options = store.questions[index].options;
+                let options = question.options;
                 if (options !== undefined) {
                     answersVal = options.map(({ text }) => text);
                     isCorrectVal = options.map(({ isCorrect }) => isCorrect);
@@ -186,7 +192,7 @@ export function CreateQuestionView() {
         errorColor: {
             color: red[500],
         },
-        addAnswerBtn:{
+        addAnswerBtn: {
             fontSize: 16,
         },
         deleteBtn: {
@@ -368,7 +374,12 @@ export function CreateQuestionView() {
 
             console.log(obj);
             if (data !== undefined) {
-                store.questions[data.index] = obj;
+                for(let i=0; i < store.questions.length; i++){
+                    if(store.questions[i].id === data.id){
+                        store.questions[i] = obj;
+                        break;
+                    }
+                }
 
                 timer.current = window.setTimeout(() => {
                     setSuccess(true);
@@ -509,7 +520,7 @@ export function CreateQuestionView() {
                                                     ></TextField>
                                                 </div>
                                                 <Tooltip
-                                                    title={<Typography style={{fontSize: 14}} color="inherit">Oznacz jako poprawną</Typography>}
+                                                    title={<Typography style={{ fontSize: 14 }} color="inherit">Oznacz jako poprawną</Typography>}
                                                     placement="left"
                                                     arrow
                                                 >
