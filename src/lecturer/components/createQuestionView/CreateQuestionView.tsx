@@ -341,8 +341,7 @@ export function CreateQuestionView() {
     }, [QuestionType, answers, mode, noError, question, store.questions, title]);
 
     const timer = useRef<number>();
-    const handleSubmit = useCallback((event) => {
-        event.preventDefault();
+    const handleSubmit = useCallback(() => {
         if (!loading) {
 
             if (!validate()) {
@@ -408,7 +407,7 @@ export function CreateQuestionView() {
           if (event.code === "Enter" || event.code === "NumpadEnter") {
             event.preventDefault();
             if (!loading){
-                handleSubmit(event);
+                handleSubmit();
             } 
           }
         };
