@@ -1,24 +1,23 @@
-import { CssBaseline, makeStyles } from "@material-ui/core";
-import Backdrop from "@material-ui/core/Backdrop";
-import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
-import "fontsource-roboto";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import {
-    BrowserRouter as Router,
-    Redirect, Route, Switch
-} from "react-router-dom";
-import { GridLoader } from "react-spinners";
-import { useSocket } from "../../services/SocketService";
-import Store, { StoreContext } from "../../services/StoreService";
-import { CreateQuestionView } from "../createQuestionView/CreateQuestionView";
-import { CreateQuizView } from "../createQuizView/CreateQuizView";
-import { CreateSessionView } from "../createSessionView/CreateSessionView";
-import { QuestionsListView } from "../questionsListView/QuestionsListView";
-import { QuizStatsView } from "../quizStatsView/QuizStatsView";
-import { QuizzesListView } from "../quizzesListView/QuizzesListView";
-import { SessionDashboardView } from "../sessionDashboardView/SessionDashboardView";
-import { TimestampView } from "../timestampView/TimestampView";
-import TopBar from "../topBar/topBar";
+import 'fontsource-roboto';
+
+import { CssBaseline, makeStyles } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
+import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core/styles';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { GridLoader } from 'react-spinners';
+
+import { useSocket } from '../../services/SocketService';
+import Store, { StoreContext } from '../../services/StoreService';
+import { CreateQuestionView } from '../createQuestionView/CreateQuestionView';
+import { CreateQuizView } from '../createQuizView/CreateQuizView';
+import { CreateSessionView } from '../createSessionView/CreateSessionView';
+import { QuestionsListView } from '../questionsListView/QuestionsListView';
+import { QuizStatsView } from '../quizStatsView/QuizStatsView';
+import { QuizzesListView } from '../quizzesListView/QuizzesListView';
+import { SessionDashboardView } from '../sessionDashboardView/SessionDashboardView';
+import { TimestampView } from '../timestampView/TimestampView';
+import TopBar from '../topBar/topBar';
 
 const theme = createMuiTheme({
     palette: {
@@ -92,6 +91,61 @@ function App() {
         setIsLectureStarted((prev) => !prev);
     }
 
+    // hotfix by me
+    // TODO get reaction index with string sent with payload
+    // TODO make it work nice and properly, because I do not know how 
+    const TIME_WAITING = 20000;
+    const refreshReactions = useCallback((payload?: ReactionResponsePayload) => {
+        const reactionsString = [
+            "HEART",
+            "HAPPY",
+            "SAD",
+            "UP",
+            "DOWN"
+        ];
+        let index: number;
+        if (payload) {
+            let indexString: string = payload.data.reaction;
+            index = reactionsString.indexOf(indexString);
+        } else {
+            index = Math.round(Math.random() * reactionsString.length);
+        }
+        let tmpValues = store.reactionValues;
+        tmpValues[index]++;
+        store.reactionValues = tmpValues;
+        if (!store.reactionModes[index] || store.lastReactionTime > 0)
+        store.lastReactionTime = Date.now() + TIME_WAITING;
+    },[store]);
+    
+    useEffect(() => {
+        socketEmiter.on("send_student_reaction", refreshReactions);
+        return () => {
+            socketEmiter.off("send_student_reaction", refreshReactions);
+        };
+    }, [refreshReactions, socketEmiter]);
+
+
+    const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
+        console.log("refreshQuestionList");
+        console.log(payload);
+        const studentQuestion: StudentQuestion = {
+            studentNick: payload.data.studentID,
+            time: new Date(),
+            text: payload.data.text,
+            processed: false,
+        };
+        const newStudentQuestions = store.studentQuestions;
+        newStudentQuestions.push(studentQuestion);
+        store.studentQuestions = newStudentQuestions;
+    }, [store]);
+
+    useEffect(() => {
+        socketEmiter.on("send_student_question", refreshQuestionList);
+        return () => {
+            socketEmiter.off("send_student_question", refreshQuestionList);
+        };
+    }, [refreshQuestionList, socketEmiter]);
+
     const classes = makeStyles({
         mainContainer:{
             minWidth: "100vw",
@@ -99,8 +153,7 @@ function App() {
         }
     })();
     return (
-        <Store>
-            <Router>
+        
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Backdrop
@@ -185,8 +238,7 @@ function App() {
                         )
                     }} />
                 </ThemeProvider>
-            </Router>
-        </Store>
+
     );
 }
 

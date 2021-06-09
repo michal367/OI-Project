@@ -1,8 +1,9 @@
 import { makeStyles, Paper, TextField } from '@material-ui/core';
 import { useCallback, useContext, useEffect } from 'react';
 import ReactScrollableFeed from 'react-scrollable-feed';
+
 import { useSocket } from '../../services/SocketService';
-import { StoreContext } from "../../services/StoreService";
+import { StoreContext } from '../../services/StoreService';
 
 
 export function StudentsQuestionListView() {
@@ -15,20 +16,20 @@ export function StudentsQuestionListView() {
             borderRadius: "0",
 
         },
-        questionsHeader:{
+        questionsHeader: {
             padding: 10,
             fontSize: "16px",
             display: "block",
         },
-        questionField:{
-            overflow:"auto",
-            height:"98%"   
+        questionField: {
+            overflow: "auto",
+            height: "98%"
         },
         tmp: {
             maxHeight: "100%",
         },
-        field:{
-            margin:"5px 0px"
+        field: {
+            margin: "5px 0px"
         },
         messageReplyButton: {
             flexShrink: 0,
@@ -45,7 +46,7 @@ export function StudentsQuestionListView() {
                     display: "block",
                 }
             },
-            "& *":{
+            "& *": {
                 pointerEvents: "none",
             },
         },
@@ -57,63 +58,51 @@ export function StudentsQuestionListView() {
         },
         messageText: {
             flexGrow: 1,
-            width:"100%"
+            width: "100%"
         },
-        questionText:{
-            width:"100%"
+        questionText: {
+            width: "100%"
         },
     })();
 
-    const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
-        console.log("refreshQuestionList");
-        console.log(payload);
-        const studentQuestion: StudentQuestion = {
-            studentNick: payload.data.studentID,
-            time: new Date(),
-            text: payload.data.text,
-            processed: false,
-        };
-        const newStudentQuestions = store.studentQuestions;
-        newStudentQuestions.push(studentQuestion);
-        store.studentQuestions = newStudentQuestions;
-    }, [store]);
 
-    useEffect(() => {
-        socketEmiter.on("send_student_question", refreshQuestionList);
-        return () => {
-            socketEmiter.off("send_student_question", refreshQuestionList);
-        };
-    }, [refreshQuestionList, socketEmiter]);
+    useEffect(
+        () => {
+            return () => {
+                store.studentQuestions.forEach(question => question.viewed = true);
+            }
+        }
+        , [])
 
     return (
         <Paper className={classes.root} variant="outlined" square>
-        <b className={classes.questionsHeader}>
-            Pytania od studentów
+            <b className={classes.questionsHeader}>
+                Pytania od studentów
         </b>
-        <div className={classes.questionField}>
-            <ReactScrollableFeed>
-            {store.studentQuestions.map((studentQuestion, index) => {
-                return (
-                    <div
-                        key={index}
-                    >
-                        <div className={classes.message}>
-                            <div className={classes.messageText}>
-                                <TextField className={classes.field} error={!studentQuestion.processed}
-                                 fullWidth={true} 
-                                 multiline
-                                 label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"} 
-                                 defaultValue={studentQuestion.text} InputProps={{
-                                    className: classes.questionText,
-                                    readOnly: true,
-                                }}/>
-                            </div>
+            <div className={classes.questionField}>
+                <ReactScrollableFeed>
+                    {store.studentQuestions.map((studentQuestion, index) => {
+                        return (
+                            <div
+                                key={index}
+                            >
+                                <div className={classes.message}>
+                                    <div className={classes.messageText}>
+                                        <TextField className={classes.field} error={!studentQuestion.viewed}
+                                            fullWidth={true}
+                                            multiline
+                                            label={studentQuestion.time.toLocaleTimeString("en-GB") + " | Anonimowy student"}
+                                            defaultValue={studentQuestion.text} InputProps={{
+                                                className: classes.questionText,
+                                                readOnly: true,
+                                            }} />
+                                    </div>
 
-                        </div>
-                    </div>
-                );
-            })}
-            </ReactScrollableFeed>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </ReactScrollableFeed>
             </div>
         </Paper>
     );

@@ -31,24 +31,25 @@ export default function TopBar(props: TopBarProps) {
         return { routes: route, value: routeToTabsValue(route) };
     }
 
-    const processQuestions = () =>{
-        store.studentQuestions.forEach(question => question.processed = true)
+    const processQuestions = () => {
+        store.studentQuestions.forEach(question => question.processed = true)        
     }
+
     const theme = useTheme();
     const NotifiableTabs = withStyles({
         indicator: {
-          backgroundColor: theme.palette.secondary.light,
-          padding: 2,
+            backgroundColor: theme.palette.secondary.light,
+            padding: 2,
         },
     })(Tabs);
 
     return (
-        <AppBar position="relative" style={{flexShrink:0,}}>
+        <AppBar position="relative" style={{ flexShrink: 0, }}>
             <NotifiableTabs
                 value={selectedTab}
                 centered
             >
-                <NotifiableTab label="Sesja" resetFunction={processQuestions} observableList={store.studentQuestions} {...tabProps(store.lectureID ? routes.session : routes.index)} />
+                <NotifiableTab label="Sesja" resetFunction={processQuestions} number={store.studentQuestions.filter(question => !question.processed).length} {...tabProps(store.lectureID ? routes.session : routes.index)} />
                 <NotifiableTab label="Quizy" {...tabProps(routes.quiz)} />
                 <NotifiableTab label="Pytania" {...tabProps(routes.questions)} />
                 {store.lectureID && (
