@@ -65,7 +65,7 @@ export function QuestionBlock(props: QuestionBlockProps) {
                     let option = (props.question?.options) ? (props.question.options[k]) : (undefined);
                     return option && (<AnswerBar
                         answer={option}
-                        selected={answerStat.numberOfTimesSelected}
+                        selected={answerStat.numberOfTimesSelected??0}
                         totalSelected={props.totalSelected}
                     />)
                 })

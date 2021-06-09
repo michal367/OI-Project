@@ -46,6 +46,8 @@ interface ScheduledQuiz {
     timeSeconds?: number;
     questionStats: QuestionStat[];
     alreadyShowedResults: boolean;
+    inProgress?: boolean;
+    timeToEnd?: number;
 }
 
 interface AnswerStat {
@@ -67,6 +69,7 @@ interface QuizStat{
 interface Statistic{
     quizzes: QuizStat[];
 }
+
 type TimestampType = 
     "QuestionType" |
     "LogType" |
