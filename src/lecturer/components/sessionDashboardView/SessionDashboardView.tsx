@@ -117,6 +117,20 @@ export function SessionDashboardView(props: { update: () => void }) {
         newStudentList.push(studentRow);
         setStudentList(newStudentList);
         console.log("list refreshed with one student")
+        
+        if (store.nicks === undefined) store.nicks = new Map();
+
+        store.nicks.set(parsed.data.id, parsed.data.nick)
+
+        let timeStamp: Timestamp = {
+            type: "LogType",
+            message: "Dołączył",
+            minutes: new Date().getMinutes().toString(),
+            hours: new Date().getHours().toString(),
+            owner: parsed.data.nick,
+        }
+    
+        store.timestamps.push(timeStamp);
     }, [studentList]);
 
     useEffect(() => {

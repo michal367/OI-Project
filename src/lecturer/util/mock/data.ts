@@ -123,20 +123,6 @@ const studentListMock: Student[] = [
 
 const timestampMock: Timestamp[] = [
     {
-        type: "QuestionType",
-        message: "Zadał pytanie",
-        hours: "09",
-        minutes: "30",
-        owner: "PŚwiderski",
-    },
-    {
-        type: "LogType",
-        message: "Dołączył",
-        hours: "09",
-        minutes: "30",
-        owner: "PŚwiderski",
-    },
-    {
         type: "QuizType",
         message: "Zakończył quiz",
         hours: "09",
@@ -192,13 +178,6 @@ const timestampMock: Timestamp[] = [
         minutes: "37",
         owner: "PŚwiderski",
     },
-    {
-        type: "ReactionType",
-        message: "Zareagował",
-        hours: "09",
-        minutes: "30",
-        owner: "PŚwiderski",
-    }
 ];
 
 export { 

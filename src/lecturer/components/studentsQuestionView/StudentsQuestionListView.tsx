@@ -65,6 +65,7 @@ export function StudentsQuestionListView() {
     })();
 
     const refreshQuestionList = useCallback((payload: SendQuestionResponsePayload) => {
+        
         console.log("refreshQuestionList");
         console.log(payload);
         const studentQuestion: StudentQuestion = {
@@ -76,6 +77,17 @@ export function StudentsQuestionListView() {
         const newStudentQuestions = store.studentQuestions;
         newStudentQuestions.push(studentQuestion);
         store.studentQuestions = newStudentQuestions;
+
+        let timeStamp: Timestamp = {
+                type: "QuestionType",
+                message: "Zadał pytanie",
+                minutes: new Date().getMinutes().toString(),
+                hours: new Date().getHours().toString(),
+                owner: "student",
+            }
+
+        store.timestamps.push(timeStamp);
+
     }, [store]);
 
     useEffect(() => {
