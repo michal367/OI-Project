@@ -19,12 +19,13 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { lazareTheme } from "../../util/theme/customTheme";
 import { ImportExport } from '../importExport/ImportExport';
 
 
-export type TitleType = Pick<Question | FrontQuiz, "title">;
+export type TitleType = Pick<Question | FrontQuiz, "id" | "title">;
 
 interface ListViewProps {
     getContainer: (() => TitleType[]);
@@ -40,10 +41,6 @@ export function ListView(props: ListViewProps) {
         return ('title' in object && 'text' in object);
     }
 
-    interface IndexedElement {
-        index: number;
-        element: TitleType;
-    }
     const onImportBasic = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
             let jsonString = e.target.result as string;
@@ -65,132 +62,152 @@ export function ListView(props: ListViewProps) {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.secondary.light,
-            gap: "50px",
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            paddingTop: 75,
-            paddingBottom: "10px"
+            ...lazareTheme.root,
         },
-        cardWrapper: {
+        content: {
+            ...lazareTheme.slimColumnWrapper,
+            gap: 20,
+            height: "calc(100vh - 48px)",
+            minHeight: "500px",
+            boxSizing: "border-box",
+        },
+        listHeader: {
             position: "relative",
+            width: "100%",
+            height: "fit-content",
+            flexGrow: 0,
+            flexShrink: 0,
+        },
+        listBody: {
+            gap: 5,
+            flexShrink: 1,
+            height: "100%",
+            display: "grid",
+            gridAutoRows: 60,
+            overflowY: "auto"
+        },
+        listFooter: {
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: "fit-content",
+            flexGrow: 0,
+            flexShrink: 0,
         },
         list: {
             backgroundColor: theme.palette.background.paper,
             width: "500px",
             height: "500px",
             overflow: "auto",
-        },
-        bottomMenu: {
-            width: "500px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            "& > div": {
-                marginLeft: "auto"
-            }
+            
         },
         deleteBtn: {
-            color: red[700],
+            "&:hover":{
+                color: red[700],
+            },
             flexShrink: 0,
             height: 48,
             width: 48,
         },
         searchInput: {
             position: "absolute",
-            top: "42px",
-            right: "25px",
+            top: 16,
+            right: 0,
+            borderRadius: 5,
+            background: "white",
+        },
+        listCardWrapper: {
+            padding: 0,
+            "& li":{
+                height: "60px",
+                display: "flex",
+            },
         },
     })();
 
-    const handleRemoveElement = (index: number) => {
-        const list = getContainer();
-        list.splice(index, 1);
+    const handleRemoveElement = (id: string) => {
+        let list = getContainer();
+        list = list.filter((item) => { 
+            return item.id != id;
+        });
         setContainer(list);
-
     }
-    const selectElement = (index: number) => {
+    const selectElement = (id: string) => {
         history.push({
             pathname: createEditPathname,
-            state: { index: index }
+            state: { id: id }
         });
     }
 
     const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
         setFilter(e.target.value);
     }
-    const filterByTitle = (items: IndexedElement[]) => {
-        return items.filter(item => item.element.title.toLowerCase().includes(filter));
-    }
-    const addIndexes = (item: TitleType, i: number) => {
-        let q: IndexedElement = { index: i, element: item };
-        return q;
+    const filterByTitle = (items: TitleType[]) => {
+        return items.filter(item => item.title.toLowerCase().includes(filter));
     }
 
     return (
         <div className={classes.root}>
 
-            <Card className={classes.cardWrapper}>
-                <CardHeader
-                    title={`Lista ${listElements}`}
-                    subheader={`${filterByTitle(getContainer().map(addIndexes)).length} ${listElements}`}
-                />
-                <TextField
-                    className={classes.searchInput}
-                    onChange={handleSearchInput}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Search />
-                            </InputAdornment>
-                        )
-                    }}
-                />
-                <List className={classes.list}>
+            <div className={classes.content} >
+                <div className={classes.listHeader}>
+                    <CardHeader
+                        title={`Lista ${listElements}`}
+                        subheader={`${filterByTitle(getContainer()).length} ${listElements}`}
+                    />
+                    <TextField
+                        className={classes.searchInput}
+                        variant="outlined"
+                        onChange={handleSearchInput}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search />
+                                </InputAdornment>
+                            )
+                        }}
+                    />
                     <Divider />
-                    {filterByTitle(getContainer().map(addIndexes)).map((item) => ([
-                        <ListItem
-                            key={item.element.title}
-                            button
-                            onClick={() => selectElement(item.index)}
-                        >
-                            {isQuestion(item.element) && (
-                                <ListItemIcon>{item.element.options ? <DoneAllIcon /> : <DescriptionIcon />}</ListItemIcon>
-                            )}
-                            <ListItemText primary={item.element.title} />
-                            <ListItemSecondaryAction>
-                                <IconButton
-                                    aria-label="delete"
-                                    className={classes.deleteBtn}
-                                    onClick={() => handleRemoveElement(item.index)}
+                </div>
+                <div className={classes.listBody}>
+                    {filterByTitle(getContainer()).map((item) => ([
+                        <Card>
+                            <List className={classes.listCardWrapper}>
+                                <ListItem
+                                    key={item.title}
+                                    button
+                                    onClick={() => selectElement(item.id)}
                                 >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>,
-                        <Divider />
+                                    {isQuestion(item) && (
+                                        <ListItemIcon>{item.options ? <DoneAllIcon /> : <DescriptionIcon />}</ListItemIcon>
+                                    )}
+                                    <ListItemText primary={item.title} />
+                                    <ListItemSecondaryAction>
+                                        <IconButton
+                                            aria-label="delete"
+                                            className={classes.deleteBtn}
+                                            onClick={() => handleRemoveElement(item.id)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            </List>
+                        </Card>
                     ]))}
+                </div>
+                <div className={classes.listFooter}>
+                    <Fab
+                        color="primary"
+                        aria-label="add"
+                        onClick={() => { history.push(createEditPathname); }}
+                    >
+                        <AddIcon />
+                    </Fab>
 
-                </List>
-            </Card>
-
-            <div className={classes.bottomMenu}>
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    onClick={() => { history.push(createEditPathname); }}
-                >
-                    <AddIcon />
-                </Fab>
-
-                <ImportExport onImport={onImport} objectToExport={getContainer()} fileName={exportFilename} />
+                    <ImportExport onImport={onImport} objectToExport={getContainer()} fileName={exportFilename} />
+                </div>
             </div>
         </div>
     );
