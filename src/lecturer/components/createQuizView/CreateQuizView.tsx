@@ -1,22 +1,23 @@
 import {
     Button,
-    CircularProgress,
-    ButtonGroup
+    ButtonGroup, 
+    CircularProgress
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import clsx from "clsx";
-import "fontsource-roboto";
-import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { intersection, not, union } from "../../../common/util/boolAlgebra";
-import { StoreContext } from "../../services/StoreService";
-import { CreateQuizList } from "./CreateQuizList";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { lazareTheme } from "../../util/theme/customTheme";
-
+import clsx from "clsx";
+import "fontsource-roboto";
+import { Location } from 'history';
+import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import { v4 } from 'uuid';
+import { intersection, not, union } from "../../../common/util/boolAlgebra";
+import { StoreContext } from "../../services/StoreService";
+import { lazareTheme } from "../../util/theme/customTheme";
+import { CreateQuizList } from "./CreateQuizList";
+
 
 function createIndexArray(s: number) {
     let array = [];
@@ -30,6 +31,54 @@ export function CreateQuizView() {
     const theme = useTheme();
     const history = useHistory();
     const store = useContext(StoreContext);
+    const location: Location<Object> = useLocation();
+
+    let titleVal = "";
+    let leftVal: number[] = createIndexArray(store.questions.length);
+    let rightVal: number[] = [];
+    let questionsVal: Question[] = JSON.parse(JSON.stringify(store.questions));
+
+    let data: any = location.state;
+    if (data !== undefined) {
+        let id = data.id;
+        let quiz: FrontQuiz | undefined = undefined;
+        for (const item of store.quizzes) {
+            if (item.id === id) {
+                quiz = item;
+                break;
+            }
+        }
+
+        if (quiz) {
+            titleVal = quiz.title;
+            for (const question of quiz.questions) {
+                let found: boolean = false;
+                for (let i = 0; i < store.questions.length; i++) {
+                    if (store.questions[i].id === question.id) {
+                        rightVal.push(i);
+                        leftVal = leftVal.filter((item) => item != i);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    questionsVal.push(question);
+                    rightVal.push(questionsVal.length - 1);
+                }
+            }
+            console.log(quiz.questions)
+            console.log(rightVal)
+        }
+    }
+
+    const [checked, setChecked] = useState<number[]>([]);
+    const [left, setLeft] = useState<number[]>(leftVal);
+    const [right, setRight] = useState<number[]>(rightVal);
+    const [title, setTitle] = useState(titleVal);
+    const [questions, setQuestions] = useState<Question[]>(questionsVal);
+    const [error, setError] = useState("");
+    const [filter, setFilter] = useState<string>("");
+
 
     const classes = makeStyles({
         root: {
@@ -70,11 +119,11 @@ export function CreateQuizView() {
         transferButtonGroup: {
             width: 32,
             height: 100,
-            "& .MuiButtonGroup-grouped":{
+            "& .MuiButtonGroup-grouped": {
                 minWidth: "unset",
                 padding: "4px 0",
             },
-            "& svg.MuiSvgIcon-root":{
+            "& svg.MuiSvgIcon-root": {
                 width: 16,
             },
         },
@@ -101,28 +150,13 @@ export function CreateQuizView() {
             maxWidth: "100%",
         },
     })();
-    const [indexArray, setIndexArray] = useState<number[]>([]);
-    const [checked, setChecked] = useState<number[]>([]);
-    const [left, setLeft] = useState<number[]>(indexArray);
-    const [right, setRight] = useState<number[]>([]);
-    const [title, setTitle] = useState("");
-    const [error, setError] = useState("");
-    const [filter, setFilter] = useState<string>("");
+
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
         setError("");
     };
-    const [questions, setQuestions] = useState<Question[]>([]);
 
-    useEffect(() => {
-        setLeft(indexArray);
-    }, [indexArray]);
-
-    useEffect(() => {
-        setQuestions(store.questions);
-        setIndexArray(createIndexArray(store.questions.length));
-    }, [store.questions]);
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -176,9 +210,11 @@ export function CreateQuizView() {
     };
     const filterByTitle = (items: number[]) => {
         let result: number[] = [];
-        for (let i = 0; i < items.length; i++) {
-            if (questions[items[i]].title.toLowerCase().includes(filter))
-                result.push(items[i]);
+        if (questions.length > 0) {
+            for (let i = 0; i < items.length; i++) {
+                if (questions[items[i]].title.toLowerCase().includes(filter))
+                    result.push(items[i]);
+            }
         }
         return result;
     }
@@ -191,31 +227,54 @@ export function CreateQuizView() {
                 selectedQuestions.push(questions[i]);
             });
 
-            for (const quiz of store.quizzes) {
-                if (quiz.title === title) {
-                    setError("Istnieje już quiz o takiej nazwie");
-                    return;
-                }
-            }
-
             console.log(selectedQuestions);
             setSuccess(false);
             setLoading(true);
 
-            store.quizzes = [
-                ...store.quizzes,
-                { "id": v4(), title, questions: selectedQuestions },
-            ];
+            if (data != undefined) {
+                for (const quiz of store.quizzes) {
+                    if (quiz.title === title && quiz.title != titleVal) {
+                        setError("Istnieje już quiz o takiej nazwie");
+                        return;
+                    }
+                }
+                for(let i=0; i < store.quizzes.length; i++){
+                    if(store.quizzes[i].id === data.id){
+                        store.quizzes[i].title = title;
+                        store.quizzes[i].questions = selectedQuestions;
+                        break;
+                    }
+                }
 
-            timer.current = window.setTimeout(() => {
-                console.log(store.quizzes);
-                setLeft(indexArray);
-                setRight([]);
-                setChecked(not(checked, rightChecked));
-                setTitle("");
-                setSuccess(true);
-                setLoading(false);
-            }, 500);
+                timer.current = window.setTimeout(() => {
+                    console.log(store.quizzes);
+                    setSuccess(true);
+                    setLoading(false);
+                }, 500);
+            }
+            else {
+                for (const quiz of store.quizzes) {
+                    if (quiz.title === title) {
+                        setError("Istnieje już quiz o takiej nazwie");
+                        return;
+                    }
+                }
+
+                store.quizzes = [
+                    ...store.quizzes,
+                    { "id": v4(), title, questions: selectedQuestions }
+                ];
+
+                timer.current = window.setTimeout(() => {
+                    console.log(store.quizzes);
+                    setLeft(createIndexArray(questions.length));
+                    setRight([]);
+                    setChecked(not(checked, rightChecked));
+                    setTitle("");
+                    setSuccess(true);
+                    setLoading(false);
+                }, 500);
+            }
         }
     }, [checked, indexArray, loading, questions, right, rightChecked, store, title]);
 
