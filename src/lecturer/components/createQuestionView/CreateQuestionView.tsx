@@ -1,27 +1,34 @@
 import {
     Button,
     ButtonGroup,
+    Card,
     Checkbox,
     CircularProgress,
-    Fab,
-    FormLabel,
+    FormControl,
     Grid,
     IconButton,
     makeStyles,
     TextField,
-    useTheme,
+    Typography,
+    Tooltip,
+    useTheme
 } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
-import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
 import { Location } from 'history';
-import { ChangeEvent, FormEvent, useContext, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-
 import { StoreContext } from '../../services/StoreService';
+import { numToSSColumn } from '../../util/numToOptionLetter';
+import { lazareTheme } from "../../util/theme/customTheme";
 import { UploadImageField } from '../uploadImageField/uploadImageField';
+import ReactScrollableFeed from 'react-scrollable-feed';
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
+import { v4 } from 'uuid';
 
 export function CreateQuestionView() {
     const theme = useTheme();
@@ -86,42 +93,87 @@ export function CreateQuestionView() {
 
     const classes = makeStyles({
         root: {
-            background: theme.palette.secondary.light,
-            gap: "50px",
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            zIndex: -1,
-            paddingTop: 75,
-            paddingBottom: "10px",
+            ...lazareTheme.root,
+        },
+        content: {
+            ...lazareTheme.columnWrapper,
+            gap: 20,
+            minHeight: "max(700px, 100vh - 48px)",
+            maxHeight: "1320px",
+            boxSizing: "border-box",
         },
         form: {
-            width: 600,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+            height: "100%",
+        },
+        formRow: {
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
             "& > *": {
-                display: "block-inline",
-                marginBottom: "15px",
-                margin: theme.spacing(1),
+                flexGrow: 1,
             },
+        },
+        formControl: {
+            display: "flex",
+            flexDirection: "row",
+            gap: 15,
+            alignItems: "center",
+        },
+        answerList: {
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
         },
         answerRow: {
             display: "flex",
             gap: 10,
+            paddingRight: 20,
             justifyContent: "space-between",
             flexWrap: "nowrap",
+            alignItems: "center",
+        },
+        answerField: {
+            height: "auto",
+        },
+        titleLabel: {
+            fontSize: 26,
+            fontWeight: "bold",
+            paddingLeft: 15,
         },
         titleInput: {
-            width: "100%",
+            flexGrow: 1,
+            "& .MuiInput-input": {
+                fontSize: 18,
+                padding: 10,
+            },
         },
         textarea: {
-            width: "100%",
+            width: "calc(100% - 40px)",
+            margin: "10px 20px",
+            boxSizing: "border-box",
+            "& .MuiInput-underline:before": {
+                display: "none",
+            },
+            "& .MuiInput-underline:after": {
+                display: "none",
+            },
+        },
+        optionLetter: {
+            flexGrow: 0,
+            padding: 10,
+            color: "rgba(0,0,0,0.67)",
+            minWidth: 55,
+            textAlign: "center",
         },
         checkbox: {
-            width: 55.4,
-            height: 55.4,
+            height: 48,
+            width: 48,
+            flexShrink: 0,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -134,12 +186,16 @@ export function CreateQuestionView() {
         errorColor: {
             color: red[500],
         },
+        addAnswerBtn:{
+            fontSize: 16,
+        },
         deleteBtn: {
-            color: red[700],
+            "&:hover": {
+                color: red[700],
+            },
             flexShrink: 0,
-            width: 55,
-            height: 55,
-            margin: "5px 0"
+            height: 48,
+            width: 48,
         },
         buttonSuccess: {
             backgroundColor: green[500],
@@ -168,13 +224,16 @@ export function CreateQuestionView() {
             }
         },
         buttonActive: {
-            backgroundColor: theme.palette.primary.main,
-            color: "black",
+            backgroundColor: theme.palette.primary.light,
             height: "50px",
             textTransform: "none",
             width: "100px",
+            "& span": {
+                color: "white",
+                opacity: 0.7,
+            },
             "&:hover": {
-                backgroundColor: theme.palette.primary.dark,
+                backgroundColor: theme.palette.primary.main,
             }
         },
         buttonNonactive: {
@@ -225,19 +284,20 @@ export function CreateQuestionView() {
     const handleAddAnswer = () => {
         setAnswers([...answers, ""]);
         setChecked([...checked, false]);
+        window.scrollTo(0, document.body.scrollHeight);
     };
 
     const handleRemoveAnswer = (index: number) => {
         const list = [...answers];
         list.splice(index, 1);
-        setAnswers(list);
         const list2 = [...checked];
         list2.splice(index, 1);
-        setChecked(list2);
+        setAnswers(prev => list.length > 0 ? list : [""]);
+        setChecked(prev => list2.length > 0 ? list2 : [false]);
     };
 
     let noError: string = "";
-    const validate = () => {
+    const validate = useCallback(() => {
         let required: string = "To pole jest wymagane";
         let tooLongTitle: string = "Tytuł może mieć maksymalnie 40 znaków";
         let noAnswers: string = "Trzeba dodać odpowiedzi";
@@ -252,12 +312,14 @@ export function CreateQuestionView() {
 
         if (title.length > 40)
             errorTemp.title = tooLongTitle;
-
-        for (const quest of store.questions)
-            if (quest.title === title) {
-                errorTemp.title = duplicateTitle;
-                break;
-            }
+            
+        if (data === undefined || titleVal !== title) {
+            for (const quest of store.questions)
+                if (quest.title === title) {
+                    errorTemp.title = duplicateTitle;
+                    break;
+                }
+        }
 
         for (let i = 0; i < answers.length; i++)
             errorTemp.emptyAnswers.push(answers[i] || mode === QuestionType.OPEN ? noError : required);
@@ -270,23 +332,21 @@ export function CreateQuestionView() {
             errorTemp.noAnswers === noError &&
             errorTemp.emptyAnswers.every((x: string) => x === noError)
         );
-    };
+    }, [QuestionType, answers, mode, noError, question, store.questions, title]);
 
     const timer = useRef<number>();
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = useCallback(() => {
         if (!loading) {
 
             if (!validate()) {
                 return;
             }
 
-
-
             setSuccess(false);
             setLoading(true);
 
             let obj: Question = {
+                id: v4(),
                 title: title,
                 text: question,
                 imageSrc: imageUrl
@@ -328,158 +388,193 @@ export function CreateQuestionView() {
                 }, 500);
             }
         }
-    };
+    }, [QuestionType, answers, checked, data, imageUrl, loading, mode, question, store, title, validate]);
 
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!loading){
+                handleSubmit();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [loading, handleSubmit]);
 
     return (
         <div className={classes.root}>
-            <form
-                onSubmit={handleSubmit}
-                className={classes.form}
-                noValidate
-                autoComplete="off"
-            >
-                <TextField
-                    variant="filled"
-                    label="Tytuł"
-                    value={title}
-                    className={classes.titleInput}
-                    required
-                    error={errors.title !== noError}
-                    helperText={errors.title}
-                    onChange={handleTitleChange}
-                    inputProps={{ maxLength: 40 }}
-                />
-
-                <UploadImageField imageSrc={imageUrl} onChange={(image) => setImageUrl(image)} />
-
-                <TextField
-                    multiline={true}
-                    rows={5}
-                    required
-                    value={question}
-                    error={errors.question !== noError}
-                    helperText={errors.question}
-                    variant="filled"
-                    label="Pytanie"
-                    className={classes.textarea}
-                    fullWidth
-                    onChange={handleQuestionChange}
-                ></TextField>
-
-                <ButtonGroup
-                    variant="outlined"
-                    color="primary"
-                    aria-label="question type"
+            <div className={classes.content}>
+                <form
+                    onSubmit={handleSubmit}
+                    className={classes.form}
+                    noValidate
+                    autoComplete="off"
                 >
-                    <Button
-                        color={mode === QuestionType.CLOSED ? "primary" : "default"}
-                        className={mode === QuestionType.CLOSED ? classes.buttonActive : classes.buttonNonactive}
-                        onClick={() => setMode(QuestionType.CLOSED)} >
-                        Zamknięte
-                    </Button>
-                    <Button
-                        color={mode === QuestionType.OPEN ? "primary" : "default"}
-                        className={mode === QuestionType.OPEN ? classes.buttonActive : classes.buttonNonactive}
-                        onClick={() => setMode(QuestionType.OPEN)}
-                        style={{ marginLeft: 0 }} >
-                        Otwarte
-                    </Button>
-                </ButtonGroup>
+                    <div className={classes.formRow}>
+                        <FormControl className={classes.formControl}>
+                            <Typography className={classes.titleLabel}>
+                                Tytuł
+                            </Typography>
+                            <TextField
+                                id="question-title"
+                                value={title}
+                                className={classes.titleInput}
+                                required
+                                error={errors.title !== noError}
+                                helperText={errors.title}
+                                onChange={handleTitleChange}
+                                inputProps={{ maxLength: 40 }}
+                            />
+                        </FormControl>
+                    </div>
+                    <div className={classes.formRow}>
+                        <UploadImageField imageSrc={imageUrl} onChange={(image) => setImageUrl(image)} />
+                    </div>
+                    <div className={classes.formRow}>
+                        <Card>
+                            <TextField
+                                multiline={true}
+                                rows={5}
+                                required
+                                value={question}
+                                error={errors.question !== noError}
+                                helperText={errors.question}
+                                label="Pytanie"
+                                className={classes.textarea}
+                                fullWidth
+                                onChange={handleQuestionChange}
+                            />
+                        </Card>
+                    </div>
+                    <div className={classes.formRow}>
+                        <ButtonGroup
+                            variant="outlined"
+                            color="primary"
+                            aria-label="question type"
+                        >
+                            <Button
+                                color={mode === QuestionType.CLOSED ? "primary" : "default"}
+                                className={mode === QuestionType.CLOSED ? classes.buttonActive : classes.buttonNonactive}
+                                onClick={() => {
+                                    setMode(QuestionType.CLOSED);
+                                    if (answers.length === 0)
+                                        handleAddAnswer();
+                                }} >
+                                Zamknięte
+                        </Button>
+                            <Button
+                                color={mode === QuestionType.OPEN ? "primary" : "default"}
+                                className={mode === QuestionType.OPEN ? classes.buttonActive : classes.buttonNonactive}
+                                onClick={() => setMode(QuestionType.OPEN)}
+                                style={{ marginLeft: 0 }} >
+                                Otwarte
+                        </Button>
+                        </ButtonGroup>
+                    </div>
+                    <ReactScrollableFeed className={classes.answerList}>
+                        {mode !== QuestionType.OPEN && (<>
+                            {answers.map((x, i) => {
+                                return (
+                                    <div className={classes.formRow}>
+                                        <Typography variant="h3" className={classes.optionLetter}>
+                                            {numToSSColumn(i + 1)}
+                                        </Typography>
+                                        <Card>
+                                            <Grid
+                                                key={'answer' + i}
+                                                container
+                                                className={classes.answerRow}
+                                            >
+                                                <div className={classes.textarea}>
+                                                    <TextField
+                                                        value={x}
+                                                        onChange={(e) => handleAnswerChange(e, i)}
+                                                        label={checked[i] ? "Poprawna odpowiedź" : "Odpowiedź"}
+                                                        multiline={true}
+                                                        rows={2}
+                                                        required
+                                                        fullWidth
+                                                        className={classes.answerField}
+                                                        error={
+                                                            errors.emptyAnswers.length > i &&
+                                                            errors.emptyAnswers[i] !== noError
+                                                        }
+                                                        helperText={errors.emptyAnswers[i]}
+                                                    ></TextField>
+                                                </div>
+                                                <Tooltip
+                                                    title={<Typography style={{fontSize: 14}} color="inherit">Oznacz jako poprawną</Typography>}
+                                                    placement="left"
+                                                    arrow
+                                                >
+                                                    <Checkbox
+                                                        color="primary"
+                                                        icon={<RadioButtonUncheckedIcon />}
+                                                        checkedIcon={<CheckCircleOutlineRoundedIcon />}
+                                                        checked={checked[i]}
+                                                        className={classes.checkbox}
+                                                        onChange={(e) => handleCheckboxChange(e, i)}
+                                                    />
+                                                </Tooltip>
+                                                <IconButton
+                                                    aria-label="delete answer"
+                                                    className={classes.deleteBtn}
+                                                    onClick={() => handleRemoveAnswer(i)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Grid>
+                                        </Card>
 
-                <div hidden={mode === QuestionType.OPEN} className={classes.closedAnswers}>
-                    <Grid container className={classes.answerRow}>
-                        <Grid item>
-                            <FormLabel>Odpowiedzi:</FormLabel>
-                        </Grid>
-                        <Grid item>
-                            <FormLabel>Poprawne:</FormLabel>
-                        </Grid>
-                    </Grid>
+                                    </div>);
+                            })}
+                            <span className={classes.errorColor}>{errors.noAnswers}</span>
 
-                    {answers.map((x, i) => {
-                        return (
-                            <Grid
-                                item
-                                key={'answer' + i}
-                                container
-                                className={classes.answerRow}
+                            <Button
+                                color="primary"
+                                aria-label="add answer"
+                                onClick={handleAddAnswer}
+                                className={classes.addAnswerBtn}
                             >
-                                {answers.length !== 0 && (
-                                    <IconButton
-                                        aria-label="delete answer"
-                                        className={classes.deleteBtn}
-                                        onClick={() => handleRemoveAnswer(i)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                )}
-                                <Grid item className={classes.textarea}>
-                                    <TextField
-                                        value={x}
-                                        onChange={(e) => handleAnswerChange(e, i)}
-                                        label="Odpowiedź"
-                                        multiline={true}
-                                        rows={1}
-                                        required
-                                        fullWidth
-                                        error={
-                                            errors.emptyAnswers.length > i &&
-                                            errors.emptyAnswers[i] !== noError
-                                        }
-                                        helperText={errors.emptyAnswers[i]}
-                                    ></TextField>
-                                </Grid>
-                                <Grid item className={classes.checkbox}>
-                                    <Checkbox
-                                        color="primary"
-                                        checked={checked[i]}
-                                        onChange={(e) => handleCheckboxChange(e, i)}
-                                    />
-                                </Grid>
-                            </Grid>
-                        );
-                    })}
-                    <span className={classes.errorColor}>{errors.noAnswers}</span>
-
-                    <Fab
-                        color="primary"
-                        aria-label="add answer"
-                        onClick={handleAddAnswer}
-                    >
-                        <AddIcon />
-                    </Fab>
-                </div>
-
-
-
-                <div className={classes.right}>
-                    <Button
-                        color="inherit"
-                        size="large"
-                        onClick={() => history.goBack()}
-                        style={{ color: "rgba(0, 0, 0, 0.87)" }}
-                    >
-                        Anuluj
+                                Dodaj odpowiedź
+                            </Button>
+                        </>
+                        )}
+                    </ReactScrollableFeed>
+                    <div className={classes.right}>
+                        <Button
+                            color="inherit"
+                            size="large"
+                            onClick={() => history.goBack()}
+                            className={classes.sessionBtn}
+                            style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                        >
+                            Anuluj
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="large"
-                        className={buttonClassName}
-                        disabled={loading}
-                        type="submit"
-                    >
-                        {success ? `Zapisano Pytanie` : `Zapisz Pytanie`}
-                    </Button>
-                    {loading && (
-                        <CircularProgress
-                            size={38}
-                            className={classes.fabProgress}
-                        />
-                    )}
-                </div>
-            </form>
-        </div>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            className={buttonClassName}
+                            disabled={loading}
+                            type="submit"
+                        >
+                            {success ? `Zapisano Pytanie` : `Zapisz Pytanie`}
+                        </Button>
+                        {loading && (
+                            <CircularProgress
+                                size={38}
+                                className={classes.fabProgress}
+                            />
+                        )}
+                    </div>
+                </form>
+            </div>
+        </div >
     );
 }

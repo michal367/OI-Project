@@ -17,12 +17,12 @@ import {
     FormControl,
     TextField
 } from "@material-ui/core";
-import { useContext, useState, useEffect, ChangeEvent } from "react";
+import { useContext, useState, useEffect, ChangeEvent, useCallback } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
-import { useCallback } from "react";
 import { getRandomIndexes } from "../../../common/util/random";
 import { formatTime } from "../../../common/util/time";
+import { useSocket } from "../../services/SocketService";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -41,15 +41,16 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
+    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
     const studentCount = studentList.length;
     const [students, setStudents] = useState<string[]>(selectedStudents);
-    const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeInSec !== undefined ? Math.floor(store.sendQuiz.timeInSec / 60) : 1);
-    const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeInSec ? Math.floor(store.sendQuiz.timeInSec) % 60 : 0);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeInSec ?? 0);
+    const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeSeconds !== undefined ? Math.floor(store.sendQuiz.timeSeconds / 60) : 1);
+    const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeSeconds ? Math.floor(store.sendQuiz.timeSeconds) % 60 : 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 0);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
     const [checked, setChecked] = useState<boolean>(time === 0);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
@@ -84,9 +85,9 @@ export function SendQuizView(props: SendQuizViewProps) {
         setSeconds(secondsNumber);
         let timeInSeconds = 60 * minutesNumber + secondsNumber;
         let sendQuiz = store.sendQuiz;
-        sendQuiz.timeInSec = timeInSeconds;
+        sendQuiz.timeSeconds = timeInSeconds;
         store.sendQuiz = sendQuiz;
-        setTime(store.sendQuiz.timeInSec ?? 0);
+        setTime(store.sendQuiz.timeSeconds ?? 0);
     }
     const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>) => {
         let numberStr = e.target.value.replace(/[^0-9]/g, '');
@@ -268,7 +269,7 @@ export function SendQuizView(props: SendQuizViewProps) {
         setChecked(event.target.checked);
         if (event.target.checked === true) {
             let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-            delete tmpQuiz.timeInSec;
+            delete tmpQuiz.timeSeconds;
             store.sendQuiz = tmpQuiz;
             setTime(0);
         }
@@ -295,9 +296,21 @@ export function SendQuizView(props: SendQuizViewProps) {
             store.timeToNextQuiz = timeToWait;
             setClock(timeToWait - Date.now());
             setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
+
+            let payload: QuizRequestPayload = {
+                event: "send_quiz",
+                data:{
+                    quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
+                    studentIDs: store.sendQuiz.studentIDs,
+                    timeSeconds: (time ?? 0),
+                    questions: store.sendQuiz.quiz
+                }
+            };
+            sendJsonMessage(payload);
+            console.log(payload);
         }
         store.sendQuizStep = store.sendQuizStep + 1;
-    }, [refreshClock, steps.length, store, time]);
+    }, [refreshClock, steps.length, store, time, sendJsonMessage]);
 
     useEffect(() => {
         return () => {
@@ -328,7 +341,7 @@ export function SendQuizView(props: SendQuizViewProps) {
         changeSelectedStudents(true);
     };
 
-    const isStepReady = (step: number) => {
+    const isStepReady = useCallback((step: number) => {
         switch (step) {
             case 3:
                 return false;
@@ -341,7 +354,22 @@ export function SendQuizView(props: SendQuizViewProps) {
             default:
                 return true;
         }
-    };
+    }, [quiz, time, checked, students]);
+
+    useEffect(() => {
+        const listener = (event: { code: string; preventDefault: () => void; }) => {
+          if (event.code === "Enter" || event.code === "NumpadEnter") {
+            event.preventDefault();
+            if (!isStepReady(store.sendQuizStep)){
+                handleNext();
+            } 
+          }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+          document.removeEventListener("keydown", listener);
+        };
+      }, [store, isStepReady, handleNext]);
 
     return (
         <Paper className={classes.details} variant="outlined" square>

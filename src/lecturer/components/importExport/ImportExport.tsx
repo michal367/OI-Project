@@ -82,7 +82,11 @@ export function ImportExport(props: ImportExportProps) {
             >
 
                 <Input ref={inputRef} accept=".json" type="file" onChange={(e) => onChangeImport(e)} />
-                <Button className={classes.importExportButton} onClick={handleImportButtonClick} >
+                <Button
+                    className={classes.importExportButton}
+                    onClick={handleImportButtonClick}
+                    color="secondary"
+                >
                     <PublishIcon />
                     Wczytaj
                 </Button>
@@ -91,6 +95,7 @@ export function ImportExport(props: ImportExportProps) {
                     className={classes.importExportButton}
                     onClick={handleExportButtonClick}
                     disabled={!canBeExported()}
+                    color="secondary"
                 >
                     Zapisz
                     <GetAppIcon />
