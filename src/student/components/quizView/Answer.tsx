@@ -1,5 +1,6 @@
 import { TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
+import { OPEN_ANSWER_MAX_LENGTH } from "../../../common/util/globalConfig";
 
 interface AnswerProps {
     value: string;
@@ -7,7 +8,7 @@ interface AnswerProps {
     label: string;
 }
 
-export function Answer(props: AnswerProps){
+export function Answer(props: AnswerProps) {
     const [answer, setAnswer] = useState<string>(props.value);
     useEffect(() => setAnswer(props.value), [props.value, props]);
 
@@ -19,6 +20,7 @@ export function Answer(props: AnswerProps){
         value={answer}
         fullWidth={true}
         rows={5}
+        inputProps={{ maxLength: OPEN_ANSWER_MAX_LENGTH }}
         onChange={(e) => {
             let text = e.target.value;
             setAnswer(text);

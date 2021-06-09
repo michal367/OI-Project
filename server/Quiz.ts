@@ -1,5 +1,5 @@
-import EventEmitter from "https://deno.land/x/events/mod.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
+import EventEmitter from "https://deno.land/x/events/mod.ts";
 import Student from "./Student.ts";
 
 class Quiz extends EventEmitter {
