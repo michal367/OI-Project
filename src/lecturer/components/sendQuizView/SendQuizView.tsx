@@ -453,9 +453,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             {store.sendQuizStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
                     <Typography>Quiz został wysłany.</Typography>
-                    <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
+                    {/* <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
                         {"Pokaż odpowiedzi"}
-                    </Button>
+                    </Button> */}
                     <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
                         {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
                     </Button>

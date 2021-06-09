@@ -5,7 +5,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
@@ -124,25 +124,28 @@ export function QuizStatsView() {
         store.scheduledQuizzes = scheduledQuizzes;
     }
 
-    const handleShowResults = () => {
-        let tmpQuizzes = store.scheduledQuizzes;
-        tmpQuizzes.forEach(
-            (scheduledQuiz: ScheduledQuiz) => {
-                if (scheduledQuiz === selectedQuizStats) {
-                    scheduledQuiz.alreadyShowedResults = true;
+    const handleShowResults = useCallback(
+        () => {
+            let tmpQuizzes = store.scheduledQuizzes;
+            tmpQuizzes.forEach(
+                (scheduledQuiz: ScheduledQuiz) => {
+                    if (scheduledQuiz === selectedQuizStats) {
+                        scheduledQuiz.alreadyShowedResults = true;
 
-                    const payload: ShowAnswersPayload = {
-                        event: 'show_answers',
-                        data: {
-                            quizID: scheduledQuiz?.quiz?.id ?? ""
+                        const payload: ShowAnswersPayload = {
+                            event: 'show_answers',
+                            data: {
+                                quizID: scheduledQuiz?.id ?? ""
+                            }
                         }
+                        sendJsonMessage(payload);
                     }
-                    sendJsonMessage(payload);
                 }
-            }
-        )
-        store.scheduledQuizzes = tmpQuizzes;
-    }
+            )
+            store.scheduledQuizzes = tmpQuizzes;
+        },
+        [selectedQuizStats, sendJsonMessage, store]
+    )
 
     const onImport = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
@@ -156,7 +159,7 @@ export function QuizStatsView() {
             <div className={classes.content}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
-                        {store.scheduledQuizzes.map((quizStats : ScheduledQuiz, i) => {
+                        {store.scheduledQuizzes.map((quizStats: ScheduledQuiz, i) => {
                             return (
                                 <StatsListItem
                                     index={i}
@@ -166,7 +169,7 @@ export function QuizStatsView() {
                                     onEnded={() => handleEnded(i)}
                                     timeToEnd={quizStats.timeToEnd ?? 0}
                                     inProgress={!!quizStats.inProgress} // !! changes (boolean | undefined) to boolean
-                                    title={quizStats.quiz?.title ?? ""}
+                                    title={(quizStats.quiz?.title ?? "")}
                                 />
                             )
                         }
@@ -190,7 +193,7 @@ export function QuizStatsView() {
                     }
                 </Paper>
 
-                    <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
+                <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
 
                 <Fab
                     variant="extended"
