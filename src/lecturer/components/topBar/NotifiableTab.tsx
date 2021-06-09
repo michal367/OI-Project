@@ -7,10 +7,10 @@ import { StoreContext } from '../../services/StoreService';
 import { Theme, withStyles, createStyles } from "@material-ui/core/styles";
 
 interface NotifiableTabProps {
-    observableList?: any[];
     label?: string;
     routes?: string;
     value?: number;
+    number?: number;
     resetFunction?: () => void;
 }
 
@@ -25,17 +25,10 @@ const StyledBadge = withStyles((theme: Theme) =>
 export default function NotifiableTab(props: NotifiableTabProps) {
     const store = useContext(StoreContext);
 
-    const [notifiableNumber, setNotifiableNumber] = useState(0);
     const label = props.label ?? "none";
     const routes = props.routes ?? "";
     const resetFunction = props.resetFunction ?? (() => { });
-    useEffect(() => {
-        if (props.observableList) {
-            if (props.observableList.length !== 0) {
-                setNotifiableNumber(prev => ++prev);
-            }
-        }
-    }, [props.observableList, store.studentQuestions]);
+
     const theme = useTheme();
     const classes = makeStyles({
         topBarTab: {
@@ -46,13 +39,12 @@ export default function NotifiableTab(props: NotifiableTabProps) {
     })();
 
     const resetNewQuestionsValue = () => {
-        setNotifiableNumber(0);
         resetFunction();
     }
 
     return (
         <div>
-            <StyledBadge badgeContent={notifiableNumber} overlap="circle" color="error">
+            <StyledBadge badgeContent={props.number} overlap="circle" color="error">
                 <Tab className={classes.topBarTab} onClick={resetNewQuestionsValue} label={label} value={routes} component={RouterLink} to={routes} />
             </StyledBadge>
         </div>
