@@ -276,7 +276,7 @@ export function CreateQuizView() {
                 }, 500);
             }
         }
-    }, [checked, indexArray, loading, questions, right, rightChecked, store, title]);
+    }, [checked, loading, questions, right, rightChecked, store, title]);
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
