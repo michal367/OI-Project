@@ -6,6 +6,7 @@ import { reactionsIcons } from "../../../common/util/reactions/icons";
 import { useSocket } from "../../services/SocketService";
 import { ReactionName } from "../../../common/util/reactions/enum";
 import { ReactionProgress } from "./ReactionProgress";
+import { timeStamp } from "node:console";
 
 export function ReactionReceiveView() {
     const store = useContext(StoreContext);
@@ -29,6 +30,7 @@ export function ReactionReceiveView() {
     const TIME_WAITING = 20000;
     const { socketEmiter } = useSocket();
     const refreshReactions = useCallback((payload?: ReactionResponsePayload) => {
+    
         let index: number;
         if (payload) {
             let indexString: string = payload.data.reaction;
@@ -41,6 +43,16 @@ export function ReactionReceiveView() {
         store.reactionValues = tmpValues;
         if (!store.reactionModes[index] || store.lastReactionTime > 0)
             store.lastReactionTime = Date.now() + TIME_WAITING;
+
+        let timeStamp: Timestamp = {
+            type: "ReactionType",
+            message: "Wysłał reakcje",
+            minutes: new Date().getMinutes().toString(),
+            hours: new Date().getHours().toString(),
+            owner: store.nicks.get(payload?.data.studentID)
+        }
+    
+        store.timestamps.push(timeStamp);
     },[]);
     
     const [progressEnabled, setProgressEnabled] = useState<boolean>(!store.reactionModes.reduce((acc, mode) => {
