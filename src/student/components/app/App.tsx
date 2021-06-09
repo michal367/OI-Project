@@ -59,9 +59,10 @@ function App() {
     }, [socketEmiter, store]);
 
     const handleNotReconnected = useCallback((payload: Payload) => {
-        store.operation?.clear();
         history.push("/student", { dialogOpen: true });
-    }, [history, store.operation]);
+        store.studentId = null;
+        console.log("KOLBAK");
+    }, [history, store]);
 
     useEffect(() => {
         console.log("use effect dupa");
@@ -77,11 +78,11 @@ function App() {
                     "studentID": store.studentId
                 }
             };
-            store.studentId = null;
             sendJsonMessage(payload);
         }
 
         return () => {
+            console.log("odpinam event");
             socketEmiter.off("student_not_reconnected", handleNotReconnected);
         }
     }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.studentId]);

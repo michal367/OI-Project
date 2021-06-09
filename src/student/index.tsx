@@ -5,7 +5,7 @@ import App from "./components/app/App";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { SocketService } from './services/SocketService';
-import Store from '../lecturer/services/StoreService';
+import Store from './services/StoreService';
 
 ReactDOM.render(
   <React.StrictMode>
