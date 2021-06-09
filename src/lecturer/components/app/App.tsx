@@ -63,6 +63,30 @@ function App() {
         };
     }, [socketEmiter, store]);
 
+
+    const handleNotReconnected = useCallback((payload: Payload) => {
+        setIsLectureStarted(false);
+    },[]);
+    
+    useEffect(()=>{
+        socketEmiter.on("lecture_not_reconnected", handleNotReconnected);
+        // TODO: handle lecture_connected if you want to
+        if(store.lectureID != null){
+            const payload: LectureReconnectRequestPayload = {
+                "event": "reconnect_lecture",
+                "data": {
+                    "lectureID": store.lectureID
+                }         
+            };
+            store.lectureID = null;
+            sendJsonMessage(payload);
+        }
+
+        return () =>{
+            socketEmiter.off("lecture_not_reconnected", handleNotReconnected);
+        }
+    }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.lectureID]);
+
     const updateSessionState = () => {
         setIsLectureStarted((prev) => !prev);
     }

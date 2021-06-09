@@ -128,7 +128,9 @@ function handlerCreateLecture(parsed: LectureCreateRequestPayload, ws: WebSocket
 
 function handlerReconnectLecture(parsed: LectureReconnectRequestPayload, ws: WebSocketClient): boolean {
     const lecture: Lecture | undefined = lectures.get(parsed.data.lectureID);
-    if (!lecture?.wsc) {
+    console.log(lecture);
+    console.log(lecture?.wsc?.isClosed);
+    if (lecture?.wsc?.isClosed) {
         lecture?.setWebSocketClient(ws);
 
         const payload: Payload = {

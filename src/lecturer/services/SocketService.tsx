@@ -23,7 +23,7 @@ function SocketService(props: ISocketProps) {
             let obj = JSON.parse(event.data);
             socketEmiter.emit(obj.event, obj);
         } catch (err) {
-            console.log("lecturer: error in json parse");
+            console.log("lecturer: error in json parse", err);
             socketEmiter.emit(event.data);
         }
         console.log("onMessage", event.data);
