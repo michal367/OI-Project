@@ -15,18 +15,23 @@ import {
     Checkbox,
     FormControlLabel,
     FormControl,
-    TextField
+    TextField,
+    Card,
+    Divider
 } from "@material-ui/core";
 import { useContext, useState, useEffect, ChangeEvent, useCallback } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { QuizListView } from "./QuizListView";
 import { getRandomIndexes } from "../../../common/util/random";
 import { formatTime } from "../../../common/util/time";
+import TimerIcon from '@material-ui/icons/Timer';
 import { useSocket } from "../../services/SocketService";
 
 interface SendQuizViewProps {
     studentList?: Student[];
     students?: [string[], (checked: boolean) => void, (randomNumbers: Array<number>) => void];
+    minimal?: boolean;
+    setMinimal?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getSteps() {
@@ -56,9 +61,11 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
+    const [minimal, setMinimal] = useState(props.minimal);
+    useEffect(() => setMinimal(props.minimal));
 
     useEffect(() => {
-        if (props.students){
+        if (props.students) {
             let [students] = props.students;
             setStudents(students);
         }
@@ -123,10 +130,14 @@ export function SendQuizView(props: SendQuizViewProps) {
         }
     }
     const classes = makeStyles({
-        details: {
-            padding: 20,
-            height: "100%",
-            maxHeight: "100%",
+        root: {
+            width: "100%",
+            padding: 1,
+            height: "93%",
+            ...(()=>{
+                if(minimal) return {maxHeight: 220}
+                return {maxHeight: "100vh"}
+            })(),
         },
         container: {
             display: "flex",
@@ -154,6 +165,20 @@ export function SendQuizView(props: SendQuizViewProps) {
         stepper: {},
         step: {
             maxHeight: "50vh",
+        },
+        minimalContent: {
+            height: "100%",
+            width: "100%",
+            backgroundColor: "white",
+            fontSize: 24,
+            "& .MuiButton-label": {
+                display: "flex",
+                gap: 10,
+            },
+            "& .MuiSvgIcon-root":{
+                marginRight: 10,
+                marginTop: 2,
+            },
         },
     })();
     const getStepContent = (step: number) => {
@@ -299,7 +324,7 @@ export function SendQuizView(props: SendQuizViewProps) {
 
             let payload: QuizRequestPayload = {
                 event: "send_quiz",
-                data:{
+                data: {
                     quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
                     studentIDs: store.sendQuiz.studentIDs,
                     timeSeconds: (time ?? 0),
@@ -340,7 +365,7 @@ export function SendQuizView(props: SendQuizViewProps) {
         setSelectedQuiz(undefined);
         changeSelectedStudents(true);
     };
-    const handleSendAnswers = () =>{
+    const handleSendAnswers = () => {
         const payload: ShowAnswersPayload = {
             event: 'show_answers',
             data: {
@@ -366,70 +391,92 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
-          if (event.code === "Enter" || event.code === "NumpadEnter") {
-            event.preventDefault();
-            if (!isStepReady(store.sendQuizStep)){
-                handleNext();
-            } 
-          }
+            if (event.code === "Enter" || event.code === "NumpadEnter") {
+                event.preventDefault();
+                if (!isStepReady(store.sendQuizStep)) {
+                    handleNext();
+                }
+            }
         };
         document.addEventListener("keydown", listener);
         return () => {
-          document.removeEventListener("keydown", listener);
+            document.removeEventListener("keydown", listener);
         };
-      }, [store, isStepReady, handleNext]);
+    }, [store, isStepReady, handleNext]);
+
+    const updateMinimal = () => {
+        if(props.setMinimal)
+            props!.setMinimal(prev=>!prev)
+        setMinimal(prev=>!prev);
+    }
 
     return (
-        <Paper className={classes.details} variant="outlined" square>
-            <Stepper
-                activeStep={store.sendQuizStep}
-                orientation="vertical"
-                className={classes.stepper}
-            >
-                {steps.map((label, index) => (
-                    <Step key={label} className={classes.step}>
-                        <StepLabel>{label}</StepLabel>
-                        <StepContent>
-                            {getStepContent(index)}
-                            <div className={classes.actionsContainer}>
-                                <div>
-                                    <Button
-                                        disabled={store.sendQuizStep === 0}
-                                        onClick={handleBack}
-                                        className={classes.button}
-                                    >
-                                        Wstecz
+        <Card className={classes.root} style={{ transition: "max-height 0.5s" }}>
+            {minimal ?
+                (<Button
+                    variant="outlined"
+                    color="secondary"
+                    className={classes.minimalContent}
+                    size="large"
+                    onClick={() => props.setMinimal ? updateMinimal() : null}
+                >
+                    <span>{clock > 0 ? "Do końca quizu" : "Wyślij nowy quiz"}</span>
+                    <Divider orientation="vertical" flexItem />
+                    <span style={{ display: "inline-flex" }}>
+                        <TimerIcon fontSize="large" />
+                        {clock > 0 ? formatTime(clock) : "00:00:00"}
+                    </span>
+                </Button>) :
+                (<><Stepper
+                    activeStep={store.sendQuizStep}
+                    orientation="vertical"
+                    className={classes.stepper}
+                >
+                    {steps.map((label, index) => (
+                        <Step key={label} className={classes.step}>
+                            <StepLabel>{label}</StepLabel>
+                            <StepContent>
+                                {getStepContent(index)}
+                                <div className={classes.actionsContainer}>
+                                    <div>
+                                        <Button
+                                            disabled={store.sendQuizStep === 0}
+                                            onClick={handleBack}
+                                            className={classes.button}
+                                        >
+                                            Wstecz
                                     </Button>
-                                    <Button
-                                        disabled={isStepReady(
-                                            store.sendQuizStep
-                                        )}
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={handleNext}
-                                        className={classes.button}
-                                    >
-                                        {store.sendQuizStep === steps.length - 1
-                                            ? "Wyślij"
-                                            : "Dalej"}
-                                    </Button>
+                                        <Button
+                                            disabled={isStepReady(
+                                                store.sendQuizStep
+                                            )}
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={handleNext}
+                                            className={classes.button}
+                                        >
+                                            {store.sendQuizStep === steps.length - 1
+                                                ? "Wyślij"
+                                                : "Dalej"}
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </StepContent>
-                    </Step>
-                ))}
-            </Stepper>
-            {store.sendQuizStep === steps.length && (
-                <Paper square elevation={0} className={classes.resetContainer}>
-                    <Typography>Quiz został wysłany.</Typography>
-                    <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
-                        {"Pokaż odpowiedzi"}
-                    </Button>
-                    <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
-                        {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
-                    </Button>
-                </Paper>
-            )}
-        </Paper>
+                            </StepContent>
+                        </Step>
+                    ))}
+                </Stepper>
+                    {store.sendQuizStep === steps.length && (
+                        <Paper square elevation={0} className={classes.resetContainer}>
+                            <Typography>Quiz został wysłany.</Typography>
+                            <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
+                                {"Pokaż odpowiedzi"}
+                            </Button>
+                            <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
+                                {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
+                            </Button>
+                        </Paper>
+                    )}
+                </>)}
+        </Card>
     );
 }

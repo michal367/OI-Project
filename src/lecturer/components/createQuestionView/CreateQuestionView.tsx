@@ -18,7 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import clsx from 'clsx';
 import { Location } from 'history';
-import { ChangeEvent, FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactScrollableFeed from 'react-scrollable-feed';
 import { v4 } from 'uuid';
@@ -49,7 +49,7 @@ export function CreateQuestionView() {
     let titleVal = "";
     let questionVal = "";
     let imageUrlVal = "";
-    let modeVal = QuestionType.CLOSED;
+    let modeVal = QuestionType.OPEN;
     let answersVal: string[] = [];
     let isCorrectVal: boolean[] = [];
 

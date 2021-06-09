@@ -62,7 +62,22 @@ export function CreateQuizList(props: QuizListViewProps) {
         list: {
             width: "100%",
             height: 580,
-            overflow: "auto",
+            overflow: "overlay",
+            position: "relative",
+            ...(() => {
+                if(props.isQuiz())
+                    return {}
+                return {direction: "rtl" as "rtl"}
+            })(),
+            "&::-webkit-scrollbar":{
+            },
+        },
+        listItem: {
+            ...(() => {
+                if(props.isQuiz())
+                    return {}
+                return {direction: "ltr" as "ltr"}
+            })(),
         },
         quizInput: {
             position: "absolute",
@@ -78,6 +93,11 @@ export function CreateQuizList(props: QuizListViewProps) {
         },
         checkbox: {
             width: 42,
+            ...(() => {
+                if(props.isQuiz())
+                    return {marginLeft: "10px"}
+                return {}
+            })(),
         },
     })();
 
@@ -135,9 +155,9 @@ export function CreateQuizList(props: QuizListViewProps) {
                     return (
                         <ListItem
                             key={value}
-                            role="listitem"
                             button
                             onClick={handleToggle(value)}
+                            className={classes.listItem} 
                         >
                             <ListItemIcon>
                                 <Checkbox

@@ -14,17 +14,18 @@ interface QuestionsListProps {
 }
 
 export function QuestionsList(props: QuestionsListProps) {
-    const [quiz, setQuiz] = useState(testData());
+    const [quiz, setQuiz] = useState<FrontQuiz | undefined>();
     const [quizID, setQuizID] = useState("");
     const [answersRecord, setAnswersRecord] = useState<Record<string, boolean | string | undefined>>({});
     const store = useContext(StoreContext);
 
     const { socketEmiter, sendJsonMessage } = useSocket();
 
+    const background = "#D3D0CB";
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
-            background: "#fedf9d",
+            background: background,
             overflow: 'auto',
         }
     })();
@@ -65,9 +66,10 @@ export function QuestionsList(props: QuestionsListProps) {
     };
 
     const generateAnswersData = () => {
+        let currentQuiz = quiz as FrontQuiz
         let data: (boolean[] | string)[] = [];
-        for (let i = 0; i < quiz.questions.length; i++) {
-            let len = quiz.questions[i].options?.length;
+        for (let i = 0; i < currentQuiz.questions.length; i++) {
+            let len = currentQuiz.questions[i].options?.length;
             if (len) {
                 let answers: boolean[] = [];
                 for (let j = 0; j < len; j++) {
@@ -82,6 +84,7 @@ export function QuestionsList(props: QuestionsListProps) {
     }
 
     const submit = () => {
+        if(quiz === undefined) return;
         let payload: QuizResponsePayload = {
             event: "send_quiz_response",
             data: {
@@ -97,7 +100,7 @@ export function QuestionsList(props: QuestionsListProps) {
     }
     return (
         <>
-            {quiz.questions.map((question, i) => (
+            {quiz?.questions.map((question, i) => (
                 <Paper className={classes.details} variant="outlined" square >
                     <div className='question-text' style={{ marginBottom: "10px", fontSize: "1.2rem" }}>{i + 1}.{question.text}</div>
                     {question.imageSrc && <ImageView imageSrc={question.imageSrc} />}

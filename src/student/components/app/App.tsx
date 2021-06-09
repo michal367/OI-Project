@@ -14,14 +14,12 @@ import { useHistory } from "react-router-dom";
 const theme = createMuiTheme({
     palette: {
         primary: {
-            light: "#E1F1FF",
-            main: "#80A3E4",
-            dark: "#4870AC",
+
+            main: "#4C3957",
         },
         secondary: {
-            light: "#FFEECB",
-            main: "#D9A21B",
-            dark: "#877455",
+            
+            main: "#41658A",
         },
         contrastThreshold: 3,
         tonalOffset: 0.2,

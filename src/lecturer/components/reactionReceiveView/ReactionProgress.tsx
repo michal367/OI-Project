@@ -1,4 +1,4 @@
-import { LinearProgress, useTheme } from "@material-ui/core";
+import { LinearProgress, makeStyles, useTheme } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 
@@ -8,6 +8,14 @@ interface ReactionProgressProps {
 
 export function ReactionProgress(props: ReactionProgressProps) {
     const theme = useTheme();
+    const classes = makeStyles({
+        progress:{
+            maxWidth: 470,
+            margin: "0 auto",
+            borderRadius: "0 0 20px 20px",
+            height: 5,
+        }
+    })();
     const store = useContext(StoreContext);
     const getProgress = () => {
         return Math.min(
@@ -15,7 +23,7 @@ export function ReactionProgress(props: ReactionProgressProps) {
             Math.max(
                 0,
                 (store.lastReactionTime - Date.now())
-            ) * 101 / props.time
+            ) * 112 / props.time
         );
     }
     const [progress, setProgress] = useState(getProgress());
@@ -26,5 +34,10 @@ export function ReactionProgress(props: ReactionProgressProps) {
         }, 200);
         return () => clearInterval(interval);
     }, [store, store.lastReactionTime]);
-    return <LinearProgress color="secondary" variant="determinate" value={progress} />;
+    return <LinearProgress
+        color="primary"
+        variant="determinate"
+        value={progress}
+        className={ classes.progress }
+    />;
 }

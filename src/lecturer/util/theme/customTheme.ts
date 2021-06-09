@@ -7,7 +7,6 @@ export const lazareTheme = {
         background: background,
     },
     root: {
-        gap: "50px",
         minHeight: "calc(100vh - 48px)",
         width: "100%",
         overflowX: "hidden" as "hidden",
@@ -22,9 +21,6 @@ export const lazareTheme = {
     fullWidthWrapper:{
         width: "100%",
         margin: "0 auto",
-        padding: 20,
-        paddingTop: 60,
-        paddingBottom: 25,
         minHeight: "fit-content",
         display: "flex",
         flexDirection: "column" as "column",
