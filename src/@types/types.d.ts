@@ -38,7 +38,6 @@ interface StudentQuestion{
     time: Date;
     text: string;
     processed: boolean;
-    viewed?: boolean;
 }
 interface ScheduledQuiz {
     id: string;
