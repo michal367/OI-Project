@@ -50,17 +50,60 @@ function App() {
     }, []);
 
     useEffect(() => {
+        const handleInProgress = (parsed: ShowAnswersPayload) => {
+            let quizzes = store.scheduledQuizzes;
+            console.log(quizzes);
+            quizzes[store.scheduledQuizzes.length-1].sendQuizID = parsed.data.quizID;
+            store.scheduledQuizzes = quizzes;
+            console.log(quizzes[store.scheduledQuizzes.length-1],"same same")
+        }
+        socketEmiter.on("quiz_in_progress", handleInProgress);
+        return () => {
+            socketEmiter.off("quiz_in_progress", handleInProgress);
+        }
+    },[]);
+
+    useEffect(() => {
         const onClose = () => {
             store.isLoading = true;
         };
         const onOpen = () => {
             store.isLoading = false;
         };
+        const onQuizResponse = (payload: ServerQuizResponsePayload) => {
+            console.log(payload,"SAME SAME")
+            // try{
+                let quizzes = store.scheduledQuizzes;
+                let responses = payload.data.answers;
+                let quizStats = quizzes.filter(scheduledQuiz => scheduledQuiz.sendQuizID === payload.data.quizID)[0];
+                let index = (quizzes.indexOf(quizStats));
+                quizStats.questionStats.forEach(qStat => {
+                    let question = quizStats?.quiz?.questions[qStat.index];
+                    let response = responses[qStat.index];
+                    if(question?.options?.length ?? 0 > 0){
+                        qStat.options.forEach(oStat => {
+                            oStat.numberOfTimesSelected = 
+                                oStat.numberOfTimesSelected??0 + response[oStat.index];
+                        })
+                    }else{ 
+                        let answersArray = qStat.options;
+                        answersArray.push(response);
+                        qStat.options = answersArray;
+                    }
+                })
+                quizzes[index] = quizStats
+                console.log(quizStats,"SAME SAME");
+                store.scheduledQuizzes = quizzes;
+            // }finally{
+            // }
+        }
         socketEmiter.on("onClose", onClose);
         socketEmiter.on("onOpen", onOpen);
+        socketEmiter.on("quiz_answers_added", onQuizResponse);
         return () => {
             socketEmiter.off("onClose", onClose);
             socketEmiter.off("onOpen", onOpen);
+            socketEmiter.off("quiz_answers_added", onQuizResponse);
         };
     }, [socketEmiter, store]);
 
@@ -75,7 +118,6 @@ function App() {
         }
     })();
     return (
-        <Store>
             <Router>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
@@ -162,7 +204,6 @@ function App() {
                     }} />
                 </ThemeProvider>
             </Router>
-        </Store>
     );
 }
 

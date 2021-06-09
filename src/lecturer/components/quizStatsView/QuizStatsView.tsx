@@ -101,7 +101,8 @@ export function QuizStatsView() {
         shareFab: {
             height: 55,
             fontSize: 16,
-            marginRight: "20px"
+            marginRight: "20px",
+            maxWidth: 288,
         }
     })();
 
@@ -109,26 +110,9 @@ export function QuizStatsView() {
         setQuizStats(store.scheduledQuizzes[quizIndex]);
     };
 
-    // const refreshClock = useCallback((timeToWait) => {
-    //     if (timeToWait - Date.now() < 0) {
-    //         if (timerWait)
-    //             clearTimeout(timerWait);
-    //         setClock(0);
-    //     } else
-    //         setClock(timeToWait - Date.now());
-    // }, [timerWait])
-
-    // useEffect(() => {
-    //     if (store.sendQuiz.timeToEnd - Date.now() > 0 && !timerWait) {
-    //         setClock(store.sendQuiz.timeToEnd - Date.now());
-    //         setTimerWait(setInterval(() => { refreshClock(store.sendQuiz.timeToEnd) }, 1000));
-    //     }
-    // }, [store.sendQuiz.timeToEnd, refreshClock, timerWait, store])
-
-
     const handleDeleteStats = (quizIndex: number) => {
         let statsToBeDeleted = store.scheduledQuizzes[quizIndex];
-        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz.id !== statsToBeDeleted.id);
     }
 
     const handleEnded = (quizIndex: number) => {
@@ -140,7 +124,7 @@ export function QuizStatsView() {
     const handleShowResults = () => {
         let tmpQuizzes = store.scheduledQuizzes;
         tmpQuizzes.forEach(
-            (element: ScheduledQuiz) => (element === selectedQuizStats) ? (element.alreadyShowedResults = true) : (null)
+            (element: ScheduledQuiz) => (element.id === selectedQuizStats?.id) ? (element.alreadyShowedResults = true) : (null)
         )
         store.scheduledQuizzes = tmpQuizzes;
     }
@@ -157,11 +141,11 @@ export function QuizStatsView() {
             <div className={classes.content}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
-                        {store.scheduledQuizzes.map((quizStats, i) => {
+                        {store.scheduledQuizzes.map((quizStats : ScheduledQuiz, i) => {
                             return (
                                 <StatsListItem
                                     index={i}
-                                    isSelected={quizStats === selectedQuizStats}
+                                    isSelected={quizStats.id === selectedQuizStats?.id}
                                     onSelect={() => handleQuiz(i)}
                                     onDelete={() => handleDeleteStats(i)}
                                     onEnded={() => handleEnded(i)}

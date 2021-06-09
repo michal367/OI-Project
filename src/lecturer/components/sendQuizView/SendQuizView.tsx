@@ -23,6 +23,7 @@ import { QuizListView } from "./QuizListView";
 import { getRandomIndexes } from "../../../common/util/random";
 import { formatTime } from "../../../common/util/time";
 import { useSocket } from "../../services/SocketService";
+import { v4 } from "uuid";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -41,8 +42,8 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
-    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
+    const { sendJsonMessage, socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
@@ -63,6 +64,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             setStudents(students);
         }
     }, [props.students]);
+
 
     useEffect(() => {
         if (store.sendQuiz.quiz)
@@ -285,31 +287,42 @@ export function SendQuizView(props: SendQuizViewProps) {
             if (timerWait)
                 clearTimeout(timerWait);
             setClock(0);
-            store.sendQuiz = {
-                students: [],
-                questionStats: [],
-                alreadyShowedResults: false,
-                timeInSec: 0,
-                inProgress: true,
-                timeToEnd: 0,
-            }
         } else
             setClock(timeToWait - Date.now());
     }, [timerWait])
 
     const handleNext = useCallback(() => {
         if (store.sendQuizStep === steps.length - 1) {
+            let newScheduledQuiz = store.sendQuiz;
+            newScheduledQuiz.questionStats = [];
+            newScheduledQuiz.quiz?.questions.forEach((question, index) => {
+                let qStat:QuestionStat = {
+                    index,
+                    options: []
+                }
+                if((question.options??[]).length > 0)
+                    question.options?.forEach((answer, index) => {
+                        let aStat:AnswerStat = {
+                            index,
+                            numberOfTimesSelected: 0,
+                        }
+                        qStat.options.push(aStat);
+                    });
+                newScheduledQuiz.questionStats.push(qStat);
+            })
             console.log("scheduled quiz", store.sendQuiz);
             let timeToWait = Date.now() + 1000 * (time ?? 0);
-            store.timeToNextQuiz = timeToWait;
+            newScheduledQuiz.timeToEnd = timeToWait;
             setClock(timeToWait - Date.now());
-            store.scheduledQuizzes.push(store.sendQuiz);
-            setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
+            let scheduledQuizzes = store.scheduledQuizzes;
+            scheduledQuizzes.push(JSON.parse(JSON.stringify(newScheduledQuiz)));
+            store.scheduledQuizzes = JSON.parse(JSON.stringify(scheduledQuizzes));
+            setTimerWait(setInterval(() => { refreshClock(newScheduledQuiz.timeToEnd) }, 1000));
 
             let payload: QuizRequestPayload = {
                 event: "send_quiz",
                 data:{
-                    quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
+                    quizID: store.sendQuiz.id,
                     studentIDs: store.sendQuiz.studentIDs,
                     timeSeconds: (time ?? 0),
                     questions: store.sendQuiz.quiz
@@ -343,13 +356,20 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
 
     const handleReset = () => {
+        if(clock > 0) return;
         store.sendQuizStep = 0;
-        setSelectedTime(undefined, undefined);
         setMinutes(1);
         setSeconds(0);
-        setSelectedQuiz(undefined);
-        changeSelectedStudents(true);
-    };
+        store.sendQuiz = {
+            id: v4(),
+            studentIDs: [],
+            questionStats: [],
+            alreadyShowedResults: false,
+            timeSeconds: 0,
+            inProgress: true,
+            timeToEnd: 0,
+        }
+    }
 
     const isStepReady = (step: number) => {
         switch (step) {

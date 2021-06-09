@@ -40,6 +40,7 @@ interface StudentQuestion{
     processed: boolean;
 }
 interface ScheduledQuiz {
+    sendQuizID?: string;
     id: string;
     quiz?: FrontQuiz;
     studentIDs: string[];
@@ -52,7 +53,8 @@ interface ScheduledQuiz {
 
 interface AnswerStat {
     index: number;
-    numberOfTimesSelected: number;
+    numberOfTimesSelected?: number;
+    textAnswer?: string;
 }
 
 interface QuestionStat{
@@ -68,6 +70,7 @@ interface QuizStat{
 interface Statistic{
     quizzes: QuizStat[];
 }
+
 type TimestampType = 
     "QuestionType" |
     "LogType" |

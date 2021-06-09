@@ -1,11 +1,9 @@
-import { makeStyles, useTheme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { useEffect } from "react";
 import { TimestampTable } from "./TimestampTable";
 import { lazareTheme } from "../../util/theme/customTheme";
 
 export function TimestampView() {
-
-    const theme = useTheme();
 
     const classes = makeStyles({
         root: {

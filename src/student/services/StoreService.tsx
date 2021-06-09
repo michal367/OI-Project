@@ -26,7 +26,7 @@ type StorageKey =
     "quizzes";
 
 // REMEMBER TO BUMP UP VERSION(STORAGE_VERSION) WHEN THE DATA TYPE THAT IS SAVED TO LOCAL STORAGE CHANGES
-const STORAGE_VERSION = "0.2";
+const STORAGE_VERSION = "0.3";
 const KEY_PREFIX = "student.";
 
 const { loadKey, saveKey, upgradeStorage } = lazareLocalStorage<StorageKey>(KEY_PREFIX, STORAGE_VERSION);
