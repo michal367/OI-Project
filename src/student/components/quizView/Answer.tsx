@@ -14,6 +14,7 @@ export function Answer(props: AnswerProps){
     return (<TextField
         multiline={true}
         variant="filled"
+        color="secondary"
         label={props.label}
         value={answer}
         fullWidth={true}

@@ -45,13 +45,14 @@ export default function FeedbackView() {
     }, [refreshQuiz, socketEmiter]);
 
     const theme = useTheme();
+    const background = "#D3D0CB";
     const classes = makeStyles({
         details: {
             width: "100%",
             height: "100%",
             maxHeight: "100%",
             padding: "10px 10px",
-            background: theme.palette.secondary.light,
+            background: background,
         },
         correctFullFilledAnswer: {
             border: '5px solid #80A3E4',

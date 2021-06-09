@@ -22,7 +22,6 @@ export function SendQuestion() {
             flexGrow: 1,
             "& .MuiOutlinedInput-root": {
                 borderRadius: "4px 0 0 4px",
-                color: "white",
             },
         },
         sendButton: {

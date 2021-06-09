@@ -21,10 +21,11 @@ export function QuestionsList(props: QuestionsListProps) {
 
     const { socketEmiter, sendJsonMessage } = useSocket();
 
+    const background = "#D3D0CB";
     const classes = makeStyles({
         details: {
             padding: "20px 10px",
-            background: "#fedf9d",
+            background: background,
             overflow: 'auto',
         }
     })();

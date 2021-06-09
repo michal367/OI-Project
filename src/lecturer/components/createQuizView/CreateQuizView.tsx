@@ -238,8 +238,8 @@ export function CreateQuizView() {
                         return;
                     }
                 }
-                for(let i=0; i < store.quizzes.length; i++){
-                    if(store.quizzes[i].id === data.id){
+                for (let i = 0; i < store.quizzes.length; i++) {
+                    if (store.quizzes[i].id === data.id) {
                         store.quizzes[i].title = title;
                         store.quizzes[i].questions = selectedQuestions;
                         break;
@@ -280,18 +280,18 @@ export function CreateQuizView() {
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
-          if (event.code === "Enter" || event.code === "NumpadEnter") {
-            event.preventDefault();
-            if (!(loading || right.length === 0 || title.length === 0 || title.length > 40)){
-                handleSaveQuiz();
-            } 
-          }
+            if (event.code === "Enter" || event.code === "NumpadEnter") {
+                event.preventDefault();
+                if (!(loading || right.length === 0 || title.length === 0 || title.length > 40)) {
+                    handleSaveQuiz();
+                }
+            }
         };
         document.addEventListener("keydown", listener);
         return () => {
-          document.removeEventListener("keydown", listener);
+            document.removeEventListener("keydown", listener);
         };
-      }, [loading, right, title, handleSaveQuiz]);
+    }, [loading, right, title, handleSaveQuiz]);
 
     return (
         <div className={classes.root}>

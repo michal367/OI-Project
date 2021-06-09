@@ -14,14 +14,14 @@ export function Option(props: OptionProps) {
     return (
         <div style={{ display: "flex", marginBottom: "10px" }}>
             <Checkbox
-                color="primary"
+                color="secondary"
                 checked={checked}
                 onChange={() => {
                     setChecked(prev => !prev);
                     props.onChange(!checked);
                 }}
             />
-            <Button variant="outlined" onClick={() => {
+            <Button variant="outlined" color="secondary" onClick={() => {
                 setChecked(prev => !prev)
                 props.onChange(!checked);
             }}>{props.text} </Button>

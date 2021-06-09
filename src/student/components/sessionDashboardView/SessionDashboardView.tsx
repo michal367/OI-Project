@@ -14,13 +14,14 @@ import FeedbackView from "../feedbackView/FeedbackView";
 import { TimerClock } from "../timerClock/timerClock";
 import { ReactionName } from "../../../common/util/reactions/enum";
 import { StoreContext } from "../../services/StoreService";
+import { green, red } from '@material-ui/core/colors';
 
 export function SessionDashboardView() {
     const theme = useTheme();
-
+    const background = "#D3D0CB";
     const classes = makeStyles({
         root: {
-            background: theme.palette.secondary.light,
+            background: background,
             maxHeight: "100vh",
             height: "100vh",
             display: "flex",
@@ -82,8 +83,12 @@ export function SessionDashboardView() {
             flexDirection: "column",
         },
         okButton: {
+            marginLeft: 10,
             color: "white",
-            backgroundColor: "green",
+            backgroundColor: green[500],
+            "&.MuiButton-root:hover":{
+                backgroundColor: green[700],
+            }
         },
         wrapper: {
             display: "flex",

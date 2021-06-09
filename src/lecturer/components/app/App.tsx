@@ -2,7 +2,7 @@ import { CssBaseline, makeStyles } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import { ThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import "fontsource-roboto";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
     BrowserRouter as Router,
     Redirect, Route, Switch
@@ -63,6 +63,30 @@ function App() {
             socketEmiter.off("onOpen", onOpen);
         };
     }, [socketEmiter, store]);
+
+
+    const handleNotReconnected = useCallback((payload: Payload) => {
+        setIsLectureStarted(false);
+    },[]);
+    
+    useEffect(()=>{
+        socketEmiter.on("lecture_not_reconnected", handleNotReconnected);
+        // TODO: handle lecture_connected if you want to
+        if(store.lectureID != null){
+            const payload: LectureReconnectRequestPayload = {
+                "event": "reconnect_lecture",
+                "data": {
+                    "lectureID": store.lectureID
+                }         
+            };
+            store.lectureID = null;
+            sendJsonMessage(payload);
+        }
+
+        return () =>{
+            socketEmiter.off("lecture_not_reconnected", handleNotReconnected);
+        }
+    }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.lectureID]);
 
     const updateSessionState = () => {
         setIsLectureStarted((prev) => !prev);
