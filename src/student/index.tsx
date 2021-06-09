@@ -6,14 +6,17 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { SocketService } from './services/SocketService';
 import Store from './services/StoreService';
+import { BrowserRouter as Router } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Store>
-      <SocketService>
-        <App />
-      </SocketService>
-    </Store>
+    <Router>
+      <Store>
+        <SocketService>
+          <App />
+        </SocketService>
+      </Store>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

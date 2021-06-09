@@ -3,7 +3,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import "fontsource-roboto";
 import { useCallback, useContext, useEffect } from "react";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { GridLoader } from "react-spinners";
 import { useSocket } from "../../services/SocketService";
 import Store, { StoreContext } from "../../services/StoreService";
@@ -61,14 +61,9 @@ function App() {
     const handleNotReconnected = useCallback((payload: Payload) => {
         history.push("/student", { dialogOpen: true });
         store.studentId = null;
-        console.log("KOLBAK");
     }, [history, store]);
 
     useEffect(() => {
-        console.log("use effect dupa");
-        socketEmiter.on("student_not_reconnected", handleNotReconnected);
-        // TODO: handle student_connected if you want to
-        console.log(store.studentId);
         if (store.studentId !== null) {
             console.log("use effect student id niepuste");
             const payload: StudentReconnectRequestPayload = {
@@ -80,36 +75,40 @@ function App() {
             };
             sendJsonMessage(payload);
         }
-
         return () => {
-            console.log("odpinam event");
+        }
+    }, [sendJsonMessage, store.invitation, store.studentId]);
+
+    useEffect(() => {
+        socketEmiter.on("student_not_reconnected", handleNotReconnected);
+        return () => {
             socketEmiter.off("student_not_reconnected", handleNotReconnected);
         }
-    }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.studentId]);
+    }, [handleNotReconnected, socketEmiter]);
 
 
     return (
-        <Router>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
-                    <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
-                </Backdrop>
 
-                <Switch>
-                    <Route path="/student/session">
-                        <SessionDashboardView />
-                    </Route>
-                    <Route path='/student/code/:session'>
-                        <JoinSessionView />
-                    </Route>
-                    <Route path='/'>
-                        <JoinSessionView />
-                        <Redirect to="/student/" />
-                    </Route>
-                </Switch>
-            </ThemeProvider>
-        </Router>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Backdrop style={{ zIndex: 1, backgroundColor: "rgba(0,0,0,.8)" }} open={store.isLoading} >
+                <GridLoader color={theme.palette.primary.main} loading={true} margin={10} size={50} />
+            </Backdrop>
+
+            <Switch>
+                <Route path="/student/session">
+                    <SessionDashboardView />
+                </Route>
+                <Route path='/student/code/:session'>
+                    <JoinSessionView />
+                </Route>
+                <Route path='/'>
+                    <JoinSessionView />
+                    <Redirect to="/student/" />
+                </Route>
+            </Switch>
+        </ThemeProvider>
+
     );
 }
 export default App;
