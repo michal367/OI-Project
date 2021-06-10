@@ -58,6 +58,10 @@ function App() {
 
     const handleNotReconnected = useCallback((payload: Payload) => {
         history.push("/student", { dialogOpen: true });
+        store.lectureID = null;
+    }, [history, store]);
+    const handleReconnected = useCallback((payload: Payload) => {
+        history.push("/student/session");
     }, [history, store]);
 
     useEffect(() => {
@@ -70,16 +74,19 @@ function App() {
                     "studentID": store.studentId
                 }
             };
+
             sendJsonMessage(payload);
         }
         return () => {
         }
-    }, [sendJsonMessage, store.invitation, store.studentId]);
+    }, [sendJsonMessage, store.invitation]);
 
     useEffect(() => {
         socketEmiter.on("student_not_reconnected", handleNotReconnected);
+        socketEmiter.on("student_reconnected", handleReconnected);
         return () => {
             socketEmiter.off("student_not_reconnected", handleNotReconnected);
+            socketEmiter.off("student_reconnected", handleReconnected);
         }
     }, [handleNotReconnected, socketEmiter]);
 

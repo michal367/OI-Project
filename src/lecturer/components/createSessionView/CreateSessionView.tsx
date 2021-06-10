@@ -123,16 +123,16 @@ export function CreateSessionView(props: { update: () => void }) {
         if (!loading) {
             setSuccess(false);
             setLoading(true);
+            
             const handleCreate = (parsed: LectureCreateResponsePayload) => {
-                setTimeout(() => {
-                    setSuccess(true);
-                    setLoading(false);
-                    store.lectureID = parsed.data.lectureID;
-                    store.sendQuizStep = 0;
-                    store.timeToNextQuiz = 0;
-                    store.link = parsed.data.lectureLink;
-                    props.update();
-                },1000);
+                setSuccess(true);
+                setLoading(false);
+                store.lectureID = parsed.data.lectureID;
+                store.sendQuizStep = 0;
+                store.timeToNextQuiz = 0;
+                store.link = parsed.data.lectureLink;
+                props.update();
+
                 socketEmiter.off("lecture_created", handleCreate);
                 console.log("lecture created", parsed);
             };

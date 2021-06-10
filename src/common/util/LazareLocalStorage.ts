@@ -21,7 +21,7 @@ const loadForArray = (key: string, initialValue: any[]) => {
 
 const save = (key: string, value: any) => {
     if (value === undefined) return;
-    console.log("saveKey", value);
+    // console.log("saveKey", value);
     return localStorage.setItem(makeKey(key), JSON.stringify(value));
 }
 

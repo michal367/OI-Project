@@ -36,8 +36,9 @@ const theme = createMuiTheme({
 
 function App() {
     const store = useContext(StoreContext);
-    const { socketEmiter, sendJsonMessage } = useSocket(); //for keeping socket open
-    const [isLectureStarted, setIsLectureStarted] = useState<boolean>(!!store.lectureID);
+    const { socketEmiter, sendJsonMessage } = useSocket();
+    const [isLectureStarted, setIsLectureStarted] = useState<boolean>(store.lectureID != null);
+    // TODO: line above is executed before loading from local storage so store.lectureID is null for short time
     
     // heroku 55s timeout fix
     useEffect(() => {
@@ -104,26 +105,30 @@ function App() {
 
     const handleNotReconnected = useCallback((payload: Payload) => {
         setIsLectureStarted(false);
-    },[]);
-    
-    useEffect(()=>{
+        store.lectureID = null;
+    }, []);
+
+    useEffect(() => {
         socketEmiter.on("lecture_not_reconnected", handleNotReconnected);
-        // TODO: handle lecture_connected if you want to
-        if(store.lectureID != null){
+
+        if (store.lectureID != null) {
+            setIsLectureStarted(true);
             const payload: LectureReconnectRequestPayload = {
                 "event": "reconnect_lecture",
                 "data": {
                     "lectureID": store.lectureID
-                }         
+                }
             };
-            store.lectureID = null;
             sendJsonMessage(payload);
         }
+        else {
+            setIsLectureStarted(false);
+        }
 
-        return () =>{
+        return () => {
             socketEmiter.off("lecture_not_reconnected", handleNotReconnected);
         }
-    }, [handleNotReconnected, sendJsonMessage, socketEmiter, store, store.lectureID]);
+    }, [handleNotReconnected, sendJsonMessage, socketEmiter]);
 
     const updateSessionState = () => {
         setIsLectureStarted((prev) => !prev);
@@ -161,7 +166,7 @@ function App() {
                                     return (
                                         isLectureStarted ?
                                             <Redirect to={{
-                                                pathname: "lecturer/session",
+                                                pathname: "/lecturer/session",
                                                 state: { isOpen: true }
                                             }} /> :
                                             <CreateSessionView update={updateSessionState} />
