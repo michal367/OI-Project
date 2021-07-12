@@ -76,7 +76,7 @@ export function SessionDashboardView(props: { update: () => void }) {
             flexDirection: "column",
             maxHeight: "calc(100vh - 48px)",
         },
-        aside:{
+        aside: {
             flexShrink: 0,
             width: 400,
             display: "flex",
@@ -84,11 +84,13 @@ export function SessionDashboardView(props: { update: () => void }) {
             position: "relative",
             minHeight: "calc(32vh - 18px)",
             ...(() => {
-                if(minimizeColumns) return {
-                    maxHeight: "calc(100vh - 648px)" 
+                if (minimizeColumns) return {
+                    maxHeight: "calc(100vh - 648px)"
                 }
-                return { maxHeight : "calc(100vh - 248px)", 
-                minHeight: "calc(100vh - 298px)",}
+                return {
+                    maxHeight: "calc(100vh - 248px)",
+                    minHeight: "calc(100vh - 298px)",
+                }
             })(),
             alignSelf: "flex-end",
         },
@@ -96,12 +98,12 @@ export function SessionDashboardView(props: { update: () => void }) {
             padding: 20,
             flexGrow: 1,
             display: "grid",
-            gridTemplateColumns: "auto auto", 
+            gridTemplateColumns: "auto auto",
             gridAutoRows: "minmax(60px, min-content)",
             gap: 10,
             borderRadius: 0,
         },
-        sessionName:{
+        sessionName: {
             gridColumn: "span 2",
         },
         content: {
@@ -113,7 +115,7 @@ export function SessionDashboardView(props: { update: () => void }) {
             paddingRight: 15,
             gap: 15,
         },
-        contentBottom:{
+        contentBottom: {
             ...lazareTheme.fullWidthWrapper,
         },
         columns: {
@@ -125,10 +127,10 @@ export function SessionDashboardView(props: { update: () => void }) {
             transition: "max-height .5s",
             height: 600,
             ...(() => {
-                if(minimizeColumns) return {
+                if (minimizeColumns) return {
                     maxHeight: "68vh"
                 }
-                return {maxHeight : 250}
+                return { maxHeight: 250 }
             })(),
         },
         backdrop: {
@@ -165,7 +167,7 @@ export function SessionDashboardView(props: { update: () => void }) {
         }
     })();
 
-    const refreshList = useCallback((parsed: StudentAddedPayload) => {
+    const handleStudentAdded = useCallback((parsed: StudentAddedPayload) => {
         const newStudentList: StudentListRow[] = studentList;
         const studentRow: StudentListRow = {
             orderIndex: newStudentList.length + 1,
@@ -173,18 +175,29 @@ export function SessionDashboardView(props: { update: () => void }) {
             name: parsed.data.name,
             surname: parsed.data.surname,
             nick: parsed.data.nick
-        }
+        };
         newStudentList.push(studentRow);
         setStudentList(newStudentList);
-        console.log("list refreshed with one student")
+    }, [studentList]);
+
+    const handleStudentDeleted = useCallback((parsed: StudentDeletedPayload) => {
+        const newStudentList: StudentListRow[] = studentList.filter((student) => student.id !== parsed.data.studentID);
+        setStudentList(newStudentList);
     }, [studentList]);
 
     useEffect(() => {
-        socketEmiter.addListener("student_added", refreshList);
+        socketEmiter.addListener("student_added", handleStudentAdded);
         return () => {
-            socketEmiter.removeListener("student_added", refreshList);
+            socketEmiter.removeListener("student_added", handleStudentAdded);
         };
-    }, [refreshList, socketEmiter]);
+    }, [handleStudentAdded, socketEmiter]);
+
+    useEffect(() => {
+        socketEmiter.addListener("student_deleted", handleStudentDeleted);
+        return () => {
+            socketEmiter.removeListener("student_deleted", handleStudentDeleted);
+        };
+    }, [handleStudentDeleted, socketEmiter]);
 
     // TODO
     // I do not know what is happening here
@@ -239,13 +252,13 @@ export function SessionDashboardView(props: { update: () => void }) {
     return (
         <div className={classes.root}>
             <div className={classes.content}>
-                <div className={classes.aside} style={{transition: "max-height .5s, min-height .5s",}}>
+                <div className={classes.aside} style={{ transition: "max-height .5s, min-height .5s", }}>
                     <Card className={classes.sessionDetails}>
                         <Typography className={classes.sessionName}>{"Zajęcia: " + store.lectureName}</Typography>
                         <ShareSessionView isOpen={isOpen} update={props.update} />
                     </Card>
                     <div className={classes.minimalButton}>
-                        <IconButton  onClick={()=>setMinimizeColumns(prev=>!prev)}> {minimizeColumns ? (<ExpandMoreIcon />) : (<ExpandLessIcon />)}</IconButton>
+                        <IconButton onClick={() => setMinimizeColumns(prev => !prev)}> {minimizeColumns ? (<ExpandMoreIcon />) : (<ExpandLessIcon />)}</IconButton>
                     </div>
                 </div>
                 <div className={classes.columns}>

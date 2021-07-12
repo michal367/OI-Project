@@ -1,29 +1,23 @@
 import {
     Paper,
     List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    ListItemSecondaryAction,
-    IconButton,
     Fab
 } from "@material-ui/core";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import BackspaceIcon from '@material-ui/icons/Backspace';
 import { makeStyles, useTheme } from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
-import React, { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../services/StoreService";
 import { green } from "@material-ui/core/colors";
 import DoneIcon from '@material-ui/icons/Done';
 import { QuestionBlock } from "./QuestionBlock";
+import { StatsListItem } from "./StatsListItem";
 import { ImportExport } from "../importExport/ImportExport";
 import { useSocket } from "../../services/SocketService";
 import { lazareTheme } from "../../util/theme/customTheme";
 
 export function QuizStatsView() {
     const store = useContext(StoreContext);
-    const [selectedQuizStats, setQuizStats] = React.useState<ScheduledQuiz | undefined>(undefined);
+    const [selectedQuizStats, setQuizStats] = useState<ScheduledQuiz | undefined>(undefined);
 
     const theme = useTheme();
     const { sendJsonMessage } = useSocket();
@@ -78,10 +72,6 @@ export function QuizStatsView() {
                 content: '""',
             },
         },
-        quizStatRow: {
-            paddingTop: 16,
-            paddingBottom: 16,
-        },
         answer: {
             width: "100%",
             height: "100%",
@@ -116,7 +106,8 @@ export function QuizStatsView() {
         shareFab: {
             height: 55,
             fontSize: 16,
-            marginRight: "20px"
+            marginRight: "20px",
+            maxWidth: 288,
         }
     })();
 
@@ -126,28 +117,37 @@ export function QuizStatsView() {
 
     const handleDeleteStats = (quizIndex: number) => {
         let statsToBeDeleted = store.scheduledQuizzes[quizIndex];
-        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz !== statsToBeDeleted);
+        store.scheduledQuizzes = store.scheduledQuizzes.filter(storeQuiz => storeQuiz.id !== statsToBeDeleted.id);
     }
 
-    const handleShowResults = () => {
-        let tmpQuizzes = store.scheduledQuizzes;
-        tmpQuizzes.forEach(
-            (scheduledQuiz: ScheduledQuiz) => {
-                if (scheduledQuiz === selectedQuizStats) {
-                    scheduledQuiz.alreadyShowedResults = true;
+    const handleEnded = (quizIndex: number) => {
+        let scheduledQuizzes = store.scheduledQuizzes;
+        scheduledQuizzes[quizIndex].inProgress = false;
+        store.scheduledQuizzes = scheduledQuizzes;
+    }
 
-                    const payload: ShowAnswersPayload = {
-                        event: 'show_answers',
-                        data: {
-                            quizID: scheduledQuiz?.quiz?.id ?? ""
+    const handleShowResults = useCallback(
+        () => {
+            let tmpQuizzes = store.scheduledQuizzes;
+            tmpQuizzes.forEach(
+                (scheduledQuiz: ScheduledQuiz) => {
+                    if (scheduledQuiz === selectedQuizStats) {
+                        scheduledQuiz.alreadyShowedResults = true;
+
+                        const payload: ShowAnswersPayload = {
+                            event: 'show_answers',
+                            data: {
+                                quizID: scheduledQuiz?.id ?? ""
+                            }
                         }
+                        sendJsonMessage(payload);
                     }
-                    sendJsonMessage(payload);
                 }
-            }
-        )
-        store.scheduledQuizzes = tmpQuizzes;
-    }
+            )
+            store.scheduledQuizzes = tmpQuizzes;
+        },
+        [selectedQuizStats, sendJsonMessage, store]
+    )
 
     const onImport = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result != null) {
@@ -161,26 +161,21 @@ export function QuizStatsView() {
             <div className={classes.content}>
                 <Paper variant="outlined" square className={classes.quizColumn}>
                     <List component="nav">
-                        {store.scheduledQuizzes.map((quizStats, i) => (
-                            <ListItem
-                                button
-                                selected={quizStats === selectedQuizStats}
-                                onClick={(event) => handleQuiz(i)}
-                                className={classes.quizStatRow}
-                            >
-                                <ListItemIcon>
-                                    {quizStats === selectedQuizStats && (
-                                        <AssignmentIcon />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText primary={quizStats.quiz?.title} />
-                                <ListItemSecondaryAction>
-                                    <IconButton edge="end" onClick={(event) => handleDeleteStats(i)}>
-                                        <BackspaceIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))}
+                        {store.scheduledQuizzes.map((quizStats: ScheduledQuiz, i) => {
+                            return (
+                                <StatsListItem
+                                    index={i}
+                                    isSelected={quizStats.id === selectedQuizStats?.id}
+                                    onSelect={() => handleQuiz(i)}
+                                    onDelete={() => handleDeleteStats(i)}
+                                    onEnded={() => handleEnded(i)}
+                                    timeToEnd={quizStats.timeToEnd ?? 0}
+                                    inProgress={!!quizStats.inProgress} // !! changes (boolean | undefined) to boolean
+                                    title={(quizStats.quiz?.title ?? "")}
+                                />
+                            )
+                        }
+                        )}
                     </List>
                 </Paper>
                 <Paper
@@ -199,9 +194,6 @@ export function QuizStatsView() {
                         })
                     }
                 </Paper>
-
-            </div>
-            <div className={classes.action}>
 
                 <ImportExport onImport={onImport} objectToExport={store.scheduledQuizzes} fileName="scheduledQuizzes" />
 

@@ -27,6 +27,7 @@ export function ImportExport(props: ImportExportProps) {
                 height: "100%",
             },
             height: 55,
+            maxWidth: 288,
         },
         importExportGroup: {
             width: "100%",

@@ -62,7 +62,7 @@ export function QuizListView(props: QuizListViewProps) {
                         <ListItem
                             key={value.title}
                             button
-                            selected={selected === value}
+                            selected={selected?.id === value.id}
                             onClick={handleQuiz(value)}
                             className={classes.listItem}
                         >

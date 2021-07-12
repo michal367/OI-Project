@@ -169,11 +169,17 @@ class Lecture {
                     reason: reason
                 }
             };
-            this.wsc?.send(JSON.stringify(serverResponse));
+
+            if (!this.wsc?.isClosed)
+                this.wsc?.send(JSON.stringify(serverResponse))
+
             if (reason === "quiz_timeout") {
                 serverResponse.data.quizID = quiz.IDFromServer;
                 const remainingStudents: Student[] = selectedStudents.filter((student: Student) => !quiz.answeredStudents().includes(student.id));
-                remainingStudents.forEach((student: Student) => student.wsc?.send(JSON.stringify(serverResponse)));
+                remainingStudents.forEach((student: Student) => {
+                    if (!student.wsc?.isClosed)
+                        student.wsc?.send(JSON.stringify(serverResponse))
+                });
             }
             quiz.removeListener("answersAdded", answersAddedHandler);
             quiz.removeListener("quizEnded", quizEndedHandler);

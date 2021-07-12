@@ -26,6 +26,7 @@ import { getRandomIndexes } from "../../../common/util/random";
 import { formatTime } from "../../../common/util/time";
 import TimerIcon from '@material-ui/icons/Timer';
 import { useSocket } from "../../services/SocketService";
+import { v4 } from "uuid";
 
 interface SendQuizViewProps {
     studentList?: Student[];
@@ -46,8 +47,8 @@ function getSteps() {
 
 
 export function SendQuizView(props: SendQuizViewProps) {
-    const { sendJsonMessage } = useSocket();
     const theme = useTheme();
+    const { sendJsonMessage, socketEmiter } = useSocket();
     const store = useContext(StoreContext);
     let [selectedStudents, toggleAllSelectedStudents, toggleRandomSelectedStudents] = props.students ?? [[], () => { }, () => { }];
     const studentList = props.studentList ?? [];
@@ -55,13 +56,14 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [students, setStudents] = useState<string[]>(selectedStudents);
     const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeSeconds !== undefined ? Math.floor(store.sendQuiz.timeSeconds / 60) : 1);
     const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeSeconds ? Math.floor(store.sendQuiz.timeSeconds) % 60 : 0);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 60);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
-    const [checked, setChecked] = useState<boolean>(time === 0);
+    const [unlimitedTime, setUnlimitedTime] = useState<boolean>(false);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
     const [minimal, setMinimal] = useState(props.minimal);
+    
     useEffect(() => setMinimal(props.minimal));
 
     useEffect(() => {
@@ -70,6 +72,7 @@ export function SendQuizView(props: SendQuizViewProps) {
             setStudents(students);
         }
     }, [props.students]);
+
 
     useEffect(() => {
         if (store.sendQuiz.quiz)
@@ -134,9 +137,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             width: "100%",
             padding: 1,
             height: "93%",
-            ...(()=>{
-                if(minimal) return {maxHeight: 220}
-                return {maxHeight: "100vh"}
+            ...(() => {
+                if (minimal) return { maxHeight: 220 }
+                return { maxHeight: "100vh" }
             })(),
         },
         container: {
@@ -175,7 +178,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                 display: "flex",
                 gap: 10,
             },
-            "& .MuiSvgIcon-root":{
+            "& .MuiSvgIcon-root": {
                 marginRight: 10,
                 marginTop: 2,
             },
@@ -196,8 +199,8 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     value={minutes.toString()}
                                     onChange={handleMinutesChange}
                                     inputProps={{ min: 0 }}
-                                    disabled={checked}
-                                    autoFocus={!checked}
+                                    disabled={unlimitedTime}
+                                    autoFocus={!unlimitedTime}
                                 />
                             </Grid>
                             <Grid item xs={3}>
@@ -207,16 +210,19 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     value={seconds.toString()}
                                     onChange={handleSecondsChange}
                                     inputProps={{ min: 0 }}
-                                    disabled={checked}
-                                    autoFocus={!checked}
+                                    disabled={unlimitedTime}
+                                    autoFocus={!unlimitedTime}
                                 />
                             </Grid>
                         </Grid>
-
+                        {/*
+                        //TODO: implement unlimited time quiz
+                        Not supported 
+                        
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={checked}
+                                    checked={unlimitedTime}
                                     onChange={handleChange}
                                     name="checked"
                                     color="primary"
@@ -224,6 +230,8 @@ export function SendQuizView(props: SendQuizViewProps) {
                             }
                             label="Bez limitu"
                         />
+                         */}
+                        
                     </FormControl>
                 );
             case 2:
@@ -291,10 +299,10 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
+        setUnlimitedTime(event.target.checked);
         if (event.target.checked === true) {
             let tmpQuiz: ScheduledQuiz = store.sendQuiz;
-            delete tmpQuiz.timeSeconds;
+            tmpQuiz.timeSeconds = 0;
             store.sendQuiz = tmpQuiz;
             setTime(0);
         }
@@ -316,16 +324,36 @@ export function SendQuizView(props: SendQuizViewProps) {
 
     const handleNext = useCallback(() => {
         if (store.sendQuizStep === steps.length - 1) {
+            let newScheduledQuiz = store.sendQuiz;
+            newScheduledQuiz.questionStats = [];
+            newScheduledQuiz.quiz?.questions.forEach((question, index) => {
+                let qStat: QuestionStat = {
+                    index,
+                    options: []
+                }
+                if ((question.options ?? []).length > 0)
+                    question.options?.forEach((answer, index) => {
+                        let aStat: AnswerStat = {
+                            index,
+                            numberOfTimesSelected: 0,
+                        }
+                        qStat.options.push(aStat);
+                    });
+                newScheduledQuiz.questionStats.push(qStat);
+            })
             console.log("scheduled quiz", store.sendQuiz);
             let timeToWait = Date.now() + 1000 * (time ?? 0);
-            store.timeToNextQuiz = timeToWait;
+            newScheduledQuiz.timeToEnd = timeToWait;
             setClock(timeToWait - Date.now());
-            setTimerWait(setInterval(() => { refreshClock(timeToWait) }, 1000));
+            let scheduledQuizzes = store.scheduledQuizzes;
+            scheduledQuizzes.push(JSON.parse(JSON.stringify(newScheduledQuiz)));
+            store.scheduledQuizzes = JSON.parse(JSON.stringify(scheduledQuizzes));
+            setTimerWait(setInterval(() => { refreshClock(newScheduledQuiz.timeToEnd) }, 1000));
 
             let payload: QuizRequestPayload = {
                 event: "send_quiz",
                 data: {
-                    quizID: "", //@rozchlastywacz why it requires ID from us if we don't have it yet?
+                    quizID: store.sendQuiz.id,
                     studentIDs: store.sendQuiz.studentIDs,
                     timeSeconds: (time ?? 0),
                     questions: store.sendQuiz.quiz
@@ -345,12 +373,13 @@ export function SendQuizView(props: SendQuizViewProps) {
     }, [timerWait])
 
     useEffect(() => {
-        if (store.timeToNextQuiz - Date.now() > 0 && !timerWait) {
-            setClock(store.timeToNextQuiz - Date.now());
-            setTimerWait(setInterval(() => { refreshClock(store.timeToNextQuiz) }, 1000));
+        let timeToEnd = store.sendQuiz.timeToEnd ?? 0;
+        if (timeToEnd > 0 && timeToEnd - Date.now() > 0 && !timerWait) {
+            setClock(store.sendQuiz.timeToEnd ?? 0 - Date.now());
+            setTimerWait(setInterval(() => { refreshClock(store.sendQuiz.timeToEnd) }, 1000));
             store.sendQuizStep = 4;
         }
-    }, [store.timeToNextQuiz, refreshClock, timerWait, store])
+    }, [store.sendQuiz.timeToEnd, refreshClock, timerWait, store])
 
 
     const handleBack = () => {
@@ -358,13 +387,21 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
 
     const handleReset = () => {
+        if (clock > 0) return;
         store.sendQuizStep = 0;
-        setSelectedTime(undefined, undefined);
         setMinutes(1);
         setSeconds(0);
-        setSelectedQuiz(undefined);
-        changeSelectedStudents(true);
-    };
+        store.sendQuiz = {
+            id: v4(),
+            studentIDs: [],
+            questionStats: [],
+            alreadyShowedResults: false,
+            timeSeconds: 0,
+            inProgress: true,
+            timeToEnd: 0,
+        }
+    }
+
     const handleSendAnswers = () => {
         const payload: ShowAnswersPayload = {
             event: 'show_answers',
@@ -381,13 +418,13 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 0:
                 return !quiz;
             case 1:
-                return !(time > 0 || checked);
+                return !(time > 0 || unlimitedTime);
             case 2:
                 return students.length === 0;
             default:
                 return true;
         }
-    }, [quiz, time, checked, students]);
+    }, [quiz, time, unlimitedTime, students]);
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
@@ -405,9 +442,9 @@ export function SendQuizView(props: SendQuizViewProps) {
     }, [store, isStepReady, handleNext]);
 
     const updateMinimal = () => {
-        if(props.setMinimal)
-            props!.setMinimal(prev=>!prev)
-        setMinimal(prev=>!prev);
+        if (props.setMinimal)
+            props!.setMinimal(prev => !prev)
+        setMinimal(prev => !prev);
     }
 
     return (
@@ -445,7 +482,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                             className={classes.button}
                                         >
                                             Wstecz
-                                    </Button>
+                                        </Button>
                                         <Button
                                             disabled={isStepReady(
                                                 store.sendQuizStep
@@ -469,10 +506,10 @@ export function SendQuizView(props: SendQuizViewProps) {
                         <Paper square elevation={0} className={classes.resetContainer}>
                             <Typography>Quiz został wysłany.</Typography>
                             <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
-                                {"Pokaż odpowiedzi"}
+                                {"Wyślij odpowiedzi"}
                             </Button>
                             <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
-                                {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
+                                {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz"}
                             </Button>
                         </Paper>
                     )}

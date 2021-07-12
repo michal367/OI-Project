@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { lazareLocalStorage } from "../../common/util/LazareLocalStorage";
 import { includeMockData } from "../util/mock/includeMockData";
+import { v4 } from "uuid";
 export interface StoreProps {
     children: ReactNode
 }
@@ -66,10 +67,13 @@ const initialValue: IStore = includeMockData(true, {
     sendQuizStep: 0,
     scheduledQuizzes: [],
     sendQuiz: {
-        id: "",
+        id: v4(),
         studentIDs: [],
         questionStats: [],
-        alreadyShowedResults: true,
+        alreadyShowedResults: false,
+        timeSeconds: 0,
+        inProgress: true,
+        timeToEnd: 0,
     },
     isLoading: true,
     studentQuestions: [],
@@ -220,6 +224,7 @@ const Store = (props: StoreProps) => {
         get sendQuizStep() {
             return sendQuizStep;
         },
+
         set sendQuizStep(newValue: number) {
             setSendQuizStep(newValue);
             saveKey("sendQuizStep", newValue);
