@@ -56,13 +56,14 @@ export function SendQuizView(props: SendQuizViewProps) {
     const [students, setStudents] = useState<string[]>(selectedStudents);
     const [minutes, setMinutes] = useState<number>(store.sendQuiz.timeSeconds !== undefined ? Math.floor(store.sendQuiz.timeSeconds / 60) : 1);
     const [seconds, setSeconds] = useState<number>(store.sendQuiz.timeSeconds ? Math.floor(store.sendQuiz.timeSeconds) % 60 : 0);
-    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 0);
+    const [time, setTime] = useState<number>(store.sendQuiz.timeSeconds ?? 60);
     const [quiz, setQuiz] = useState<boolean>(Boolean(store.sendQuiz.quiz));
-    const [checked, setChecked] = useState<boolean>(time === 0);
+    const [unlimitedTime, setUnlimitedTime] = useState<boolean>(false);
     const [randomStudentsNumber, setRandomStudentsNumber] = useState<string>();
     const [timerWait, setTimerWait] = useState<NodeJS.Timeout>();
     const [clock, setClock] = useState(0);
     const [minimal, setMinimal] = useState(props.minimal);
+    
     useEffect(() => setMinimal(props.minimal));
 
     useEffect(() => {
@@ -136,9 +137,9 @@ export function SendQuizView(props: SendQuizViewProps) {
             width: "100%",
             padding: 1,
             height: "93%",
-            ...(()=>{
-                if(minimal) return {maxHeight: 220}
-                return {maxHeight: "100vh"}
+            ...(() => {
+                if (minimal) return { maxHeight: 220 }
+                return { maxHeight: "100vh" }
             })(),
         },
         container: {
@@ -177,7 +178,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                 display: "flex",
                 gap: 10,
             },
-            "& .MuiSvgIcon-root":{
+            "& .MuiSvgIcon-root": {
                 marginRight: 10,
                 marginTop: 2,
             },
@@ -198,8 +199,8 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     value={minutes.toString()}
                                     onChange={handleMinutesChange}
                                     inputProps={{ min: 0 }}
-                                    disabled={checked}
-                                    autoFocus={!checked}
+                                    disabled={unlimitedTime}
+                                    autoFocus={!unlimitedTime}
                                 />
                             </Grid>
                             <Grid item xs={3}>
@@ -209,16 +210,19 @@ export function SendQuizView(props: SendQuizViewProps) {
                                     value={seconds.toString()}
                                     onChange={handleSecondsChange}
                                     inputProps={{ min: 0 }}
-                                    disabled={checked}
-                                    autoFocus={!checked}
+                                    disabled={unlimitedTime}
+                                    autoFocus={!unlimitedTime}
                                 />
                             </Grid>
                         </Grid>
-
+                        {/*
+                        //TODO: implement unlimited time quiz
+                        Not supported 
+                        
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={checked}
+                                    checked={unlimitedTime}
                                     onChange={handleChange}
                                     name="checked"
                                     color="primary"
@@ -226,6 +230,8 @@ export function SendQuizView(props: SendQuizViewProps) {
                             }
                             label="Bez limitu"
                         />
+                         */}
+                        
                     </FormControl>
                 );
             case 2:
@@ -293,7 +299,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
+        setUnlimitedTime(event.target.checked);
         if (event.target.checked === true) {
             let tmpQuiz: ScheduledQuiz = store.sendQuiz;
             tmpQuiz.timeSeconds = 0;
@@ -321,13 +327,13 @@ export function SendQuizView(props: SendQuizViewProps) {
             let newScheduledQuiz = store.sendQuiz;
             newScheduledQuiz.questionStats = [];
             newScheduledQuiz.quiz?.questions.forEach((question, index) => {
-                let qStat:QuestionStat = {
+                let qStat: QuestionStat = {
                     index,
                     options: []
                 }
-                if((question.options??[]).length > 0)
+                if ((question.options ?? []).length > 0)
                     question.options?.forEach((answer, index) => {
-                        let aStat:AnswerStat = {
+                        let aStat: AnswerStat = {
                             index,
                             numberOfTimesSelected: 0,
                         }
@@ -346,7 +352,7 @@ export function SendQuizView(props: SendQuizViewProps) {
 
             let payload: QuizRequestPayload = {
                 event: "send_quiz",
-                data:{
+                data: {
                     quizID: store.sendQuiz.id,
                     studentIDs: store.sendQuiz.studentIDs,
                     timeSeconds: (time ?? 0),
@@ -381,7 +387,7 @@ export function SendQuizView(props: SendQuizViewProps) {
     };
 
     const handleReset = () => {
-        if(clock > 0) return;
+        if (clock > 0) return;
         store.sendQuizStep = 0;
         setMinutes(1);
         setSeconds(0);
@@ -395,8 +401,8 @@ export function SendQuizView(props: SendQuizViewProps) {
             timeToEnd: 0,
         }
     }
-    
-    const handleSendAnswers = () =>{
+
+    const handleSendAnswers = () => {
         const payload: ShowAnswersPayload = {
             event: 'show_answers',
             data: {
@@ -412,13 +418,13 @@ export function SendQuizView(props: SendQuizViewProps) {
             case 0:
                 return !quiz;
             case 1:
-                return !(time > 0 || checked);
+                return !(time > 0 || unlimitedTime);
             case 2:
                 return students.length === 0;
             default:
                 return true;
         }
-    }, [quiz, time, checked, students]);
+    }, [quiz, time, unlimitedTime, students]);
 
     useEffect(() => {
         const listener = (event: { code: string; preventDefault: () => void; }) => {
@@ -436,9 +442,9 @@ export function SendQuizView(props: SendQuizViewProps) {
     }, [store, isStepReady, handleNext]);
 
     const updateMinimal = () => {
-        if(props.setMinimal)
-            props!.setMinimal(prev=>!prev)
-        setMinimal(prev=>!prev);
+        if (props.setMinimal)
+            props!.setMinimal(prev => !prev)
+        setMinimal(prev => !prev);
     }
 
     return (
@@ -476,7 +482,7 @@ export function SendQuizView(props: SendQuizViewProps) {
                                             className={classes.button}
                                         >
                                             Wstecz
-                                    </Button>
+                                        </Button>
                                         <Button
                                             disabled={isStepReady(
                                                 store.sendQuizStep
@@ -500,10 +506,10 @@ export function SendQuizView(props: SendQuizViewProps) {
                         <Paper square elevation={0} className={classes.resetContainer}>
                             <Typography>Quiz został wysłany.</Typography>
                             <Button onClick={handleSendAnswers} className={classes.button} disabled={clock > 0}>
-                                {"Pokaż odpowiedzi"}
+                                {"Wyślij odpowiedzi"}
                             </Button>
                             <Button onClick={handleReset} className={classes.button} disabled={clock > 0}>
-                                {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz."}
+                                {clock > 0 ? "Do końca quizu: " + formatTime(clock) : "Wyślij nowy quiz"}
                             </Button>
                         </Paper>
                     )}
